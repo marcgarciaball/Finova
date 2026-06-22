@@ -17,9 +17,17 @@ export default function ProtectedLayout({
       <div className="flex w-full flex-1 flex-col items-center gap-20">
         <nav className="flex h-16 w-full justify-center border-b border-b-foreground/10">
           <div className="flex w-full max-w-5xl items-center justify-between p-3 px-5 text-sm">
-            <Link href="/" className="font-semibold text-lg">
-              {t('app.name')}
-            </Link>
+            <div className="flex items-center gap-6">
+              <Link href="/" className="font-semibold text-lg">
+                {t('app.name')}
+              </Link>
+              <Link
+                href="/protected/accounts"
+                className="text-ink-soft text-sm hover:text-ink"
+              >
+                {t('accounts.nav')}
+              </Link>
+            </div>
             <div className="flex items-center gap-2">
               <LocaleSwitcher />
               <ThemeSwitcher />

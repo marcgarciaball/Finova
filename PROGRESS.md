@@ -44,13 +44,15 @@ Work one ticket at a time, one PR each. Do not start a phase until the prior pha
 | ID | Ticket | Owner | Status |
 |----|--------|-------|--------|
 | P1-01 | Skill `add-money-safe-feature` + money module (cents+currency, full tests) | Backend/Domain | DONE |
-| P1-02 | Schema+RLS `accounts`; CRUD Server Actions + UI | Schema/DB + Frontend | TODO |
+| P1-02 | Schema+RLS `accounts`; CRUD Server Actions + UI | Schema/DB + Frontend | REVIEW — code complete; **migration not yet applied** |
 | P1-03 | Schema+RLS `categories`/subcategories; bilingual default seed | Schema/DB | TODO |
 | P1-04 | Schema+RLS `transactions` (full fields) | Schema/DB | TODO |
 | P1-05 | Transactions UI: CRUD, filters, search, row recategorize | Frontend | TODO |
 | P1-06 | Transfer flag excluded from income/expense totals (tested) | Backend/Domain | TODO |
 | P1-07 | Multi-currency: base/display on profile; per-transaction currency | Backend/Domain | TODO |
 | **Gate** | accounts/categories/transactions created, totals correct, RLS tested | Coordinator | TODO |
+
+**P1-02 notes:** Implemented per `docs/superpowers/specs/2026-06-22-accounts-design.md`. Schema `lib/db/schema/accounts.ts` (bigint-cents `opening_balance`, text+check `type`, four owner-scoped default-deny RLS policies mirroring `profiles`, `user_id` index). Migration `drizzle/0001_accounts.sql` generated + hand-added `accounts_set_updated_at` trigger (reuses `set_updated_at()`). Runtime data access via the **RLS-enforced Supabase server client** (not Drizzle): `app/protected/accounts/{data.ts,actions.ts}` (`requireUser()` first, owner from JWT `claims.sub` never the form, discriminated `ActionResult`, soft-archive + hard-delete with `TODO(P1-04)` emptiness guard). UI: `AccountForm` (create+edit, `useActionState`, inline field errors), `AccountRow` (read/edit toggle + archive/delete), `account-list` (active/archived sections), `CreateAccountPanel`, `page.tsx`; Accounts nav link added. Validation `lib/validation/account.ts` + 14 unit tests (green). RLS suite `tests/rls/accounts.rls.test.ts` (6 cases, skipped without `TEST_DATABASE_URL`). i18n `accounts` namespace in `messages/{en,es}.json`. **Verified:** `npm run typecheck`, `npm run lint`, `npm test` (75 pass / 10 skip) all green. **Action required:** set DB env + `npm run db:migrate` to apply `0001`; then run the RLS suite against a disposable DB and verify create/edit/archive/delete in the browser. (`npm run build` not runnable in this sandbox — Turbopack can't bind a port.)
 
 **P1-01 notes:** `lib/domain/money/` — pure domain module: integer cents + ISO-4217 currency, no floats. `money.ts` (constructors, exact + half-up-rounded arithmetic, compare, `convert`, `allocate` largest-remainder split), `format.ts` (Intl, locale-aware, forced 2 decimals), `errors.ts` (typed). Near-100% unit coverage. Skill `add-money-safe-feature` written. ADR-007 records the fixed-2-decimal choice.
 

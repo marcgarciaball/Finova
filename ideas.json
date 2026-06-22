@@ -1,36 +1,51 @@
 {
-  "your_ideas": {
-    "idea-1": "Export and import all app data to CSV and JSON files.",
-    "idea-2": "Export data to a connected Google Sheet.",
-    "idea-3": "Goals, habits and challenges: e.g. 'save $400/month' or 'save $8,000 by year-end', with AI-driven suggestions and trackers that read your real data and recommend cuts like 'save 5% on hobbies, groceries, rent or loans'.",
-    "idea-4": "Track expenses and income by category and visualize them with charts and graphs."
+  "_note": "Finvia feature ideas, split into table-stakes (must_have) that every comparable app already offers, and differentiators (great_to_have) that put Finvia above the rest. Source for competitive context: BankTrack roundups covering Banktrack, Fintonic, Wallet, Money Manager, Spendee, Monefy, YNAB, Toshl, Mint, Goodbudget.",
+
+  "must_have": {
+    "_description": "Baseline features users expect from any expense/finance app. Non-negotiable foundation; Finvia must do these cleanly.",
+    "data-import-export": "Import and export all app data to CSV and JSON files.",
+    "google-sheets-export": "Export data to a connected Google Sheet.",
+    "category-tracking": "Track expenses and income by category and visualize them with clear charts and graphs.",
+    "auto-categorization": "Automatic categorization of income and expenses (food, transport, leisure, rent, etc.).",
+    "simple-rules": "Simple automatic rules to categorize transactions (e.g. merchant X -> category Y).",
+    "budgets-by-category": "Budgets per category with alerts when nearing or exceeding the limit.",
+    "month-comparison": "Month-over-month comparison per category (e.g. 'you spent 120 EUR more on dining than last month').",
+    "duplicate-fee-alerts": "Alerts for duplicate charges, bank fees and unusual movements.",
+    "spend-trend-tracking": "Track spending trends over time: see whether a category is rising or falling month over month.",
+    "savings-goals": "Savings goals: e.g. 'save 400 EUR/month' or 'save 8,000 EUR by year-end', with progress trackers.",
+    "multi-currency": "Multi-currency support with a base currency for reporting.",
+    "shared-budgets": "Shared / household budgets for couples or family.",
+    "dashboard-reports": "Customizable dashboard and reports for a clear overview of finances.",
+    "bilingual": "Full bilingual ES/EN from day one, with locale-aware number, date and currency formatting.",
+    "security": "Bank-grade security: encryption, 2FA, and privacy-first data handling."
   },
-  "my_ideas": {
-    "smart_money": {
-      "idea-5": "Auto-categorization with confidence score: rules engine plus learning from your past corrections, showing a small confidence badge and a one-tap 'fix and remember' so it gets smarter over time.",
-      "idea-6": "Recurring and subscription radar: automatically detect recurring charges (Netflix, gym, insurance), flag price increases and forgotten subscriptions, and surface total monthly recurring spend.",
-      "idea-7": "Cash-flow forecast: project end-of-month and end-of-year balance from recurring income, fixed costs and average variable spend, with a 'safe-to-spend today' number.",
-      "idea-8": "Anomaly and duplicate detection: alert on unusual spikes, possible duplicate transactions, or a category running hot vs. its usual baseline."
-    },
-    "insight_and_motivation": {
-      "idea-9": "Weekly and monthly money digest: a clean auto-generated summary (top categories, vs. last period, biggest single expense, savings rate) delivered in-app and optionally by email.",
-      "idea-10": "Savings rate as the hero metric: surface savings rate (income minus expenses / income) as a primary, prominently tracked number, since it's the single best health indicator.",
-      "idea-11": "What-if simulator: 'If I cut dining by 20%, I reach my $8,000 goal 6 weeks earlier' — interactive sliders tied to real goals from idea-3.",
-      "idea-12": "Net worth tracking over time: combine accounts, cash, and manual assets/liabilities into a single net-worth trend line, not just monthly cash flow."
-    },
-    "experience_and_trust": {
-      "idea-13": "Privacy-first / local-first mode: option to keep data on-device or self-export anytime, marketed as a key differentiator vs. cloud-only competitors.",
-      "idea-14": "Multi-currency support with daily FX: track accounts and trips in different currencies, normalized to a base currency for reporting.",
-      "idea-15": "Shared / household spaces: split a budget or specific categories with a partner or family, with per-member visibility controls.",
-      "idea-16": "Receipt capture and attach: snap a photo, OCR the amount and merchant, and attach it to the transaction for warranties and expense proof.",
-      "idea-17": "Full bilingual ES/EN from day one, including number, date and currency formatting per locale (already aligned with the MVP plan)."
-    }
+
+  "great_to_have": {
+    "_description": "Differentiators that go beyond what competitor apps offer. This is where Finvia wins: turning data into guidance and action.",
+    "natural-language-trends": "Natural-language trend narratives: instead of only a chart, a weekly plain-language insight, e.g. 'Dining has been rising for 3 months (+35% this quarter); at this pace you'll end the year ~480 EUR over.'",
+    "category-trend-score": "Per-category trend score (direction semaphore): an up/down/flat indicator per category showing where spending is heading, giving early warning before a budget is blown.",
+    "money-leak-finder": "Money-leak finder: automatically group 'ant expenses', forgotten subscriptions and bank fees into a single 'recoverable per month' figure, directly answering 'my money disappears and I don't know where'.",
+    "cash-flow-forecast": "Cash-flow forecast with a 'safe-to-spend today' number, projecting end-of-month and end-of-year balance from recurring income, fixed costs and average variable spend.",
+    "ai-goal-suggestions": "AI-driven goal coaching: read real data and recommend concrete cuts ('save 5% on hobbies, groceries or loans') to reach goals faster.",
+    "what-if-simulator": "What-if simulator: 'If I cut dining by 20%, I reach my 8,000 EUR goal 6 weeks earlier', with sliders tied to real goals.",
+    "auto-suggested-budgets": "Auto-suggested budgets from history: propose realistic per-category budgets based on a 3-month average adjusted for seasonality, with one-tap accept.",
+    "subscription-radar": "Recurring and subscription radar: detect recurring charges, flag price increases and forgotten subscriptions, and surface total monthly recurring spend.",
+    "anomaly-detection": "Anomaly and duplicate detection: alert on unusual spikes, possible duplicates, or a category running hot vs. its baseline.",
+    "confidence-categorization": "Auto-categorization with a confidence score that learns from your past corrections via one-tap 'fix and remember'.",
+    "seasonal-comparison": "Smart seasonal comparison: compare each category against the same month last year (Dec vs. Dec), not only the previous month.",
+    "weekly-digest": "Weekly and monthly money digest: an auto-generated summary (top categories, vs. last period, biggest expense, savings rate) in-app and optionally by email.",
+    "savings-rate-hero": "Savings rate as the hero metric, surfaced prominently as the single best financial-health indicator.",
+    "net-worth-tracking": "Net worth tracking over time: combine accounts, cash and manual assets/liabilities into a single trend line.",
+    "multichannel-alerts": "Configurable multi-channel alerts: choose the channel per alert type (push, email) for low balance, duplicate charges, fees, budget limits and unusual activity.",
+    "receipt-capture": "Receipt capture and attach: snap a photo, OCR the amount and merchant, and attach it to the transaction.",
+    "privacy-first-mode": "Privacy-first / local-first mode: option to keep data on-device and self-export anytime, as a key differentiator vs. cloud-only competitors."
   },
+
   "top_picks_to_stand_out": [
-    "idea-7 (cash-flow forecast + safe-to-spend)",
-    "idea-3 (goals with AI suggestions from real data)",
-    "idea-6 (subscription radar)",
-    "idea-11 (what-if simulator)",
-    "idea-10 (savings rate as hero metric)"
+    "natural-language-trends + category-trend-score + money-leak-finder (the core differentiator: tells users what's happening and what to do)",
+    "cash-flow-forecast (safe-to-spend today)",
+    "ai-goal-suggestions + what-if-simulator",
+    "savings-rate-hero",
+    "auto-suggested-budgets"
   ]
 }

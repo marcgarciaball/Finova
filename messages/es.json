@@ -16,6 +16,42 @@
     "title": "Tu cuenta",
     "signedInAs": "Sesión iniciada como {email}"
   },
+  "accounts": {
+    "title": "Cuentas",
+    "nav": "Cuentas",
+    "new": "Nueva cuenta",
+    "create": "Crear cuenta",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "archive": "Archivar",
+    "unarchive": "Desarchivar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Eliminar esta cuenta de forma permanente? No se puede deshacer.",
+    "archivedLabel": "Archivada",
+    "archivedSection": "Archivadas",
+    "empty": "Aún no tienes cuentas. Crea la primera para empezar.",
+    "fields": {
+      "name": "Nombre",
+      "type": "Tipo",
+      "currency": "Moneda",
+      "openingBalance": "Saldo inicial"
+    },
+    "types": {
+      "checking": "Cuenta corriente",
+      "savings": "Ahorros",
+      "cash": "Efectivo",
+      "credit_card": "Tarjeta de crédito",
+      "investment": "Inversión"
+    },
+    "errors": {
+      "invalid": "Valor no válido.",
+      "nameRequired": "El nombre es obligatorio.",
+      "nameTooLong": "El nombre debe tener 100 caracteres o menos.",
+      "invalidCurrency": "Usa un código de moneda de 3 letras, p. ej. EUR.",
+      "invalidAmount": "Introduce un importe válido, p. ej. 1234.56."
+    }
+  },
   "landing": {
     "title": "Todo tu dinero, en un solo lugar.",
     "subtitle": "Convierte extractos bancarios y hojas de cálculo dispersos en una visión clara, sin conectar tu banco.",

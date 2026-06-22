@@ -16,6 +16,42 @@
     "title": "Your account",
     "signedInAs": "Signed in as {email}"
   },
+  "accounts": {
+    "title": "Accounts",
+    "nav": "Accounts",
+    "new": "New account",
+    "create": "Create account",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "delete": "Delete",
+    "confirmDelete": "Delete this account permanently? This cannot be undone.",
+    "archivedLabel": "Archived",
+    "archivedSection": "Archived",
+    "empty": "No accounts yet. Create your first one to get started.",
+    "fields": {
+      "name": "Name",
+      "type": "Type",
+      "currency": "Currency",
+      "openingBalance": "Opening balance"
+    },
+    "types": {
+      "checking": "Checking",
+      "savings": "Savings",
+      "cash": "Cash",
+      "credit_card": "Credit card",
+      "investment": "Investment"
+    },
+    "errors": {
+      "invalid": "Invalid value.",
+      "nameRequired": "Name is required.",
+      "nameTooLong": "Name must be 100 characters or fewer.",
+      "invalidCurrency": "Use a 3-letter currency code, e.g. EUR.",
+      "invalidAmount": "Enter a valid amount, e.g. 1234.56."
+    }
+  },
   "landing": {
     "title": "All your money, in one place.",
     "subtitle": "Turn scattered bank statements and spreadsheets into one clear view — without connecting to your bank.",
