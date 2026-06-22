@@ -146,10 +146,10 @@
 
 @utility glass {
   background-color:var(--glass);
-  backdrop-filter:blur(var(--blur-glass));
+  backdrop-filter:blur(22px);
   border:1px solid var(--glass-line);
-  border-radius:var(--radius-3xl);
-  box-shadow:var(--shadow-glass);
+  border-radius:22px;
+  box-shadow:0 1px 1px rgba(30,58,138,.05), 0 18px 40px -18px rgba(30,58,138,.28);
 }
 
 @layer base {
