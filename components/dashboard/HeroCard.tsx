@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowUp } from 'lucide-react'
-import { Sparkline } from '@/components/charts/area-chart'
-import { Stat } from '@/components/ui/stat'
+import { Sparkline } from '@/components/charts/AreaChart'
+import { Stat } from '@/components/ui/Stat'
 import { cn } from '@/lib/utils'
 
 export interface HeroCardProps {

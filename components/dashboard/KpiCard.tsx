@@ -1,6 +1,6 @@
-import { DeltaPill } from '@/components/ui/delta-pill'
-import { GlassCard } from '@/components/ui/glass-card'
-import { Stat } from '@/components/ui/stat'
+import { DeltaPill } from '@/components/ui/DeltaPill'
+import { GlassCard } from '@/components/ui/GlassCard'
+import { Stat } from '@/components/ui/Stat'
 import { cn } from '@/lib/utils'
 
 export interface KpiCardProps {

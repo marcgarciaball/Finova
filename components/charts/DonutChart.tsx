@@ -1,7 +1,7 @@
 'use client'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { seriesColor } from '@/components/charts/chartTheme'
 import { cn } from '@/lib/utils'
-import { seriesColor } from './chart-theme'
 
 export interface DonutChartProps {
   className?: string

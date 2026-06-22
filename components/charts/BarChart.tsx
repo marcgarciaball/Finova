@@ -8,8 +8,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { seriesColor } from '@/components/charts/chartTheme'
 import { cn } from '@/lib/utils'
-import { seriesColor } from './chart-theme'
 
 export interface BarChartProps {
   categories: string[]

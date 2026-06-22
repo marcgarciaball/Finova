@@ -8,8 +8,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { BRAND_LINE, seriesColor } from '@/components/charts/chartTheme'
 import { cn } from '@/lib/utils'
-import { BRAND_LINE, seriesColor } from './chart-theme'
 
 export interface AreaChartProps {
   categories: string[]
