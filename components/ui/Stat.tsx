@@ -27,6 +27,8 @@ export function Stat({
       setDisplay(value)
       return
     }
+    // Reset to 0 before animating so the count-up always starts from zero.
+    setDisplay(0)
     let raf = 0
     const duration = 600
     const start = performance.now()
