@@ -6,6 +6,7 @@
       "!**/node_modules",
       "!**/.next",
       "!**/.claude",
+      "!**/.mcp.json",
       "!**/components.*.json",
       "!**/globals.css",
       "!docs"

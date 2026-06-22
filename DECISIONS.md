@@ -14,10 +14,10 @@ Each entry: context → decision → consequences. Newest at top.
 **Decision:** Use git's native `core.hooksPath` pointing at `.githooks/` with dependency-free shell scripts: `pre-commit` runs `npm run lint` (Biome) + `npm run typecheck`; `commit-msg` enforces Conventional Commits via a POSIX regex. A `prepare` npm script wires `core.hooksPath` on install.
 **Consequences:** Same guarantees (pre-commit gate + commit message format) with zero dependencies. If the team later wants commitlint's richer rules, swap the regex for `@commitlint/cli` once installs are available.
 
-## ADR-004 — `[locale]` route segment for i18n
-**Context:** Bilingual ES/EN required from day one; next-intl supports locale-prefixed routing.
-**Decision:** Use an `app/[locale]/` segment with route groups `(auth)` and `(app)`. Locale negotiated from path, with a switcher.
-**Consequences:** All page routes live under `[locale]`. Auth callback route handlers stay at `app/auth/` (non-localized, machine-facing).
+## ADR-004 (revised P0-09) — Cookie-based locale, NOT `[locale]` routing
+**Context:** Bilingual ES/EN required from day one. The original plan assumed `app/[locale]/` URL-prefixed routing. But Finova is a **private single-user app** — no SEO, no shareable public pages — and the user's locale is already a `profiles.locale` field. URL-prefixed locales would force restructuring the entire (working) app under `[locale]/` for no benefit.
+**Decision:** Use next-intl **without i18n routing**. Active locale comes from a `NEXT_LOCALE` cookie (default `es`), resolved per request in `lib/i18n/request.ts`; a `LocaleSwitcher` writes it via a server action. No `[locale]` segment, no next-intl middleware, `proxy.ts` untouched.
+**Consequences:** URLs never carry the locale. Simpler, lower-risk, locale follows the user. If any page ever needs to be public/shareable, URL routing can be layered in later. Superseded the original `[locale]` decision.
 
 ## ADR-003 — Drizzle ORM over Prisma
 **Context:** Need an ORM that works with Supabase Postgres + RLS.

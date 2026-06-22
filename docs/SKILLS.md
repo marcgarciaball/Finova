@@ -6,8 +6,8 @@ When a skill is built, create `docs/skills/<name>.md` with: trigger (when to use
 
 | Skill | Built at | Status | Purpose |
 |-------|----------|--------|---------|
-| `setup-i18n-string` | P0-09 | PLANNED | Add a user-facing string: add key to `messages/en.json` + `messages/es.json`, reference via next-intl, never hardcode. Checklist guards against missing-key drift. |
-| `write-rls-policy-and-tests` | P0-08 | PLANNED | Author a default-deny, ownership-scoped RLS policy for a table + a test proving user A cannot read/write user B's rows. The security backbone playbook. |
+| [`setup-i18n-string`](skills/setup-i18n-string.md) | P0-09 | BUILT | Add a user-facing string: add key to `messages/en.json` + `messages/es.json`, reference via next-intl, never hardcode. Checklist guards against missing-key drift. |
+| [`write-rls-policy-and-tests`](skills/write-rls-policy-and-tests.md) | P0-08 | BUILT | Author a default-deny, ownership-scoped RLS policy for a table + a test proving user A cannot read/write user B's rows. The security backbone playbook. |
 | `add-money-safe-feature` | P1-01 | PLANNED | Any feature touching money: integer cents + ISO currency, all math through `lib/domain/money`, near-100% unit coverage, no floats, currency mismatch handling. |
 | `add-import-adapter` | P2-02 | PLANNED | Add one parser/adapter for a new statement format: register in the parser registry, map columns to the canonical transaction shape, fixtures from a real file, encoding/locale tests. |
 | `add-categorization-rule` | P3-01 | PLANNED | Add/extend a categorization rule: match shape (merchant/desc/amount/account), priority ordering, deterministic apply, test against fixtures. |

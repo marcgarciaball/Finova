@@ -9,20 +9,36 @@ Work one ticket at a time, one PR each. Do not start a phase until the prior pha
 ## Phase 0 — Foundation & guardrails
 | ID | Ticket | Owner | Status |
 |----|--------|-------|--------|
-| P0-01 | Repo, package manager, lint/format, TS-strict, git hooks, Conventional Commits | Architect | REVIEW |
-| P0-02 | CI pipeline: type-check + lint + tests on every PR | Architect | TODO |
-| P0-03 | Env validation with Zod (`.env.example`, fail fast) | Backend/Domain | TODO |
+| P0-01 | Repo, package manager, lint/format, TS-strict, git hooks, Conventional Commits | Architect | DONE |
+| P0-02 | CI pipeline: type-check + lint + tests on every PR | Architect | REVIEW |
+| P0-03 | Env validation with Zod (`.env.example`, fail fast) | Backend/Domain | REVIEW |
 | P0-04 | Supabase project + clients (server/browser, RN-portable) | Schema/DB | PARTIAL — clients exist in `lib/supabase/` |
-| P0-05 | Auth: magic link (PKCE) + Google + optional password; harden callback | Security | PARTIAL — forms + confirm route exist; hardening TODO |
-| P0-06 | Protected routes / session helpers; default-deny | Security | PARTIAL — `app/protected/` exists; `requireUser()` TODO |
-| P0-07 | Drizzle setup + first migration; profiles table w/ RLS | Schema/DB | TODO |
-| P0-08 | Skill: `write-rls-policy-and-tests`; prove A can't read B | Security | TODO |
-| P0-09 | i18n wiring (next-intl), ES+EN, locale switch; skill `setup-i18n-string` | Frontend | TODO |
-| P0-10 | Design tokens (CSS vars) + base layout/shell, dark/light | Frontend | PARTIAL — tokens in `app/globals.css`; `[locale]` shell TODO |
-| P0-11 | Security headers (CSP/HSTS) + rate limit on auth | Security | TODO |
+| P0-05 | Auth: magic link (PKCE) + Google + optional password; harden callback | Security | REVIEW — hardened; Google provider config deferred |
+| P0-06 | Protected routes / session helpers; default-deny | Security | REVIEW — `requireUser()` in place |
+| P0-07 | Drizzle setup + first migration; profiles table w/ RLS | Schema/DB | DONE — migration applied; signup trigger verified (auto-created profile row) |
+| P0-08 | Skill: `write-rls-policy-and-tests`; prove A can't read B | Security | REVIEW |
+| P0-09 | i18n wiring (next-intl), ES+EN, locale switch; skill `setup-i18n-string` | Frontend | REVIEW — verify locale switch in browser |
+| P0-10 | Design tokens (CSS vars) + base layout/shell, dark/light | Frontend | PARTIAL — tokens in `app/globals.css`; localized nav shell now in place |
+| P0-11 | Security headers (CSP/HSTS) + rate limit on auth | Security | REVIEW |
 | **Gate** | sign up via magic link, switch language, hit protected page, tests green | Coordinator | TODO |
 
-**P0-01 notes:** native git hooks in `.githooks/` (enable with `npm run prepare`); `tsconfig` gains `noUncheckedIndexedAccess`; `.env.example` seeded; README rewritten for Finova. Lint = 0 errors. Tracked inherited debt (non-blocking warnings): 6× `noNonNullAssertion` on `process.env` in `lib/supabase/*` → cleared by P0-03 Zod env module; 1× `noUselessFragments` info in demo `deploy-button.tsx` → cleared when starter landing is replaced (P0-09/P0-10).
+**P0-01 notes:** native git hooks in `.githooks/` (enable with `npm run prepare`); `tsconfig` gains `noUncheckedIndexedAccess`; `.env.example` seeded; README rewritten for Finova.
+
+**P0-02 notes:** `.github/workflows/ci.yml` runs `npm ci` → lint → typecheck → test on PRs + pushes to `main`. Not yet exercised by a real PR.
+
+**P0-05 notes:** Fixed an open-redirect in `/auth/confirm` — `next` now goes through `lib/auth/redirect.ts#safeRedirectPath` (same-origin allowlist, 12 tests). Added hardened `/auth/callback` (OAuth/PKCE code exchange, ready for Google). `emailRedirectTo` pinned to `NEXT_PUBLIC_SITE_URL`. Deferred: enabling the Google provider (needs Supabase dashboard config) + a "Continue with Google" button.
+
+**P0-06 notes:** `lib/auth/require-user.ts#requireUser()` (server-only, default-deny, redirects to login). Applied to `app/protected/page.tsx`. Enforced alongside RLS, not instead of it.
+
+**P0-11 notes:** Security headers in `next.config.ts` (`CSP`, HSTS, X-Content-Type-Options, X-Frame-Options DENY, Referrer-Policy, Permissions-Policy). In-memory rate limiter (`lib/rate-limit.ts`, 4 tests) on the auth token routes (`/auth/confirm`, `/auth/callback`). Known follow-ups for P5-05: CSP `script-src` still allows `'unsafe-inline'` (nonce-hardening pending); rate-limit store is per-instance (swap for Upstash/Redis for multi-instance). **Verify:** `npm run dev`/`build` doesn't break under the CSP.
+
+**P0-09 notes:** next-intl 4 cookie-based (no `[locale]` routing — ADR-004 revised). `lib/i18n/{config,request,actions}.ts`, `messages/{en,es}.json`, next.config plugin, `NextIntlClientProvider` + `<html lang>` in root layout. `LocaleSwitcher` (cookie + `router.refresh`). Starter landing + protected shell replaced with localized chrome; `deploy-button.tsx` removed (cleared the demo lint infos). Skill `setup-i18n-string` built. **Verify in browser:** landing shows in ES, switch to EN persists across reload. Note: `auth-button` + auth pages still have hardcoded strings — deferred to the P5-03 full i18n pass.
+
+**P0-07 notes:** Drizzle (`drizzle-orm` + `postgres` + `drizzle-kit`). `lib/db/schema/profiles.ts` (owner = `id`, default-deny RLS for select/insert/update, currency/locale checks), `lib/db/client.ts` (lazy, `server-only`, pooled, `prepare:false` for pgbouncer), `drizzle.config.ts`. Migration `drizzle/0000_broad_raider.sql` generated, hand-extended with `updated_at` + `handle_new_user` triggers. **Action required:** set `DATABASE_URL`/`DIRECT_URL` in `.env.local`, then `npm run db:migrate`.
+
+**P0-08 notes:** `write-rls-policy-and-tests` skill written (`docs/skills/`). RLS isolation suite `tests/rls/profiles.rls.test.ts` (4 cases) — skipped unless `TEST_DATABASE_URL` is set; run against a disposable DB.
+
+**P0-03 notes:** `lib/validation/env.ts` (pure schema + `parseEnv` + lazy `getClientEnv()`) and `lib/validation/env.server.ts` (`server-only`, lazy `getServerEnv()`). Supabase clients refactored off raw `process.env.X!` — the 6 `noNonNullAssertion` warnings are now cleared. 6 unit tests, all green. Remaining lint debt: 2× info-level `noUselessFragments` in demo `deploy-button.tsx` → cleared when the starter landing is replaced (P0-09/P0-10).
 
 ## Phase 1 — Core data model & money safety
 | ID | Ticket | Owner | Status |

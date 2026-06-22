@@ -1,0 +1,26 @@
+{
+  "app": {
+    "name": "Finova",
+    "tagline": "One clear, trustworthy view of your money."
+  },
+  "common": {
+    "signIn": "Sign in",
+    "signUp": "Get started",
+    "language": "Language"
+  },
+  "locale": {
+    "es": "Español",
+    "en": "English"
+  },
+  "protected": {
+    "title": "Your account",
+    "signedInAs": "Signed in as {email}"
+  },
+  "landing": {
+    "title": "All your money, in one place.",
+    "subtitle": "Turn scattered bank statements and spreadsheets into one clear view — without connecting to your bank.",
+    "ctaPrimary": "Get started",
+    "ctaSecondary": "Sign in",
+    "disclaimer": "Finova is a personal-finance tool, not financial advice."
+  }
+}

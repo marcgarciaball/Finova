@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
+import { getClientEnv } from '@/lib/validation/env'
 
 export function SignUpForm({
   className,
@@ -44,7 +45,9 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          // Pinned to the server-known site origin, never a client-supplied
+          // value (P0-05 callback hardening).
+          emailRedirectTo: `${getClientEnv().NEXT_PUBLIC_SITE_URL}/protected`,
         },
       })
       if (error) throw error

@@ -1,0 +1,26 @@
+{
+  "app": {
+    "name": "Finova",
+    "tagline": "Una visión clara y fiable de tu dinero."
+  },
+  "common": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Empezar",
+    "language": "Idioma"
+  },
+  "locale": {
+    "es": "Español",
+    "en": "English"
+  },
+  "protected": {
+    "title": "Tu cuenta",
+    "signedInAs": "Sesión iniciada como {email}"
+  },
+  "landing": {
+    "title": "Todo tu dinero, en un solo lugar.",
+    "subtitle": "Convierte extractos bancarios y hojas de cálculo dispersos en una visión clara, sin conectar tu banco.",
+    "ctaPrimary": "Empezar",
+    "ctaSecondary": "Iniciar sesión",
+    "disclaimer": "Finova es una herramienta de finanzas personales, no asesoramiento financiero."
+  }
+}
