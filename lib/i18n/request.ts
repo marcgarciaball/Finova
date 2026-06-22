@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 import { getRequestConfig } from 'next-intl/server'
-import { defaultLocale, isLocale, LOCALE_COOKIE } from './config'
+import { defaultLocale, isLocale, LOCALE_COOKIE } from '@/lib/i18n/config'
 
 /**
  * Per-request i18n config (P0-09). Resolves the active locale from the cookie,

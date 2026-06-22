@@ -1,6 +1,6 @@
 import 'server-only'
 import { z } from 'zod'
-import { parseEnv } from './env'
+import { parseEnv } from '@/lib/validation/env'
 
 /**
  * Server-only environment (P0-03). The `server-only` import makes any attempt

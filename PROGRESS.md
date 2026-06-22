@@ -43,7 +43,7 @@ Work one ticket at a time, one PR each. Do not start a phase until the prior pha
 ## Phase 1 — Core data model & money safety
 | ID | Ticket | Owner | Status |
 |----|--------|-------|--------|
-| P1-01 | Skill `add-money-safe-feature` + money module (cents+currency, full tests) | Backend/Domain | TODO |
+| P1-01 | Skill `add-money-safe-feature` + money module (cents+currency, full tests) | Backend/Domain | DONE |
 | P1-02 | Schema+RLS `accounts`; CRUD Server Actions + UI | Schema/DB + Frontend | TODO |
 | P1-03 | Schema+RLS `categories`/subcategories; bilingual default seed | Schema/DB | TODO |
 | P1-04 | Schema+RLS `transactions` (full fields) | Schema/DB | TODO |
@@ -51,6 +51,8 @@ Work one ticket at a time, one PR each. Do not start a phase until the prior pha
 | P1-06 | Transfer flag excluded from income/expense totals (tested) | Backend/Domain | TODO |
 | P1-07 | Multi-currency: base/display on profile; per-transaction currency | Backend/Domain | TODO |
 | **Gate** | accounts/categories/transactions created, totals correct, RLS tested | Coordinator | TODO |
+
+**P1-01 notes:** `lib/domain/money/` — pure domain module: integer cents + ISO-4217 currency, no floats. `money.ts` (constructors, exact + half-up-rounded arithmetic, compare, `convert`, `allocate` largest-remainder split), `format.ts` (Intl, locale-aware, forced 2 decimals), `errors.ts` (typed). Near-100% unit coverage. Skill `add-money-safe-feature` written. ADR-007 records the fixed-2-decimal choice.
 
 ## Phase 2 — Import engine
 | ID | Ticket | Owner | Status |

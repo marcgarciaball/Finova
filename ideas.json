@@ -1,0 +1,36 @@
+{
+  "your_ideas": {
+    "idea-1": "Export and import all app data to CSV and JSON files.",
+    "idea-2": "Export data to a connected Google Sheet.",
+    "idea-3": "Goals, habits and challenges: e.g. 'save $400/month' or 'save $8,000 by year-end', with AI-driven suggestions and trackers that read your real data and recommend cuts like 'save 5% on hobbies, groceries, rent or loans'.",
+    "idea-4": "Track expenses and income by category and visualize them with charts and graphs."
+  },
+  "my_ideas": {
+    "smart_money": {
+      "idea-5": "Auto-categorization with confidence score: rules engine plus learning from your past corrections, showing a small confidence badge and a one-tap 'fix and remember' so it gets smarter over time.",
+      "idea-6": "Recurring and subscription radar: automatically detect recurring charges (Netflix, gym, insurance), flag price increases and forgotten subscriptions, and surface total monthly recurring spend.",
+      "idea-7": "Cash-flow forecast: project end-of-month and end-of-year balance from recurring income, fixed costs and average variable spend, with a 'safe-to-spend today' number.",
+      "idea-8": "Anomaly and duplicate detection: alert on unusual spikes, possible duplicate transactions, or a category running hot vs. its usual baseline."
+    },
+    "insight_and_motivation": {
+      "idea-9": "Weekly and monthly money digest: a clean auto-generated summary (top categories, vs. last period, biggest single expense, savings rate) delivered in-app and optionally by email.",
+      "idea-10": "Savings rate as the hero metric: surface savings rate (income minus expenses / income) as a primary, prominently tracked number, since it's the single best health indicator.",
+      "idea-11": "What-if simulator: 'If I cut dining by 20%, I reach my $8,000 goal 6 weeks earlier' — interactive sliders tied to real goals from idea-3.",
+      "idea-12": "Net worth tracking over time: combine accounts, cash, and manual assets/liabilities into a single net-worth trend line, not just monthly cash flow."
+    },
+    "experience_and_trust": {
+      "idea-13": "Privacy-first / local-first mode: option to keep data on-device or self-export anytime, marketed as a key differentiator vs. cloud-only competitors.",
+      "idea-14": "Multi-currency support with daily FX: track accounts and trips in different currencies, normalized to a base currency for reporting.",
+      "idea-15": "Shared / household spaces: split a budget or specific categories with a partner or family, with per-member visibility controls.",
+      "idea-16": "Receipt capture and attach: snap a photo, OCR the amount and merchant, and attach it to the transaction for warranties and expense proof.",
+      "idea-17": "Full bilingual ES/EN from day one, including number, date and currency formatting per locale (already aligned with the MVP plan)."
+    }
+  },
+  "top_picks_to_stand_out": [
+    "idea-7 (cash-flow forecast + safe-to-spend)",
+    "idea-3 (goals with AI suggestions from real data)",
+    "idea-6 (subscription radar)",
+    "idea-11 (what-if simulator)",
+    "idea-10 (savings rate as hero metric)"
+  ]
+}

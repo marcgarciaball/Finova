@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createRateLimiter } from './rate-limit'
+import { createRateLimiter } from '@/lib/rate-limit'
 
 describe('createRateLimiter', () => {
   it('allows up to the limit, then blocks within the window', () => {

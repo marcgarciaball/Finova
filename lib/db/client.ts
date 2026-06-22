@@ -1,8 +1,8 @@
 import 'server-only'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
+import * as schema from '@/lib/db/schema'
 import { getServerEnv } from '@/lib/validation/env.server'
-import * as schema from './schema'
 
 /**
  * Drizzle database client (P0-07), server-only.

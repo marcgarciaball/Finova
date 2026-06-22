@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clientEnvSchema, parseEnv } from './env'
+import { clientEnvSchema, parseEnv } from '@/lib/validation/env'
 
 const valid = {
   NEXT_PUBLIC_SUPABASE_URL: 'https://abc.supabase.co',
