@@ -1,0 +1,12 @@
+#!/bin/sh
+# Finova pre-commit gate (P0-01). Dependency-free; enabled via `core.hooksPath`.
+# Runs the same checks CI runs, so broken code never reaches a commit.
+set -e
+
+echo "→ Biome (lint + format check)"
+npm run --silent lint
+
+echo "→ TypeScript (tsc --noEmit)"
+npm run --silent typecheck
+
+echo "✓ pre-commit checks passed"

@@ -1,0 +1,22 @@
+#!/bin/sh
+# Finova Conventional Commits validator (P0-01). Dependency-free.
+# Format: <type>(<optional scope>)<optional !>: <subject>
+# Allowed types: feat fix docs style refactor perf test build ci chore revert
+msg_file="$1"
+header="$(head -n1 "$msg_file")"
+
+# Allow merge/revert/fixup commits through untouched.
+case "$header" in
+  "Merge "*|"Revert "*|"fixup!"*|"squash!"*) exit 0 ;;
+esac
+
+pattern='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._-]+\))?(!)?: .{1,}'
+
+if ! printf '%s' "$header" | grep -Eq "$pattern"; then
+  echo "✗ Commit message does not follow Conventional Commits."
+  echo "  Got:      $header"
+  echo "  Expected: <type>(scope)?: <subject>"
+  echo "  Types:    feat fix docs style refactor perf test build ci chore revert"
+  echo "  Example:  feat(import): add CSV column-mapping UI"
+  exit 1
+fi
