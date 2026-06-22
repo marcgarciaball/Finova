@@ -1,6 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
-import { TutorialStep } from './tutorial-step'
+import { TutorialStep } from '@/components/tutorial/TutorialStep'
 
 export function SignUpUserSteps() {
   return (

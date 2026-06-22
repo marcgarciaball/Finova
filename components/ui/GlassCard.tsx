@@ -27,5 +27,5 @@ export {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@/components/ui/Card'
 export { GlassCard }
