@@ -58,5 +58,31 @@
     "ctaPrimary": "Get started",
     "ctaSecondary": "Sign in",
     "disclaimer": "Finova is a personal-finance tool, not financial advice."
+  },
+  "categories": {
+    "title": "Categories",
+    "kinds": {
+      "income": "Income",
+      "expense": "Expense"
+    },
+    "defaults": {
+      "housing": "Housing",
+      "rent": "Rent",
+      "mortgage": "Mortgage",
+      "food": "Food & Dining",
+      "groceries": "Groceries",
+      "restaurants": "Restaurants",
+      "transport": "Transport",
+      "utilities": "Utilities",
+      "health": "Health",
+      "shopping": "Shopping",
+      "entertainment": "Entertainment",
+      "education": "Education",
+      "travel": "Travel",
+      "other_expense": "Other",
+      "salary": "Salary",
+      "gifts": "Gifts",
+      "other_income": "Other income"
+    }
   }
 }

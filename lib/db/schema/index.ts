@@ -3,4 +3,5 @@
  * single entry point drizzle.config.ts points at.
  */
 export * from '@/lib/db/schema/accounts'
+export * from '@/lib/db/schema/categories'
 export * from '@/lib/db/schema/profiles'
