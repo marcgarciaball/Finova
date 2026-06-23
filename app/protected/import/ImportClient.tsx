@@ -13,12 +13,14 @@ import {
   type MappingFormState,
 } from '@/lib/domain/import/mapping-form'
 import type { ParseUploadData } from '@/lib/domain/import/parse-upload'
-import { type ParseResult, parseUpload, saveTemplate } from './actions'
+import { type ParseResult, saveTemplate, uploadImport } from './actions'
 import { ColumnMappingForm } from './ColumnMappingForm'
 import { MappingPreview } from './MappingPreview'
 
 /** Parsed file + the mapping form state, once an upload has been parsed. */
 interface Loaded {
+  /** The persisted batch this upload created; carried for review/commit (P2-07). */
+  batchId: string
   data: ParseUploadData
   templateName: string
 }
@@ -31,6 +33,9 @@ const KNOWN_PARSE_ERRORS = new Set([
   'noRows',
   'tooManyRows',
   'noFile',
+  'unsupportedType',
+  'excelNotSupported',
+  'storageFailed',
 ])
 
 export function ImportClient() {
@@ -38,7 +43,7 @@ export function ImportClient() {
   const [parseState, parseAction, parsing] = useActionState<
     ParseResult | undefined,
     FormData
-  >(parseUpload, undefined)
+  >(uploadImport, undefined)
 
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   const [form, setForm] = useState<MappingFormState>(emptyFormState)
@@ -54,6 +59,7 @@ export function ImportClient() {
           : emptyFormState()
       )
       setLoaded({
+        batchId: parseState.batchId,
         data: parseState.data,
         templateName: parseState.template?.name ?? '',
       })
@@ -106,7 +112,7 @@ export function ImportClient() {
               id="import-file"
               name="file"
               type="file"
-              accept=".csv,text/csv"
+              accept=".csv,.xls,.xlsx"
               required
               className="text-ink text-sm file:mr-4 file:rounded-full file:border-0 file:bg-brand file:px-4 file:py-2 file:font-medium file:text-white"
             />

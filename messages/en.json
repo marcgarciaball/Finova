@@ -188,6 +188,9 @@
       "noRows": "No data rows were found in that file.",
       "tooManyRows": "That file has too many rows.",
       "noFile": "Please choose a file to upload.",
+      "unsupportedType": "Please upload a .csv, .xls or .xlsx file.",
+      "excelNotSupported": "Excel files aren't supported yet — please export your statement as CSV.",
+      "storageFailed": "We couldn't store that file. Please try again.",
       "unexpected": "Something went wrong. Please try again.",
       "saveFailed": "Couldn't save the template. Please try again."
     }
