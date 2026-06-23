@@ -27,6 +27,12 @@ export default function ProtectedLayout({
               >
                 {t('accounts.nav')}
               </Link>
+              <Link
+                href="/protected/transactions"
+                className="text-ink-soft text-sm hover:text-ink"
+              >
+                {t('transactions.nav')}
+              </Link>
             </div>
             <div className="flex items-center gap-2">
               <LocaleSwitcher />

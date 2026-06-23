@@ -21,6 +21,7 @@ export function AccountRow({
   const locale = useLocale()
   const [editing, setEditing] = useState(false)
   const [pending, startTransition] = useTransition()
+  const [actionError, setActionError] = useState<string | null>(null)
 
   if (editing) {
     return (
@@ -85,8 +86,16 @@ export function AccountRow({
             disabled={pending}
             onClick={() => {
               if (window.confirm(t('confirmDelete'))) {
-                startTransition(() => {
-                  void deleteAccount(account.id)
+                setActionError(null)
+                startTransition(async () => {
+                  const result = await deleteAccount(account.id)
+                  if (!result.ok) {
+                    setActionError(
+                      result.error === 'hasTransactions'
+                        ? t('errors.hasTransactions')
+                        : t('errors.unexpected')
+                    )
+                  }
                 })
               }
             }}
@@ -94,6 +103,9 @@ export function AccountRow({
             {t('delete')}
           </Button>
         </div>
+        {actionError ? (
+          <p className="w-full text-neg text-sm">{actionError}</p>
+        ) : null}
       </CardContent>
     </Card>
   )

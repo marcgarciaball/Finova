@@ -155,17 +155,24 @@ export async function setArchived(
   return { ok: true }
 }
 
-/** Hard delete. Unrestricted today; gated on emptiness once transactions exist. */
+/**
+ * Hard delete. The `transactions.account_id` FK is `ON DELETE restrict`
+ * (P1-04), so Postgres blocks deletion of an account that still has
+ * transactions and returns SQLSTATE `23503` — surfaced here as the friendly
+ * `hasTransactions` error rather than a generic failure.
+ */
 export async function deleteAccount(id: string): Promise<ActionResult> {
   await requireUser()
   if (!z.string().uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
 
-  // TODO(P1-04): refuse when the account has transactions.
   const supabase = await createClient()
   const { error } = await supabase.from('accounts').delete().eq('id', id)
   if (error) {
+    if (error.code === '23503') {
+      return { ok: false, error: 'hasTransactions' }
+    }
     return { ok: false, error: UNEXPECTED }
   }
 

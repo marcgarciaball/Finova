@@ -49,7 +49,70 @@
       "nameRequired": "El nombre es obligatorio.",
       "nameTooLong": "El nombre debe tener 100 caracteres o menos.",
       "invalidCurrency": "Usa un código de moneda de 3 letras, p. ej. EUR.",
-      "invalidAmount": "Introduce un importe válido, p. ej. 1234.56."
+      "invalidAmount": "Introduce un importe válido, p. ej. 1234.56.",
+      "unexpected": "Algo salió mal. Inténtalo de nuevo.",
+      "hasTransactions": "Esta cuenta todavía tiene transacciones. Elimínalas o muévelas primero."
+    }
+  },
+  "transactions": {
+    "title": "Transacciones",
+    "nav": "Transacciones",
+    "new": "Nueva transacción",
+    "create": "Añadir transacción",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Eliminar esta transacción de forma permanente? No se puede deshacer.",
+    "uncategorized": "Sin categoría",
+    "recurringLabel": "Recurrente",
+    "summary": {
+      "title": "Resumen",
+      "income": "Ingresos",
+      "expense": "Gastos",
+      "net": "Neto"
+    },
+    "empty": "Aún no tienes transacciones. Añade la primera para empezar.",
+    "emptyFiltered": "Ninguna transacción coincide con estos filtros.",
+    "needAccount": "Crea una cuenta primero y luego podrás añadir transacciones.",
+    "tagsPlaceholder": "supermercado, trabajo (separadas por comas)",
+    "fields": {
+      "account": "Cuenta",
+      "category": "Categoría",
+      "direction": "Tipo",
+      "amount": "Importe",
+      "currency": "Moneda",
+      "occurredAt": "Fecha",
+      "description": "Descripción",
+      "note": "Nota",
+      "tags": "Etiquetas",
+      "isRecurring": "Transacción recurrente"
+    },
+    "types": {
+      "income": "Ingreso",
+      "expense": "Gasto",
+      "transfer": "Transferencia"
+    },
+    "filters": {
+      "search": "Buscar",
+      "searchPlaceholder": "Buscar descripción…",
+      "allAccounts": "Todas las cuentas",
+      "allCategories": "Todas las categorías",
+      "allTypes": "Todos los tipos",
+      "from": "Desde",
+      "to": "Hasta",
+      "clear": "Borrar filtros"
+    },
+    "errors": {
+      "invalid": "Valor no válido.",
+      "unexpected": "Algo salió mal. Inténtalo de nuevo.",
+      "forbiddenRef": "Esa cuenta o categoría no está disponible.",
+      "descriptionRequired": "La descripción es obligatoria.",
+      "descriptionTooLong": "La descripción debe tener 200 caracteres o menos.",
+      "noteTooLong": "La nota debe tener 2000 caracteres o menos.",
+      "invalidCurrency": "Usa un código de moneda de 3 letras, p. ej. EUR.",
+      "invalidAmount": "Introduce un importe válido, p. ej. 1234.56.",
+      "amountNonZero": "El importe no puede ser cero."
     }
   },
   "landing": {

@@ -49,7 +49,70 @@
       "nameRequired": "Name is required.",
       "nameTooLong": "Name must be 100 characters or fewer.",
       "invalidCurrency": "Use a 3-letter currency code, e.g. EUR.",
-      "invalidAmount": "Enter a valid amount, e.g. 1234.56."
+      "invalidAmount": "Enter a valid amount, e.g. 1234.56.",
+      "unexpected": "Something went wrong. Please try again.",
+      "hasTransactions": "This account still has transactions. Delete or move them first."
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "nav": "Transactions",
+    "new": "New transaction",
+    "create": "Add transaction",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Delete this transaction permanently? This cannot be undone.",
+    "uncategorized": "Uncategorized",
+    "recurringLabel": "Recurring",
+    "summary": {
+      "title": "Summary",
+      "income": "Income",
+      "expense": "Expense",
+      "net": "Net"
+    },
+    "empty": "No transactions yet. Add your first one to get started.",
+    "emptyFiltered": "No transactions match these filters.",
+    "needAccount": "Create an account first, then you can add transactions.",
+    "tagsPlaceholder": "groceries, work (comma-separated)",
+    "fields": {
+      "account": "Account",
+      "category": "Category",
+      "direction": "Type",
+      "amount": "Amount",
+      "currency": "Currency",
+      "occurredAt": "Date",
+      "description": "Description",
+      "note": "Note",
+      "tags": "Tags",
+      "isRecurring": "Recurring transaction"
+    },
+    "types": {
+      "income": "Income",
+      "expense": "Expense",
+      "transfer": "Transfer"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search description…",
+      "allAccounts": "All accounts",
+      "allCategories": "All categories",
+      "allTypes": "All types",
+      "from": "From",
+      "to": "To",
+      "clear": "Clear filters"
+    },
+    "errors": {
+      "invalid": "Invalid value.",
+      "unexpected": "Something went wrong. Please try again.",
+      "forbiddenRef": "That account or category isn't available.",
+      "descriptionRequired": "Description is required.",
+      "descriptionTooLong": "Description must be 200 characters or fewer.",
+      "noteTooLong": "Note must be 2000 characters or fewer.",
+      "invalidCurrency": "Use a 3-letter currency code, e.g. EUR.",
+      "invalidAmount": "Enter a valid amount, e.g. 1234.56.",
+      "amountNonZero": "Amount can't be zero."
     }
   },
   "landing": {
