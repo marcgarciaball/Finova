@@ -14,9 +14,10 @@ function adapterFor(id: string, marker: string): ImportAdapter {
   return {
     id,
     detect: (p) => p.headers.includes(marker),
-    parse: (): RawTxn[] => [
-      { occurredAt: '2026-06-23', amountCents: -1000, description: id },
-    ],
+    parse: (): { rows: RawTxn[]; errors: [] } => ({
+      rows: [{ occurredAt: '2026-06-23', amountCents: -1000, description: id }],
+      errors: [],
+    }),
   }
 }
 

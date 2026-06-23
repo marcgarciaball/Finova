@@ -97,4 +97,27 @@ describe('parseDateToIso', () => {
     expect(parseDateToIso('29/02/2024')).toBe('2024-02-29')
     expect(parseDateToIso('29/02/2026')).toBeNull()
   })
+
+  describe('ISO datetimes (date part only)', () => {
+    it('takes the date from a space-separated datetime', () => {
+      expect(parseDateToIso('2026-06-23 12:34:56', 'ymd')).toBe('2026-06-23')
+    })
+    it('takes the date from a T-separated datetime with Z', () => {
+      expect(parseDateToIso('2026-06-23T12:34:56Z', 'ymd')).toBe('2026-06-23')
+    })
+    it('handles a fractional/offset tail', () => {
+      expect(parseDateToIso('2026-06-23T12:34:56.789+02:00', 'ymd')).toBe(
+        '2026-06-23'
+      )
+    })
+    it('takes the date part of a dmy datetime', () => {
+      expect(parseDateToIso('23/06/2026 12:34', 'dmy')).toBe('2026-06-23')
+    })
+    it('leaves a plain date unchanged', () => {
+      expect(parseDateToIso('2026-06-23', 'ymd')).toBe('2026-06-23')
+    })
+    it('returns null for a time-only string', () => {
+      expect(parseDateToIso('12:34:56', 'ymd')).toBeNull()
+    })
+  })
 })

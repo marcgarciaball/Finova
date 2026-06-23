@@ -13,6 +13,7 @@
  */
 
 import type { ParsedCsv } from './csv'
+import type { RowError } from './mapping'
 
 /**
  * A normalized transaction produced by an adapter, before it is tied to an
@@ -35,8 +36,12 @@ export interface ImportAdapter {
   /** Recognize this file from its parsed structure (header signature, marker). */
   detect(parsed: ParsedCsv): boolean
   readonly id: string
-  /** Normalize recognized rows into raw transactions. */
-  parse(parsed: ParsedCsv): RawTxn[]
+  /**
+   * Normalize recognized rows into raw transactions. Mirrors `applyMapping`:
+   * a malformed row becomes a {@link RowError} rather than crashing the batch
+   * or being silently dropped, so the P2-07 review screen can count errors.
+   */
+  parse(parsed: ParsedCsv): { rows: RawTxn[]; errors: RowError[] }
 }
 
 /**

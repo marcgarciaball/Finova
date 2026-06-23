@@ -130,6 +130,11 @@ export type DateOrder = 'dmy' | 'mdy' | 'ymd' | 'auto'
  * Accepts `/`, `-`, and `.` separators. `order` disambiguates day-vs-month;
  * `auto` infers from any component > 12 and otherwise defaults to `dmy`
  * (Finova's primary locale is ES). 2-digit years map to 2000–2099.
+ *
+ * An ISO-style datetime (a date followed by a `T` or whitespace and a
+ * `HH:MM(:SS)(.sss)(Z/offset)` tail) is accepted: only the leading date is
+ * interpreted and the time/zone is discarded — Finova transactions are
+ * date-grained (see `RawTxn.occurredAt`). A bare time with no date is `null`.
  */
 export function parseDateToIso(
   raw: string,
@@ -138,7 +143,9 @@ export function parseDateToIso(
   if (typeof raw !== 'string') {
     return null
   }
-  const s = raw.trim()
+  // Split off a trailing time component (`T` or spaces, then HH:MM...), parsing
+  // only the date part. A string with no time tail is unaffected.
+  const s = raw.trim().replace(/(?:T|\s+)\d{1,2}:\d{2}(?::\d{2})?.*$/, '')
   const m = s.match(/^(\d{1,4})[/.-](\d{1,2})[/.-](\d{1,4})$/)
   if (!m) {
     return null

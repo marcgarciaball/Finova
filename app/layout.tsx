@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import { Inter, Inter_Tight, JetBrains_Mono } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getMessages } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
+import { Suspense } from 'react'
+import { defaultLocale } from '@/lib/i18n/config'
 import './globals.css'
 
 const defaultUrl = process.env.VERCEL_URL
@@ -31,29 +33,46 @@ const jetbrains = JetBrains_Mono({
   subsets: ['latin'],
 })
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const locale = await getLocale()
-
+  // `lang` is rendered into the static shell, so it uses the default locale.
+  // The active per-request locale (from the cookie) drives the actual messages
+  // inside the Suspense-streamed subtree below — see IntlProviders.
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={defaultLocale} suppressHydrationWarning>
       <body
         className={`${inter.variable} ${interTight.variable} ${jetbrains.variable} font-sans antialiased`}
       >
-        <NextIntlClientProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </NextIntlClientProvider>
+        <Suspense>
+          <IntlProviders>{children}</IntlProviders>
+        </Suspense>
       </body>
     </html>
+  )
+}
+
+/**
+ * Reads the cookie-based locale and messages. Kept under a `<Suspense>`
+ * boundary so the request-time `cookies()` access doesn't block prerendering
+ * of the static shell (required by `cacheComponents`). See ADR-004.
+ */
+async function IntlProviders({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale()
+  const messages = await getMessages()
+
+  return (
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        {children}
+      </ThemeProvider>
+    </NextIntlClientProvider>
   )
 }

@@ -115,6 +115,83 @@
       "amountNonZero": "Amount can't be zero."
     }
   },
+  "import": {
+    "nav": "Import",
+    "title": "Import transactions",
+    "subtitle": "Upload a bank CSV, map its columns, and save a reusable template.",
+    "commitBanner": "Review & commit lands next — nothing is imported yet.",
+    "upload": {
+      "label": "Bank CSV file",
+      "submit": "Parse file",
+      "parsing": "Parsing…"
+    },
+    "rowsDetected": "{count, plural, one {# data row detected} other {# data rows detected}}",
+    "none": "None",
+    "templateName": "Template name",
+    "templateNamePlaceholder": "e.g. My bank — checking",
+    "saveTemplate": "Save template",
+    "saved": "Template saved.",
+    "fields": {
+      "date": "Date column",
+      "dateFormat": "Date format",
+      "amountMode": "Amount columns",
+      "amount": "Amount column",
+      "negativeIs": "Negative means",
+      "debit": "Debit column",
+      "credit": "Credit column",
+      "decimal": "Decimal separator",
+      "description": "Description column",
+      "note": "Note column",
+      "currency": "Currency",
+      "currencyColumn": "Currency column",
+      "currencyCode": "Code"
+    },
+    "dateFormats": {
+      "auto": "Auto-detect",
+      "dmy": "Day/Month/Year",
+      "mdy": "Month/Day/Year",
+      "ymd": "Year/Month/Day"
+    },
+    "amountModes": {
+      "single": "Single signed column",
+      "debitCredit": "Separate debit/credit"
+    },
+    "negativeIs": {
+      "expense": "Expense",
+      "income": "Income"
+    },
+    "decimals": {
+      "auto": "Auto-detect",
+      "comma": "Comma (1.234,56)",
+      "dot": "Dot (1,234.56)"
+    },
+    "currencyModes": {
+      "none": "Account default",
+      "column": "From a column",
+      "fixed": "Fixed code"
+    },
+    "preview": {
+      "title": "Preview",
+      "okCount": "{count, plural, one {# row} other {# rows}}",
+      "errorCount": "{count, plural, one {# error} other {# errors}}",
+      "date": "Date",
+      "amount": "Amount",
+      "description": "Description",
+      "currency": "Currency",
+      "empty": "No rows mapped yet — choose the date, amount and description columns.",
+      "rowError": "Row {row}: {field} — {reason}"
+    },
+    "errors": {
+      "notCsv": "Please upload a .csv file.",
+      "emptyFile": "That file is empty.",
+      "tooLarge": "That file is too large.",
+      "noRows": "No data rows were found in that file.",
+      "tooManyRows": "That file has too many rows.",
+      "noFile": "Please choose a file to upload.",
+      "unexpected": "Something went wrong. Please try again.",
+      "saveFailed": "Couldn't save the template. Please try again."
+    }
+  },
   "landing": {
     "title": "All your money, in one place.",
     "subtitle": "Turn scattered bank statements and spreadsheets into one clear view — without connecting to your bank.",

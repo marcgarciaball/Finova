@@ -4,6 +4,8 @@
 **Covers:** P2-04 (2–3 real bank adapters; this design ships four)
 **Depends on:** P2-02 (adapter contract + registry), P2-03 (CSV parser + column-mapping engine), P2-05 (locale parsers), P1-01 (money module). Pure domain code — no DB, no storage. Buildable ahead of the Phase 1 gate, like the other Phase 2 cores.
 
+**Touches P2-05:** this design extends `parseDateToIso` to accept ISO datetimes (see *Contract change to `locale-parse.ts`*); Revolut depends on it.
+
 ## Goal
 
 Give Finova out-of-the-box recognition for four real bank statement exports so a
@@ -61,6 +63,33 @@ imports it with `import type`. `mapping.ts` already imports `RawTxn` from
 `adapter.ts`, so this is a *type-only* import cycle — erased at compile time,
 no runtime cycle, and handled cleanly by TypeScript.
 
+## Contract change to `locale-parse.ts`
+
+`parseDateToIso` currently anchors the whole string
+(`/^(\d{1,4})[/.-](\d{1,2})[/.-](\d{1,4})$/`), so an ISO **datetime** like
+`2026-06-23 12:34:56` fails to match and returns `null`. Revolut's
+`Completed Date` is exactly that shape, so without a change every Revolut row
+would become a `date`/`invalidDate` `RowError` — and because `applyMapping`
+calls `parseDateToIso` directly on the raw cell, a fixed `ColumnMapping` has no
+hook to strip the time. The fix lives in the parser, not the adapter.
+
+Change: before matching, split off a trailing time component — accept a single
+`T` or run of spaces separating the date from a `HH:MM(:SS)`(`.sss`)(`Z`/offset)
+tail, and parse only the date part. A string with no time component is
+unaffected. This keeps Revolut a pure `defineMappingAdapter` declaration and is
+reusable for any future ISO-datetime export.
+
+- **Scope.** Only the leading date is interpreted; the time/zone tail is
+  discarded (Finova transactions are date-grained — see `RawTxn.occurredAt`).
+  A bare time with no date still returns `null`.
+- **Tests (added to `locale-parse.test.ts`, written first):**
+  `parseDateToIso('2026-06-23 12:34:56', 'ymd') === '2026-06-23'`;
+  the `T` separator (`'2026-06-23T12:34:56Z'`) and a fractional/offset tail
+  parse identically; `dd/mm/yyyy HH:MM` with `dmy` takes the date part;
+  a plain date (`'2026-06-23'`) is unchanged; a time-only string returns
+  `null`. This is a strict superset of the current behavior, so every existing
+  `parseDateToIso` test stays green.
+
 ## File layout
 
 ```
@@ -100,7 +129,8 @@ expense row, a quoted field, and (where it applies) per-row currency.
 - **Revolut** — delimiter `,`. Headers `Type , Product , Started Date ,
   Completed Date , Description , Amount , Fee , Currency , State , Balance`. EN
   decimals `1234.56`, `Completed Date` is an ISO datetime
-  (`YYYY-MM-DD HH:MM:SS`); `parseDateToIso` with `ymd` takes the date part.
+  (`YYYY-MM-DD HH:MM:SS`); `parseDateToIso` with `ymd` takes the date part
+  (requires the `locale-parse.ts` datetime change above).
   `kind:'single'`, column `Amount`, `negativeIs:'expense'`, `decimal:'.'`.
   `Description` → description. `Currency` → per-row currency. `Fee`/`Balance`/
   `State` ignored.
@@ -152,6 +182,20 @@ Run: `npx vitest run lib/domain/import`.
   column (BBVA `Divisa`, Revolut `Currency`). A bare `€` symbol is not an ISO
   code, so ING/CaixaBank leave currency unset and the import flow falls back to
   the account currency — matching the existing `mapping.ts` contract.
+- **`detect` is normalized, column lookup is exact.** `detect` matches headers
+  via `normalizeHeader` (lowercase, strip accents, collapse whitespace), but
+  `rowsToRecords` keys records by the **raw trimmed** header and `applyMapping`
+  reads `mapping.column` as an exact string. Extra columns are tolerated, but a
+  real file whose headers differ only in case/accent from the fixture (e.g.
+  `IMPORTE` vs `Importe`, or a missing accent on `DESCRIPCIÓN`) would pass
+  `detect` and then map every column to `''` — i.e. mis-parse, not fall through
+  to the generic flow. Acceptable for the anonymized fixtures (which match
+  exactly); reconciling the two (keying records by normalized headers) is a
+  follow-up tied to the P2-07 real-file verification.
+- **CaixaBank empty-column assumption.** `applyMapping`'s `debitCredit` path
+  errors with `bothDebitAndCredit` when *both* `Cargo` and `Abono` are
+  non-empty, so the fixture must leave the unused column **genuinely empty** —
+  a `0,00` placeholder in the unused column would make every row a `RowError`.
 
 ## Definition of Done
 
@@ -159,6 +203,8 @@ Run: `npx vitest run lib/domain/import`.
   fixture (no real PII/IBANs) and a parse test written test-first.
 - `parse` returns `{ rows, errors }`; amounts are signed integer cents via the
   money module (no floats/`parseFloat`); dates ISO via `parseDateToIso`.
+- `parseDateToIso` accepts ISO datetimes (date part only), test-first; existing
+  `locale-parse.test.ts` stays green.
 - Each `detect` true for its bank, false for at least one other.
 - `createBankRegistry()` routes fixtures correctly and falls back to `null`.
 - `adapter.ts` contract updated; `adapter.test.ts` green.

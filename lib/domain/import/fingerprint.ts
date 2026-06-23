@@ -45,7 +45,7 @@ export function fingerprintKey(input: FingerprintInput): string {
 }
 
 /** FNV-1a 32-bit hash → 8-char hex. Deterministic, non-cryptographic. */
-function fnv1a(str: string): string {
+export function fnv1a(str: string): string {
   let hash = 0x811c9dc5
   for (let i = 0; i < str.length; i++) {
     hash ^= str.charCodeAt(i)
