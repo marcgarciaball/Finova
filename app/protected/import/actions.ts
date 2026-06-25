@@ -358,10 +358,13 @@ export async function commitBatch(input: {
   if (batch.status === 'committed') {
     return { ok: false, error: ALREADY_COMMITTED }
   }
-  // Only a reviewed batch with a chosen account + mapping can be committed.
+  // Only a reviewed (or previously failed) batch with a chosen account +
+  // mapping can be committed. A 'failed' batch is re-committable because the
+  // upsert is idempotent (ON CONFLICT DO NOTHING); a partial failure is safely
+  // retried and will only insert the rows that did not go through previously.
   const parsedMapping = columnMappingSchema.safeParse(batch.mapping)
   if (
-    batch.status !== 'reviewed' ||
+    !['reviewed', 'failed'].includes(batch.status) ||
     !batch.account_id ||
     !batch.storage_path ||
     !parsedMapping.success
@@ -382,8 +385,13 @@ export async function commitBatch(input: {
   if (!account) {
     return { ok: false, error: VALIDATION_FAILED }
   }
-  const fallbackCurrency =
-    (account.currency as string | null) ?? (await getBaseCurrency())
+  let fallbackCurrency: string
+  try {
+    fallbackCurrency =
+      (account.currency as string | null) ?? (await getBaseCurrency())
+  } catch {
+    return { ok: false, error: UNEXPECTED }
+  }
 
   // 3. Download + parse ALL rows (no sample cap), mirroring reviewBatch.
   let records: Record<string, string>[]
@@ -416,11 +424,12 @@ export async function commitBatch(input: {
     .sort()
   const minDate = occurred[0] ?? '0001-01-01'
   const maxDate = occurred[occurred.length - 1] ?? '9999-12-31'
-  const existing = await existingFingerprintsForAccount(
-    accountId,
-    minDate,
-    maxDate
-  )
+  let existing: Set<string>
+  try {
+    existing = await existingFingerprintsForAccount(accountId, minDate, maxDate)
+  } catch {
+    return { ok: false, error: UNEXPECTED }
+  }
   const result = reviewRows(records, parsedMapping.data, accountId, existing)
 
   const newTxns = result.rows
