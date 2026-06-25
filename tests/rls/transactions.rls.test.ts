@@ -153,4 +153,58 @@ describe.skipIf(!url)('transactions RLS', () => {
       await sql`select category_id from public.transactions where id = ${txn?.id}`
     expect(after?.category_id).toBeNull()
   })
+
+  it('a second insert of the same import_fingerprint inserts 0 rows (idempotency)', async () => {
+    await asUser(USER_A, async (tx) => {
+      const fp = 'aaaa1111'
+      const first = await tx`
+        insert into public.transactions
+          (user_id, account_id, amount_cents, currency, occurred_at, description, import_fingerprint)
+        values
+          (${USER_A}, ${accountA}, -4242, 'EUR', '2026-04-01T00:00:00.000Z', 'Idempotent', ${fp})
+        on conflict (user_id, import_fingerprint) do nothing
+        returning id`
+      expect(first).toHaveLength(1)
+
+      const second = await tx`
+        insert into public.transactions
+          (user_id, account_id, amount_cents, currency, occurred_at, description, import_fingerprint)
+        values
+          (${USER_A}, ${accountA}, -4242, 'EUR', '2026-04-01T00:00:00.000Z', 'Idempotent', ${fp})
+        on conflict (user_id, import_fingerprint) do nothing
+        returning id`
+      expect(second).toHaveLength(0)
+
+      await tx`delete from public.transactions where import_fingerprint = ${fp}`
+    })
+  })
+
+  it('the partial unique index is per-user (A and B can hold the same fingerprint)', async () => {
+    const fp = 'bbbb2222'
+    const a = await asUser(
+      USER_A,
+      (tx) => tx`
+      insert into public.transactions
+        (user_id, account_id, amount_cents, currency, occurred_at, description, import_fingerprint)
+      values
+        (${USER_A}, ${accountA}, -100, 'EUR', '2026-04-02T00:00:00.000Z', 'Shared fp', ${fp})
+      on conflict (user_id, import_fingerprint) do nothing
+      returning id`
+    )
+    expect(a).toHaveLength(1)
+
+    const b = await asUser(
+      USER_B,
+      (tx) => tx`
+      insert into public.transactions
+        (user_id, account_id, amount_cents, currency, occurred_at, description, import_fingerprint)
+      values
+        (${USER_B}, ${accountB}, -100, 'EUR', '2026-04-02T00:00:00.000Z', 'Shared fp', ${fp})
+      on conflict (user_id, import_fingerprint) do nothing
+      returning id`
+    )
+    expect(b).toHaveLength(1)
+
+    await sql`delete from public.transactions where import_fingerprint = ${fp}`
+  })
 })
