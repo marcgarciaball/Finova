@@ -1,7 +1,15 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import type { z } from 'zod'
+import { getBaseCurrency } from '@/app/protected/transactions/data'
 import { requireUser } from '@/lib/auth/require-user'
+import { applyImportCategorization } from '@/lib/domain/import/categorize'
+import {
+  buildCommitRows,
+  CHUNK_SIZE,
+  type CommitRow,
+} from '@/lib/domain/import/commit'
 import { parseCsv, rowsToRecords } from '@/lib/domain/import/csv'
 import { decodeBytes } from '@/lib/domain/import/encoding'
 import {
@@ -205,6 +213,12 @@ export type ReviewActionResult =
     }
   | { ok: false; error: string }
 
+const ALREADY_COMMITTED = 'alreadyCommitted'
+
+export type CommitActionResult =
+  | { ok: true; committed: number; skipped: number; failed: number }
+  | { ok: false; error: string }
+
 export async function reviewBatch(input: {
   batchId: string
   accountId: string
@@ -313,4 +327,154 @@ export async function reviewBatch(input: {
     preview: result.rows.slice(0, PREVIEW_CAP),
     total: result.rows.length,
   }
+}
+
+/**
+ * Commit a reviewed batch into real `transactions` rows (P2-08).
+ *
+ * Idempotent and partial-failure-tolerant: drives everything from the trusted
+ * persisted batch (re-download, re-parse, re-classify), then writes via a
+ * chunked upsert with `ON CONFLICT (user_id, import_fingerprint) DO NOTHING`.
+ * Re-committing the same batch — or re-uploading the same file — inserts 0 rows.
+ * A failed chunk doesn't abort the loop; a later re-run safely finishes the job.
+ */
+export async function commitBatch(input: {
+  batchId: string
+}): Promise<CommitActionResult> {
+  const claims = await requireUser()
+  const userId = claims.sub
+
+  const supabase = await createClient()
+
+  // 1. Load the batch (RLS scopes it to the caller).
+  const { data: batch, error: batchErr } = await supabase
+    .from('import_batches')
+    .select('id, storage_path, status, account_id, mapping')
+    .eq('id', input.batchId)
+    .maybeSingle()
+  if (batchErr || !batch) {
+    return { ok: false, error: NOT_FOUND }
+  }
+  if (batch.status === 'committed') {
+    return { ok: false, error: ALREADY_COMMITTED }
+  }
+  // Only a reviewed batch with a chosen account + mapping can be committed.
+  const parsedMapping = columnMappingSchema.safeParse(batch.mapping)
+  if (
+    batch.status !== 'reviewed' ||
+    !batch.account_id ||
+    !batch.storage_path ||
+    !parsedMapping.success
+  ) {
+    return { ok: false, error: VALIDATION_FAILED }
+  }
+  const accountId = batch.account_id as string
+
+  // 2. Resolve the fallback currency: account currency, then profile base.
+  const { data: account, error: accountErr } = await supabase
+    .from('accounts')
+    .select('currency')
+    .eq('id', accountId)
+    .maybeSingle()
+  if (accountErr) {
+    return { ok: false, error: UNEXPECTED }
+  }
+  if (!account) {
+    return { ok: false, error: VALIDATION_FAILED }
+  }
+  const fallbackCurrency =
+    (account.currency as string | null) ?? (await getBaseCurrency())
+
+  // 3. Download + parse ALL rows (no sample cap), mirroring reviewBatch.
+  let records: Record<string, string>[]
+  try {
+    const dl = await supabase.storage.from(BUCKET).download(batch.storage_path)
+    if (dl.error || !dl.data) {
+      return { ok: false, error: DOWNLOAD_FAILED }
+    }
+    const bytes = new Uint8Array(await dl.data.arrayBuffer())
+    const { text } = decodeBytes(bytes)
+    records = rowsToRecords(parseCsv(text))
+  } catch {
+    return { ok: false, error: UNEXPECTED }
+  }
+
+  // 4. Two-pass classify (same as reviewBatch): empty set to get the date
+  //    range, then existing fingerprints for that range, then classify for real.
+  const provisional = reviewRows(
+    records,
+    parsedMapping.data,
+    accountId,
+    new Set()
+  )
+  const occurred = provisional.rows
+    .filter(
+      (r): r is ReviewRow & { txn: NonNullable<ReviewRow['txn']> } =>
+        r.txn !== undefined
+    )
+    .map((r) => r.txn.occurredAt)
+    .sort()
+  const minDate = occurred[0] ?? '0001-01-01'
+  const maxDate = occurred[occurred.length - 1] ?? '9999-12-31'
+  const existing = await existingFingerprintsForAccount(
+    accountId,
+    minDate,
+    maxDate
+  )
+  const result = reviewRows(records, parsedMapping.data, accountId, existing)
+
+  const newTxns = result.rows
+    .filter((r) => r.status === 'new' && r.txn !== undefined)
+    .map((r) => r.txn as NonNullable<ReviewRow['txn']>)
+
+  // 5. Auto-categorize (seam; empty rules ⇒ all null today — P3-03 fills it).
+  const categoryIds = applyImportCategorization(newTxns, [])
+
+  // 6. Build the insert rows.
+  const rows: CommitRow[] = buildCommitRows(newTxns, {
+    userId,
+    accountId,
+    fallbackCurrency,
+    categoryIds,
+  })
+
+  // 7. Chunked idempotent upsert. Under ON CONFLICT DO NOTHING, .select()
+  //    returns only newly-inserted rows; conflicts are silently skipped. A
+  //    failed chunk is counted and skipped, not fatal — a retry is idempotent.
+  let committed = 0
+  let skipped = 0
+  let failed = 0
+  for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
+    const chunk = rows.slice(i, i + CHUNK_SIZE)
+    const { data, error } = await supabase
+      .from('transactions')
+      .upsert(chunk, {
+        onConflict: 'user_id,import_fingerprint',
+        ignoreDuplicates: true,
+      })
+      .select('id')
+    if (error) {
+      failed += chunk.length
+      continue
+    }
+    const inserted = data?.length ?? 0
+    committed += inserted
+    skipped += chunk.length - inserted
+  }
+
+  // 8. Persist the outcome on the batch.
+  await supabase
+    .from('import_batches')
+    .update({
+      status: failed > 0 ? 'failed' : 'committed',
+      counts: { committed, skipped, failed },
+      error: failed > 0 ? 'partialCommitFailure' : null,
+    })
+    .eq('id', input.batchId)
+
+  // 9. Refresh the transactions list and the import page.
+  revalidatePath('/protected/transactions')
+  revalidatePath('/protected/import')
+
+  return { ok: true, committed, skipped, failed }
 }
