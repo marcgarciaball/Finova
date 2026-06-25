@@ -119,7 +119,7 @@
     "nav": "Import",
     "title": "Import transactions",
     "subtitle": "Upload a bank CSV, map its columns, and save a reusable template.",
-    "commitBanner": "Review & commit lands next — nothing is imported yet.",
+    "commitBanner": "Review your import below, then commit when the counts look right.",
     "upload": {
       "label": "Bank CSV file",
       "submit": "Parse file",
@@ -198,6 +198,21 @@
         "downloadFailed": "We couldn't read the uploaded file. Please try again.",
         "validationFailed": "Check the account and column mapping, then try again.",
         "unexpected": "Something went wrong while reviewing. Please try again."
+      }
+    },
+    "commit": {
+      "run": "Commit import",
+      "running": "Committing…",
+      "committed": "{count, plural, one {# transaction imported} other {# transactions imported}}",
+      "skipped": "{count, plural, one {# duplicate skipped} other {# duplicates skipped}}",
+      "failed": "{count, plural, one {# row failed — Commit again to retry} other {# rows failed — Commit again to retry}}",
+      "viewTransactions": "View transactions",
+      "errors": {
+        "batchNotFound": "We couldn't find that upload. Please re-upload the file.",
+        "downloadFailed": "We couldn't read the uploaded file. Please try again.",
+        "validationFailed": "Review the import before committing.",
+        "alreadyCommitted": "This import has already been committed.",
+        "unexpected": "Something went wrong while committing. Please try again."
       }
     },
     "errors": {

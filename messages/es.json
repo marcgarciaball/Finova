@@ -119,7 +119,7 @@
     "nav": "Importar",
     "title": "Importar transacciones",
     "subtitle": "Sube un CSV del banco, asigna sus columnas y guarda una plantilla reutilizable.",
-    "commitBanner": "La revisión y confirmación llegan después — todavía no se importa nada.",
+    "commitBanner": "Revisa tu importación abajo y confírmala cuando los totales sean correctos.",
     "upload": {
       "label": "Archivo CSV del banco",
       "submit": "Analizar archivo",
@@ -198,6 +198,21 @@
         "downloadFailed": "No pudimos leer el archivo subido. Inténtalo de nuevo.",
         "validationFailed": "Comprueba la cuenta y la asignación de columnas, y vuelve a intentarlo.",
         "unexpected": "Algo salió mal durante la revisión. Inténtalo de nuevo."
+      }
+    },
+    "commit": {
+      "run": "Confirmar importación",
+      "running": "Confirmando…",
+      "committed": "{count, plural, one {# transacción importada} other {# transacciones importadas}}",
+      "skipped": "{count, plural, one {# duplicada omitida} other {# duplicadas omitidas}}",
+      "failed": "{count, plural, one {# fila falló — confirma de nuevo para reintentar} other {# filas fallaron — confirma de nuevo para reintentar}}",
+      "viewTransactions": "Ver transacciones",
+      "errors": {
+        "batchNotFound": "No encontramos esa subida. Vuelve a subir el archivo.",
+        "downloadFailed": "No pudimos leer el archivo subido. Inténtalo de nuevo.",
+        "validationFailed": "Revisa la importación antes de confirmarla.",
+        "alreadyCommitted": "Esta importación ya se ha confirmado.",
+        "unexpected": "Algo salió mal durante la confirmación. Inténtalo de nuevo."
       }
     },
     "errors": {
