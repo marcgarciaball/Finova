@@ -1,0 +1,4 @@
+Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance
+CARD_PAYMENT,Current,2026-06-23 08:12:01,2026-06-23 09:00:00,Coffee Shop,-3.50,0.00,EUR,COMPLETED,120.50
+TOPUP,Current,2026-06-22 10:00:00,2026-06-22 10:01:00,"Salary, June",2000.00,0.00,EUR,COMPLETED,2120.50
+TRANSFER,Current,2026-06-21 14:00:00,2026-06-21 14:05:00,Send to John,-50.00,0.00,USD,COMPLETED,70.50

@@ -8,6 +8,48 @@
       "when": 1782127390082,
       "tag": "0000_broad_raider",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1782163659530,
+      "tag": "0001_accounts",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782164261462,
+      "tag": "0002_spotty_sleeper",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782165382731,
+      "tag": "0003_magenta_gladiator",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782199905533,
+      "tag": "0004_nostalgic_lady_mastermind",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1782217534356,
+      "tag": "0005_flashy_strong_guy",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1782222187966,
+      "tag": "0006_yielding_captain_britain",
+      "breakpoints": true
     }
   ]
 }

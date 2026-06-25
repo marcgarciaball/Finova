@@ -4,6 +4,13 @@ Each entry: context → decision → consequences. Newest at top.
 
 ---
 
+## ADR-007 — Money stored as fixed 2-decimal integer minor units (cents)
+**Context:** Finova is multi-currency, but EUR/USD (2-decimal) dominate. ISO-4217 exponents vary (JPY=0, KWD=3).
+**Decision:** Represent every amount as integer cents = 1/100 of the major unit, regardless of currency, and force 2 fraction digits on display. The money module (`lib/domain/money`) is the single home for all money math.
+**Consequences:** Simpler arithmetic and storage; correct for the currencies Finova actually uses. JPY/KWD would mis-render decimals if introduced. Upgrade path: replace the single `MINOR_UNITS = 100` factor with an ISO exponent lookup — contained to `money.ts`/`format.ts`, no caller changes.
+
+---
+
 ## ADR-006 — Product name standardized to "Finova"
 **Context:** The build brief prose calls the product "Finvia"; the folder and the GitHub repo (`github.com/marcgarciaball/Finova`) are both named "Finova".
 **Decision:** Standardize on **Finova** (two real-world signals: folder + repo name) across docs, README, and UI strings.

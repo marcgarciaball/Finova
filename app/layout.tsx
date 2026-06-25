@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
+import { Inter, Inter_Tight, JetBrains_Mono } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getMessages } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
+import { Suspense } from 'react'
+import { defaultLocale } from '@/lib/i18n/config'
 import './globals.css'
 
 const defaultUrl = process.env.VERCEL_URL
@@ -15,33 +17,62 @@ export const metadata: Metadata = {
   description: 'One clear, trustworthy view of your money.',
 }
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const inter = Inter({
+  variable: '--font-inter',
+  display: 'swap',
+  subsets: ['latin'],
+})
+const interTight = Inter_Tight({
+  variable: '--font-inter-tight',
+  display: 'swap',
+  subsets: ['latin'],
+})
+const jetbrains = JetBrains_Mono({
+  variable: '--font-jetbrains',
   display: 'swap',
   subsets: ['latin'],
 })
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const locale = await getLocale()
-
+  // `lang` is rendered into the static shell, so it uses the default locale.
+  // The active per-request locale (from the cookie) drives the actual messages
+  // inside the Suspense-streamed subtree below — see IntlProviders.
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
-        <NextIntlClientProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </NextIntlClientProvider>
+    <html lang={defaultLocale} suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${interTight.variable} ${jetbrains.variable} font-sans antialiased`}
+      >
+        <Suspense>
+          <IntlProviders>{children}</IntlProviders>
+        </Suspense>
       </body>
     </html>
+  )
+}
+
+/**
+ * Reads the cookie-based locale and messages. Kept under a `<Suspense>`
+ * boundary so the request-time `cookies()` access doesn't block prerendering
+ * of the static shell (required by `cacheComponents`). See ADR-004.
+ */
+async function IntlProviders({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale()
+  const messages = await getMessages()
+
+  return (
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        {children}
+      </ThemeProvider>
+    </NextIntlClientProvider>
   )
 }

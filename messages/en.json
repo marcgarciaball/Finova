@@ -16,11 +16,250 @@
     "title": "Your account",
     "signedInAs": "Signed in as {email}"
   },
+  "accounts": {
+    "title": "Accounts",
+    "nav": "Accounts",
+    "new": "New account",
+    "create": "Create account",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "delete": "Delete",
+    "confirmDelete": "Delete this account permanently? This cannot be undone.",
+    "archivedLabel": "Archived",
+    "archivedSection": "Archived",
+    "empty": "No accounts yet. Create your first one to get started.",
+    "fields": {
+      "name": "Name",
+      "type": "Type",
+      "currency": "Currency",
+      "openingBalance": "Opening balance"
+    },
+    "types": {
+      "checking": "Checking",
+      "savings": "Savings",
+      "cash": "Cash",
+      "credit_card": "Credit card",
+      "investment": "Investment"
+    },
+    "errors": {
+      "invalid": "Invalid value.",
+      "nameRequired": "Name is required.",
+      "nameTooLong": "Name must be 100 characters or fewer.",
+      "invalidCurrency": "Use a 3-letter currency code, e.g. EUR.",
+      "invalidAmount": "Enter a valid amount, e.g. 1234.56.",
+      "unexpected": "Something went wrong. Please try again.",
+      "hasTransactions": "This account still has transactions. Delete or move them first."
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "nav": "Transactions",
+    "new": "New transaction",
+    "create": "Add transaction",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Delete this transaction permanently? This cannot be undone.",
+    "uncategorized": "Uncategorized",
+    "recurringLabel": "Recurring",
+    "summary": {
+      "title": "Summary",
+      "income": "Income",
+      "expense": "Expense",
+      "net": "Net"
+    },
+    "empty": "No transactions yet. Add your first one to get started.",
+    "emptyFiltered": "No transactions match these filters.",
+    "needAccount": "Create an account first, then you can add transactions.",
+    "tagsPlaceholder": "groceries, work (comma-separated)",
+    "fields": {
+      "account": "Account",
+      "category": "Category",
+      "direction": "Type",
+      "amount": "Amount",
+      "currency": "Currency",
+      "occurredAt": "Date",
+      "description": "Description",
+      "note": "Note",
+      "tags": "Tags",
+      "isRecurring": "Recurring transaction"
+    },
+    "types": {
+      "income": "Income",
+      "expense": "Expense",
+      "transfer": "Transfer"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search description…",
+      "allAccounts": "All accounts",
+      "allCategories": "All categories",
+      "allTypes": "All types",
+      "from": "From",
+      "to": "To",
+      "clear": "Clear filters"
+    },
+    "errors": {
+      "invalid": "Invalid value.",
+      "unexpected": "Something went wrong. Please try again.",
+      "forbiddenRef": "That account or category isn't available.",
+      "descriptionRequired": "Description is required.",
+      "descriptionTooLong": "Description must be 200 characters or fewer.",
+      "noteTooLong": "Note must be 2000 characters or fewer.",
+      "invalidCurrency": "Use a 3-letter currency code, e.g. EUR.",
+      "invalidAmount": "Enter a valid amount, e.g. 1234.56.",
+      "amountNonZero": "Amount can't be zero."
+    }
+  },
+  "import": {
+    "nav": "Import",
+    "title": "Import transactions",
+    "subtitle": "Upload a bank CSV, map its columns, and save a reusable template.",
+    "commitBanner": "Review your import below, then commit when the counts look right.",
+    "upload": {
+      "label": "Bank CSV file",
+      "submit": "Parse file",
+      "parsing": "Parsing…"
+    },
+    "rowsDetected": "{count, plural, one {# data row detected} other {# data rows detected}}",
+    "none": "None",
+    "templateName": "Template name",
+    "templateNamePlaceholder": "e.g. My bank — checking",
+    "saveTemplate": "Save template",
+    "saved": "Template saved.",
+    "fields": {
+      "date": "Date column",
+      "dateFormat": "Date format",
+      "amountMode": "Amount columns",
+      "amount": "Amount column",
+      "negativeIs": "Negative means",
+      "debit": "Debit column",
+      "credit": "Credit column",
+      "decimal": "Decimal separator",
+      "description": "Description column",
+      "note": "Note column",
+      "currency": "Currency",
+      "currencyColumn": "Currency column",
+      "currencyCode": "Code"
+    },
+    "dateFormats": {
+      "auto": "Auto-detect",
+      "dmy": "Day/Month/Year",
+      "mdy": "Month/Day/Year",
+      "ymd": "Year/Month/Day"
+    },
+    "amountModes": {
+      "single": "Single signed column",
+      "debitCredit": "Separate debit/credit"
+    },
+    "negativeIs": {
+      "expense": "Expense",
+      "income": "Income"
+    },
+    "decimals": {
+      "auto": "Auto-detect",
+      "comma": "Comma (1.234,56)",
+      "dot": "Dot (1,234.56)"
+    },
+    "currencyModes": {
+      "none": "Account default",
+      "column": "From a column",
+      "fixed": "Fixed code"
+    },
+    "preview": {
+      "title": "Preview",
+      "okCount": "{count, plural, one {# row} other {# rows}}",
+      "errorCount": "{count, plural, one {# error} other {# errors}}",
+      "date": "Date",
+      "amount": "Amount",
+      "description": "Description",
+      "currency": "Currency",
+      "empty": "No rows mapped yet — choose the date, amount and description columns.",
+      "rowError": "Row {row}: {field} — {reason}"
+    },
+    "review": {
+      "heading": "Review before import",
+      "account": "Import into account",
+      "accountPlaceholder": "Choose an account…",
+      "run": "Review",
+      "running": "Reviewing…",
+      "newCount": "{count, plural, one {# new} other {# new}}",
+      "duplicateCount": "{count, plural, one {# duplicate} other {# duplicates}}",
+      "errorCount": "{count, plural, one {# error} other {# errors}}",
+      "status": { "new": "New", "duplicate": "Duplicate", "error": "Error" },
+      "fuzzy": "Possible duplicate",
+      "truncated": "Showing {shown} of {total} rows",
+      "errors": {
+        "batchNotFound": "We couldn't find that upload. Please re-upload the file.",
+        "downloadFailed": "We couldn't read the uploaded file. Please try again.",
+        "validationFailed": "Check the account and column mapping, then try again.",
+        "unexpected": "Something went wrong while reviewing. Please try again."
+      }
+    },
+    "commit": {
+      "run": "Commit import",
+      "running": "Committing…",
+      "committed": "{count, plural, one {# transaction imported} other {# transactions imported}}",
+      "skipped": "{count, plural, one {# duplicate skipped} other {# duplicates skipped}}",
+      "failed": "{count, plural, one {# row failed — Commit again to retry} other {# rows failed — Commit again to retry}}",
+      "viewTransactions": "View transactions",
+      "errors": {
+        "batchNotFound": "We couldn't find that upload. Please re-upload the file.",
+        "downloadFailed": "We couldn't read the uploaded file. Please try again.",
+        "validationFailed": "Review the import before committing.",
+        "alreadyCommitted": "This import has already been committed.",
+        "unexpected": "Something went wrong while committing. Please try again."
+      }
+    },
+    "errors": {
+      "notCsv": "Please upload a .csv file.",
+      "emptyFile": "That file is empty.",
+      "tooLarge": "That file is too large.",
+      "noRows": "No data rows were found in that file.",
+      "tooManyRows": "That file has too many rows.",
+      "noFile": "Please choose a file to upload.",
+      "unsupportedType": "Please upload a .csv, .xls or .xlsx file.",
+      "excelNotSupported": "Excel files aren't supported yet — please export your statement as CSV.",
+      "storageFailed": "We couldn't store that file. Please try again.",
+      "unexpected": "Something went wrong. Please try again.",
+      "saveFailed": "Couldn't save the template. Please try again."
+    }
+  },
   "landing": {
     "title": "All your money, in one place.",
     "subtitle": "Turn scattered bank statements and spreadsheets into one clear view — without connecting to your bank.",
     "ctaPrimary": "Get started",
     "ctaSecondary": "Sign in",
     "disclaimer": "Finova is a personal-finance tool, not financial advice."
+  },
+  "categories": {
+    "title": "Categories",
+    "kinds": {
+      "income": "Income",
+      "expense": "Expense"
+    },
+    "defaults": {
+      "housing": "Housing",
+      "rent": "Rent",
+      "mortgage": "Mortgage",
+      "food": "Food & Dining",
+      "groceries": "Groceries",
+      "restaurants": "Restaurants",
+      "transport": "Transport",
+      "utilities": "Utilities",
+      "health": "Health",
+      "shopping": "Shopping",
+      "entertainment": "Entertainment",
+      "education": "Education",
+      "travel": "Travel",
+      "other_expense": "Other",
+      "salary": "Salary",
+      "gifts": "Gifts",
+      "other_income": "Other income"
+    }
   }
 }

@@ -6,6 +6,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check .",
+    "lint:fix": "biome check --write --unsafe .",
     "format": "biome check --write .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -32,6 +33,7 @@
     "postgres": "3.4.9",
     "react": "19.2.7",
     "react-dom": "19.2.7",
+    "recharts": "^2.15.4",
     "tailwind-merge": "3.6.0",
     "zod": "4.4.3"
   },

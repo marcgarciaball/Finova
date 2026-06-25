@@ -1,0 +1,51 @@
+{
+  "_note": "Finvia feature ideas, split into table-stakes (must_have) that every comparable app already offers, and differentiators (great_to_have) that put Finvia above the rest. Source for competitive context: BankTrack roundups covering Banktrack, Fintonic, Wallet, Money Manager, Spendee, Monefy, YNAB, Toshl, Mint, Goodbudget.",
+
+  "must_have": {
+    "_description": "Baseline features users expect from any expense/finance app. Non-negotiable foundation; Finvia must do these cleanly.",
+    "data-import-export": "Import and export all app data to CSV and JSON files.",
+    "google-sheets-export": "Export data to a connected Google Sheet.",
+    "category-tracking": "Track expenses and income by category and visualize them with clear charts and graphs.",
+    "auto-categorization": "Automatic categorization of income and expenses (food, transport, leisure, rent, etc.).",
+    "simple-rules": "Simple automatic rules to categorize transactions (e.g. merchant X -> category Y).",
+    "budgets-by-category": "Budgets per category with alerts when nearing or exceeding the limit.",
+    "month-comparison": "Month-over-month comparison per category (e.g. 'you spent 120 EUR more on dining than last month').",
+    "duplicate-fee-alerts": "Alerts for duplicate charges, bank fees and unusual movements.",
+    "spend-trend-tracking": "Track spending trends over time: see whether a category is rising or falling month over month.",
+    "savings-goals": "Savings goals: e.g. 'save 400 EUR/month' or 'save 8,000 EUR by year-end', with progress trackers.",
+    "multi-currency": "Multi-currency support with a base currency for reporting.",
+    "shared-budgets": "Shared / household budgets for couples or family.",
+    "dashboard-reports": "Customizable dashboard and reports for a clear overview of finances.",
+    "bilingual": "Full bilingual ES/EN from day one, with locale-aware number, date and currency formatting.",
+    "security": "Bank-grade security: encryption, 2FA, and privacy-first data handling."
+  },
+
+  "great_to_have": {
+    "_description": "Differentiators that go beyond what competitor apps offer. This is where Finvia wins: turning data into guidance and action.",
+    "natural-language-trends": "Natural-language trend narratives: instead of only a chart, a weekly plain-language insight, e.g. 'Dining has been rising for 3 months (+35% this quarter); at this pace you'll end the year ~480 EUR over.'",
+    "category-trend-score": "Per-category trend score (direction semaphore): an up/down/flat indicator per category showing where spending is heading, giving early warning before a budget is blown.",
+    "money-leak-finder": "Money-leak finder: automatically group 'ant expenses', forgotten subscriptions and bank fees into a single 'recoverable per month' figure, directly answering 'my money disappears and I don't know where'.",
+    "cash-flow-forecast": "Cash-flow forecast with a 'safe-to-spend today' number, projecting end-of-month and end-of-year balance from recurring income, fixed costs and average variable spend.",
+    "ai-goal-suggestions": "AI-driven goal coaching: read real data and recommend concrete cuts ('save 5% on hobbies, groceries or loans') to reach goals faster.",
+    "what-if-simulator": "What-if simulator: 'If I cut dining by 20%, I reach my 8,000 EUR goal 6 weeks earlier', with sliders tied to real goals.",
+    "auto-suggested-budgets": "Auto-suggested budgets from history: propose realistic per-category budgets based on a 3-month average adjusted for seasonality, with one-tap accept.",
+    "subscription-radar": "Recurring and subscription radar: detect recurring charges, flag price increases and forgotten subscriptions, and surface total monthly recurring spend.",
+    "anomaly-detection": "Anomaly and duplicate detection: alert on unusual spikes, possible duplicates, or a category running hot vs. its baseline.",
+    "confidence-categorization": "Auto-categorization with a confidence score that learns from your past corrections via one-tap 'fix and remember'.",
+    "seasonal-comparison": "Smart seasonal comparison: compare each category against the same month last year (Dec vs. Dec), not only the previous month.",
+    "weekly-digest": "Weekly and monthly money digest: an auto-generated summary (top categories, vs. last period, biggest expense, savings rate) in-app and optionally by email.",
+    "savings-rate-hero": "Savings rate as the hero metric, surfaced prominently as the single best financial-health indicator.",
+    "net-worth-tracking": "Net worth tracking over time: combine accounts, cash and manual assets/liabilities into a single trend line.",
+    "multichannel-alerts": "Configurable multi-channel alerts: choose the channel per alert type (push, email) for low balance, duplicate charges, fees, budget limits and unusual activity.",
+    "receipt-capture": "Receipt capture and attach: snap a photo, OCR the amount and merchant, and attach it to the transaction.",
+    "privacy-first-mode": "Privacy-first / local-first mode: option to keep data on-device and self-export anytime, as a key differentiator vs. cloud-only competitors."
+  },
+
+  "top_picks_to_stand_out": [
+    "natural-language-trends + category-trend-score + money-leak-finder (the core differentiator: tells users what's happening and what to do)",
+    "cash-flow-forecast (safe-to-spend today)",
+    "ai-goal-suggestions + what-if-simulator",
+    "savings-rate-hero",
+    "auto-suggested-budgets"
+  ]
+}

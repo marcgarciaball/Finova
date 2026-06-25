@@ -1,7 +1,7 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { isLocale, LOCALE_COOKIE, type Locale } from './config'
+import { isLocale, LOCALE_COOKIE, type Locale } from '@/lib/i18n/config'
 
 /**
  * Persist the chosen locale to the cookie (P0-09). The caller refreshes the

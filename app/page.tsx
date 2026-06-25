@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Suspense } from 'react'
-import { AuthButton } from '@/components/auth-button'
-import { LocaleSwitcher } from '@/components/locale-switcher'
-import { ThemeSwitcher } from '@/components/theme-switcher'
-import { Button } from '@/components/ui/button'
+import { AuthButton } from '@/components/AuthButton'
+import { LocaleSwitcher } from '@/components/LocaleSwitcher'
+import { ThemeSwitcher } from '@/components/ThemeSwitcher'
+import { Button } from '@/components/ui/Button'
 
 export default function Home() {
   const t = useTranslations()

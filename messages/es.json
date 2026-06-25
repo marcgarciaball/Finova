@@ -16,11 +16,250 @@
     "title": "Tu cuenta",
     "signedInAs": "Sesión iniciada como {email}"
   },
+  "accounts": {
+    "title": "Cuentas",
+    "nav": "Cuentas",
+    "new": "Nueva cuenta",
+    "create": "Crear cuenta",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "archive": "Archivar",
+    "unarchive": "Desarchivar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Eliminar esta cuenta de forma permanente? No se puede deshacer.",
+    "archivedLabel": "Archivada",
+    "archivedSection": "Archivadas",
+    "empty": "Aún no tienes cuentas. Crea la primera para empezar.",
+    "fields": {
+      "name": "Nombre",
+      "type": "Tipo",
+      "currency": "Moneda",
+      "openingBalance": "Saldo inicial"
+    },
+    "types": {
+      "checking": "Cuenta corriente",
+      "savings": "Ahorros",
+      "cash": "Efectivo",
+      "credit_card": "Tarjeta de crédito",
+      "investment": "Inversión"
+    },
+    "errors": {
+      "invalid": "Valor no válido.",
+      "nameRequired": "El nombre es obligatorio.",
+      "nameTooLong": "El nombre debe tener 100 caracteres o menos.",
+      "invalidCurrency": "Usa un código de moneda de 3 letras, p. ej. EUR.",
+      "invalidAmount": "Introduce un importe válido, p. ej. 1234.56.",
+      "unexpected": "Algo salió mal. Inténtalo de nuevo.",
+      "hasTransactions": "Esta cuenta todavía tiene transacciones. Elimínalas o muévelas primero."
+    }
+  },
+  "transactions": {
+    "title": "Transacciones",
+    "nav": "Transacciones",
+    "new": "Nueva transacción",
+    "create": "Añadir transacción",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Eliminar esta transacción de forma permanente? No se puede deshacer.",
+    "uncategorized": "Sin categoría",
+    "recurringLabel": "Recurrente",
+    "summary": {
+      "title": "Resumen",
+      "income": "Ingresos",
+      "expense": "Gastos",
+      "net": "Neto"
+    },
+    "empty": "Aún no tienes transacciones. Añade la primera para empezar.",
+    "emptyFiltered": "Ninguna transacción coincide con estos filtros.",
+    "needAccount": "Crea una cuenta primero y luego podrás añadir transacciones.",
+    "tagsPlaceholder": "supermercado, trabajo (separadas por comas)",
+    "fields": {
+      "account": "Cuenta",
+      "category": "Categoría",
+      "direction": "Tipo",
+      "amount": "Importe",
+      "currency": "Moneda",
+      "occurredAt": "Fecha",
+      "description": "Descripción",
+      "note": "Nota",
+      "tags": "Etiquetas",
+      "isRecurring": "Transacción recurrente"
+    },
+    "types": {
+      "income": "Ingreso",
+      "expense": "Gasto",
+      "transfer": "Transferencia"
+    },
+    "filters": {
+      "search": "Buscar",
+      "searchPlaceholder": "Buscar descripción…",
+      "allAccounts": "Todas las cuentas",
+      "allCategories": "Todas las categorías",
+      "allTypes": "Todos los tipos",
+      "from": "Desde",
+      "to": "Hasta",
+      "clear": "Borrar filtros"
+    },
+    "errors": {
+      "invalid": "Valor no válido.",
+      "unexpected": "Algo salió mal. Inténtalo de nuevo.",
+      "forbiddenRef": "Esa cuenta o categoría no está disponible.",
+      "descriptionRequired": "La descripción es obligatoria.",
+      "descriptionTooLong": "La descripción debe tener 200 caracteres o menos.",
+      "noteTooLong": "La nota debe tener 2000 caracteres o menos.",
+      "invalidCurrency": "Usa un código de moneda de 3 letras, p. ej. EUR.",
+      "invalidAmount": "Introduce un importe válido, p. ej. 1234.56.",
+      "amountNonZero": "El importe no puede ser cero."
+    }
+  },
+  "import": {
+    "nav": "Importar",
+    "title": "Importar transacciones",
+    "subtitle": "Sube un CSV del banco, asigna sus columnas y guarda una plantilla reutilizable.",
+    "commitBanner": "Revisa tu importación abajo y confírmala cuando los totales sean correctos.",
+    "upload": {
+      "label": "Archivo CSV del banco",
+      "submit": "Analizar archivo",
+      "parsing": "Analizando…"
+    },
+    "rowsDetected": "{count, plural, one {# fila de datos detectada} other {# filas de datos detectadas}}",
+    "none": "Ninguna",
+    "templateName": "Nombre de la plantilla",
+    "templateNamePlaceholder": "p. ej. Mi banco — cuenta corriente",
+    "saveTemplate": "Guardar plantilla",
+    "saved": "Plantilla guardada.",
+    "fields": {
+      "date": "Columna de fecha",
+      "dateFormat": "Formato de fecha",
+      "amountMode": "Columnas de importe",
+      "amount": "Columna de importe",
+      "negativeIs": "Negativo significa",
+      "debit": "Columna de cargo",
+      "credit": "Columna de abono",
+      "decimal": "Separador decimal",
+      "description": "Columna de descripción",
+      "note": "Columna de nota",
+      "currency": "Moneda",
+      "currencyColumn": "Columna de moneda",
+      "currencyCode": "Código"
+    },
+    "dateFormats": {
+      "auto": "Detección automática",
+      "dmy": "Día/Mes/Año",
+      "mdy": "Mes/Día/Año",
+      "ymd": "Año/Mes/Día"
+    },
+    "amountModes": {
+      "single": "Una columna con signo",
+      "debitCredit": "Cargo/abono separados"
+    },
+    "negativeIs": {
+      "expense": "Gasto",
+      "income": "Ingreso"
+    },
+    "decimals": {
+      "auto": "Detección automática",
+      "comma": "Coma (1.234,56)",
+      "dot": "Punto (1,234.56)"
+    },
+    "currencyModes": {
+      "none": "Moneda de la cuenta",
+      "column": "Desde una columna",
+      "fixed": "Código fijo"
+    },
+    "preview": {
+      "title": "Vista previa",
+      "okCount": "{count, plural, one {# fila} other {# filas}}",
+      "errorCount": "{count, plural, one {# error} other {# errores}}",
+      "date": "Fecha",
+      "amount": "Importe",
+      "description": "Descripción",
+      "currency": "Moneda",
+      "empty": "Aún no hay filas asignadas — elige las columnas de fecha, importe y descripción.",
+      "rowError": "Fila {row}: {field} — {reason}"
+    },
+    "review": {
+      "heading": "Revisar antes de importar",
+      "account": "Importar en la cuenta",
+      "accountPlaceholder": "Elige una cuenta…",
+      "run": "Revisar",
+      "running": "Revisando…",
+      "newCount": "{count, plural, one {# nueva} other {# nuevas}}",
+      "duplicateCount": "{count, plural, one {# duplicada} other {# duplicadas}}",
+      "errorCount": "{count, plural, one {# error} other {# errores}}",
+      "status": { "new": "Nueva", "duplicate": "Duplicada", "error": "Error" },
+      "fuzzy": "Posible duplicado",
+      "truncated": "Mostrando {shown} de {total} filas",
+      "errors": {
+        "batchNotFound": "No encontramos esa subida. Vuelve a subir el archivo.",
+        "downloadFailed": "No pudimos leer el archivo subido. Inténtalo de nuevo.",
+        "validationFailed": "Comprueba la cuenta y la asignación de columnas, y vuelve a intentarlo.",
+        "unexpected": "Algo salió mal durante la revisión. Inténtalo de nuevo."
+      }
+    },
+    "commit": {
+      "run": "Confirmar importación",
+      "running": "Confirmando…",
+      "committed": "{count, plural, one {# transacción importada} other {# transacciones importadas}}",
+      "skipped": "{count, plural, one {# duplicada omitida} other {# duplicadas omitidas}}",
+      "failed": "{count, plural, one {# fila falló — confirma de nuevo para reintentar} other {# filas fallaron — confirma de nuevo para reintentar}}",
+      "viewTransactions": "Ver transacciones",
+      "errors": {
+        "batchNotFound": "No encontramos esa subida. Vuelve a subir el archivo.",
+        "downloadFailed": "No pudimos leer el archivo subido. Inténtalo de nuevo.",
+        "validationFailed": "Revisa la importación antes de confirmarla.",
+        "alreadyCommitted": "Esta importación ya se ha confirmado.",
+        "unexpected": "Algo salió mal durante la confirmación. Inténtalo de nuevo."
+      }
+    },
+    "errors": {
+      "notCsv": "Sube un archivo .csv.",
+      "emptyFile": "Ese archivo está vacío.",
+      "tooLarge": "Ese archivo es demasiado grande.",
+      "noRows": "No se encontraron filas de datos en ese archivo.",
+      "tooManyRows": "Ese archivo tiene demasiadas filas.",
+      "noFile": "Elige un archivo para subir.",
+      "unsupportedType": "Sube un archivo .csv, .xls o .xlsx.",
+      "excelNotSupported": "Los archivos de Excel aún no son compatibles; exporta tu extracto como CSV.",
+      "storageFailed": "No pudimos guardar ese archivo. Inténtalo de nuevo.",
+      "unexpected": "Algo salió mal. Inténtalo de nuevo.",
+      "saveFailed": "No se pudo guardar la plantilla. Inténtalo de nuevo."
+    }
+  },
   "landing": {
     "title": "Todo tu dinero, en un solo lugar.",
     "subtitle": "Convierte extractos bancarios y hojas de cálculo dispersos en una visión clara, sin conectar tu banco.",
     "ctaPrimary": "Empezar",
     "ctaSecondary": "Iniciar sesión",
     "disclaimer": "Finova es una herramienta de finanzas personales, no asesoramiento financiero."
+  },
+  "categories": {
+    "title": "Categorías",
+    "kinds": {
+      "income": "Ingresos",
+      "expense": "Gastos"
+    },
+    "defaults": {
+      "housing": "Vivienda",
+      "rent": "Alquiler",
+      "mortgage": "Hipoteca",
+      "food": "Alimentación",
+      "groceries": "Supermercado",
+      "restaurants": "Restaurantes",
+      "transport": "Transporte",
+      "utilities": "Suministros",
+      "health": "Salud",
+      "shopping": "Compras",
+      "entertainment": "Ocio",
+      "education": "Educación",
+      "travel": "Viajes",
+      "other_expense": "Otros gastos",
+      "salary": "Salario",
+      "gifts": "Regalos",
+      "other_income": "Otros ingresos"
+    }
   }
 }
