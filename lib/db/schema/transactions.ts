@@ -8,6 +8,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUsers } from 'drizzle-orm/supabase'
@@ -57,6 +58,10 @@ export const transactions = pgTable(
     isTransfer: boolean('is_transfer').notNull().default(false),
     transferGroupId: uuid('transfer_group_id'),
     isRecurring: boolean('is_recurring').notNull().default(false),
+    // Forward-provisioned for P2-08 idempotent commit; null until an import
+    // writes it. P2-07 does NOT backfill (manual rows stay null), so the
+    // partial unique index below covers zero rows and cannot conflict.
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -92,6 +97,11 @@ export const transactions = pgTable(
     index('transactions_transfer_group_idx')
       .on(table.transferGroupId)
       .where(sql`${table.transferGroupId} is not null`),
+    // P2-08 idempotent commit: unique per user per fingerprint, but only when
+    // fingerprint is set (manual rows with null are excluded from the index).
+    uniqueIndex('transactions_user_import_fingerprint_uniq')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     pgPolicy('transactions_select_own', {
       for: 'select',
       to: authenticatedRole,

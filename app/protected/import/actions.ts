@@ -2,18 +2,23 @@
 
 import type { z } from 'zod'
 import { requireUser } from '@/lib/auth/require-user'
+import { parseCsv, rowsToRecords } from '@/lib/domain/import/csv'
+import { decodeBytes } from '@/lib/domain/import/encoding'
 import {
   type ParseUploadData,
   parseUploadBytes,
 } from '@/lib/domain/import/parse-upload'
+import { type ReviewRow, reviewRows } from '@/lib/domain/import/review'
 import { buildStoragePath, safeName } from '@/lib/domain/import/storage-path'
 import { validateUpload } from '@/lib/domain/import/upload-file'
 import { createClient } from '@/lib/supabase/server'
 import {
+  columnMappingSchema,
   type ImportTemplateRow,
   importTemplateRowSchema,
   saveTemplateSchema,
 } from '@/lib/validation/import-template'
+import { existingFingerprintsForAccount } from './data'
 
 /**
  * Server Actions for the import flow.
@@ -185,4 +190,127 @@ export async function saveTemplate(input: {
   }
 
   return { ok: true }
+}
+
+const PREVIEW_CAP = 100
+const NOT_FOUND = 'batchNotFound'
+const DOWNLOAD_FAILED = 'downloadFailed'
+
+export type ReviewActionResult =
+  | {
+      ok: true
+      counts: { new: number; duplicate: number; error: number }
+      preview: ReviewRow[]
+      total: number
+    }
+  | { ok: false; error: string }
+
+export async function reviewBatch(input: {
+  batchId: string
+  accountId: string
+  mapping: unknown
+}): Promise<ReviewActionResult> {
+  await requireUser()
+
+  const parsedMapping = columnMappingSchema.safeParse(input.mapping)
+  if (!parsedMapping.success) {
+    return { ok: false, error: VALIDATION_FAILED }
+  }
+
+  const supabase = await createClient()
+
+  // 1. Load the batch (RLS scopes it to the caller).
+  const { data: batch, error: batchErr } = await supabase
+    .from('import_batches')
+    .select('id, storage_path, status')
+    .eq('id', input.batchId)
+    .maybeSingle()
+  if (batchErr || !batch) {
+    return { ok: false, error: NOT_FOUND }
+  }
+  // A committed or failed batch is past review; don't reopen it.
+  if (!['uploaded', 'mapped', 'reviewed'].includes(batch.status)) {
+    return { ok: false, error: VALIDATION_FAILED }
+  }
+
+  // 2. Verify the chosen account belongs to the caller.
+  const { data: account, error: accountErr } = await supabase
+    .from('accounts')
+    .select('id')
+    .eq('id', input.accountId)
+    .maybeSingle()
+  if (accountErr) {
+    return { ok: false, error: UNEXPECTED }
+  }
+  if (!account) {
+    return { ok: false, error: VALIDATION_FAILED }
+  }
+
+  // 3. Download + parse ALL rows (no sample cap on the count path).
+  if (!batch.storage_path) {
+    return { ok: false, error: NOT_FOUND }
+  }
+  let records: Record<string, string>[]
+  try {
+    const dl = await supabase.storage.from(BUCKET).download(batch.storage_path)
+    if (dl.error || !dl.data) {
+      return { ok: false, error: DOWNLOAD_FAILED }
+    }
+    const bytes = new Uint8Array(await dl.data.arrayBuffer())
+    const { text } = decodeBytes(bytes)
+    const parsed = parseCsv(text)
+    records = rowsToRecords(parsed)
+  } catch {
+    return { ok: false, error: UNEXPECTED }
+  }
+
+  // 4. Two-pass classify: first with an empty set to extract the date range,
+  //    then fetch existing fingerprints for that range, then classify for real.
+  const provisional = reviewRows(
+    records,
+    parsedMapping.data,
+    input.accountId,
+    new Set()
+  )
+  const occurred = provisional.rows
+    .filter(
+      (r): r is ReviewRow & { txn: NonNullable<ReviewRow['txn']> } =>
+        r.txn !== undefined
+    )
+    .map((r) => r.txn.occurredAt)
+    .sort()
+  const minDate = occurred[0] ?? '0001-01-01'
+  const maxDate = occurred[occurred.length - 1] ?? '9999-12-31'
+  const existing = await existingFingerprintsForAccount(
+    input.accountId,
+    minDate,
+    maxDate
+  )
+  const result = reviewRows(
+    records,
+    parsedMapping.data,
+    input.accountId,
+    existing
+  )
+
+  // 5. Persist review state on the batch.
+  const { error: updErr } = await supabase
+    .from('import_batches')
+    .update({
+      account_id: input.accountId,
+      mapping: parsedMapping.data,
+      counts: result.counts,
+      status: 'reviewed',
+    })
+    .eq('id', input.batchId)
+  if (updErr) {
+    return { ok: false, error: UNEXPECTED }
+  }
+
+  return {
+    ok: true,
+    counts: result.counts,
+    preview: result.rows.slice(0, PREVIEW_CAP),
+    total: result.rows.length,
+  }
 }

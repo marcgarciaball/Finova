@@ -181,6 +181,25 @@
       "empty": "No rows mapped yet — choose the date, amount and description columns.",
       "rowError": "Row {row}: {field} — {reason}"
     },
+    "review": {
+      "heading": "Review before import",
+      "account": "Import into account",
+      "accountPlaceholder": "Choose an account…",
+      "run": "Review",
+      "running": "Reviewing…",
+      "newCount": "{count, plural, one {# new} other {# new}}",
+      "duplicateCount": "{count, plural, one {# duplicate} other {# duplicates}}",
+      "errorCount": "{count, plural, one {# error} other {# errors}}",
+      "status": { "new": "New", "duplicate": "Duplicate", "error": "Error" },
+      "fuzzy": "Possible duplicate",
+      "truncated": "Showing {shown} of {total} rows",
+      "errors": {
+        "batchNotFound": "We couldn't find that upload. Please re-upload the file.",
+        "downloadFailed": "We couldn't read the uploaded file. Please try again.",
+        "validationFailed": "Check the account and column mapping, then try again.",
+        "unexpected": "Something went wrong while reviewing. Please try again."
+      }
+    },
     "errors": {
       "notCsv": "Please upload a .csv file.",
       "emptyFile": "That file is empty.",

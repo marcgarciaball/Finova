@@ -181,6 +181,25 @@
       "empty": "Aún no hay filas asignadas — elige las columnas de fecha, importe y descripción.",
       "rowError": "Fila {row}: {field} — {reason}"
     },
+    "review": {
+      "heading": "Revisar antes de importar",
+      "account": "Importar en la cuenta",
+      "accountPlaceholder": "Elige una cuenta…",
+      "run": "Revisar",
+      "running": "Revisando…",
+      "newCount": "{count, plural, one {# nueva} other {# nuevas}}",
+      "duplicateCount": "{count, plural, one {# duplicada} other {# duplicadas}}",
+      "errorCount": "{count, plural, one {# error} other {# errores}}",
+      "status": { "new": "Nueva", "duplicate": "Duplicada", "error": "Error" },
+      "fuzzy": "Posible duplicado",
+      "truncated": "Mostrando {shown} de {total} filas",
+      "errors": {
+        "batchNotFound": "No encontramos esa subida. Vuelve a subir el archivo.",
+        "downloadFailed": "No pudimos leer el archivo subido. Inténtalo de nuevo.",
+        "validationFailed": "Comprueba la cuenta y la asignación de columnas, y vuelve a intentarlo.",
+        "unexpected": "Algo salió mal durante la revisión. Inténtalo de nuevo."
+      }
+    },
     "errors": {
       "notCsv": "Sube un archivo .csv.",
       "emptyFile": "Ese archivo está vacío.",

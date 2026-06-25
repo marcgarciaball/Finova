@@ -13,9 +13,11 @@ import {
   type MappingFormState,
 } from '@/lib/domain/import/mapping-form'
 import type { ParseUploadData } from '@/lib/domain/import/parse-upload'
+import type { AccountRow } from '@/lib/validation/account'
 import { type ParseResult, saveTemplate, uploadImport } from './actions'
 import { ColumnMappingForm } from './ColumnMappingForm'
 import { MappingPreview } from './MappingPreview'
+import { ReviewPanel } from './ReviewPanel'
 
 /** Parsed file + the mapping form state, once an upload has been parsed. */
 interface Loaded {
@@ -38,7 +40,7 @@ const KNOWN_PARSE_ERRORS = new Set([
   'storageFailed',
 ])
 
-export function ImportClient() {
+export function ImportClient({ accounts }: { accounts: AccountRow[] }) {
   const t = useTranslations('import')
   const [parseState, parseAction, parsing] = useActionState<
     ParseResult | undefined,
@@ -75,6 +77,17 @@ export function ImportClient() {
       : null
 
   const mapping = useMemo(() => buildColumnMapping(form), [form])
+
+  // Only offer the review step once the mapping has its required columns; an
+  // incomplete mapping would only earn a server-side validationFailed.
+  const mappingReady = useMemo(() => {
+    if (!mapping.date.column || !mapping.description.column) {
+      return false
+    }
+    return mapping.amount.kind === 'single'
+      ? mapping.amount.column !== ''
+      : mapping.amount.debitColumn !== '' || mapping.amount.creditColumn !== ''
+  }, [mapping])
 
   const [templateName, setTemplateName] = useState('')
   useEffect(() => {
@@ -166,6 +179,14 @@ export function ImportClient() {
             </div>
           </CardContent>
         </Card>
+      ) : null}
+
+      {loaded && mappingReady ? (
+        <ReviewPanel
+          batchId={loaded.batchId}
+          mapping={mapping}
+          accounts={accounts}
+        />
       ) : null}
     </div>
   )
