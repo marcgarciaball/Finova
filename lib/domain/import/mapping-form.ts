@@ -82,6 +82,82 @@ export function buildColumnMapping(state: MappingFormState): ColumnMapping {
   return mapping
 }
 
+/**
+ * Heuristic auto-mapping from header names (P2-03 UX). When a file is parsed and
+ * no saved template matches its layout, we pre-select the most likely date /
+ * amount / description / currency columns by matching common ES + EN bank header
+ * names — so the preview is populated immediately instead of erroring on an
+ * unmapped date column. The user can still override every choice. Patterns are
+ * ordered by specificity (first match wins per role); a debit + credit pair
+ * switches the amount mode to two-column. Anything ambiguous is left blank.
+ */
+const DATE_PATTERNS = [
+  /completed\s*date/i,
+  /f\.?\s*valor/i,
+  /fecha/i,
+  /\bdate\b/i,
+  /date/i,
+]
+const DESCRIPTION_PATTERNS = [
+  /concepto/i,
+  /descrip/i,
+  /concept/i,
+  /detalle/i,
+  /memo/i,
+]
+const SINGLE_AMOUNT_PATTERNS = [/importe/i, /\bamount\b/i, /\bmonto\b/i]
+const DEBIT_PATTERNS = [
+  /cargo/i,
+  /d[eé]bito/i,
+  /\bdebe\b/i,
+  /debit/i,
+  /charge/i,
+  /\bspent\b/i,
+]
+const CREDIT_PATTERNS = [
+  /abono/i,
+  /cr[eé]dito/i,
+  /\bhaber\b/i,
+  /credit/i,
+  /deposit/i,
+  /received/i,
+]
+const CURRENCY_PATTERNS = [/divisa/i, /currency/i, /moneda/i]
+
+/** First header matching the highest-priority pattern, or '' if none match. */
+function firstMatch(headers: string[], patterns: RegExp[]): string {
+  for (const pattern of patterns) {
+    const hit = headers.find((h) => pattern.test(h))
+    if (hit) return hit
+  }
+  return ''
+}
+
+/** Best-effort initial form state inferred from a file's headers. */
+export function suggestMapping(headers: string[]): MappingFormState {
+  const state = emptyFormState()
+  state.dateColumn = firstMatch(headers, DATE_PATTERNS)
+  state.descriptionColumn = firstMatch(headers, DESCRIPTION_PATTERNS)
+
+  const debit = firstMatch(headers, DEBIT_PATTERNS)
+  const credit = firstMatch(headers, CREDIT_PATTERNS)
+  if (debit && credit) {
+    state.amountKind = 'debitCredit'
+    state.debitColumn = debit
+    state.creditColumn = credit
+  } else {
+    state.amountKind = 'single'
+    state.singleColumn = firstMatch(headers, SINGLE_AMOUNT_PATTERNS)
+  }
+
+  const currency = firstMatch(headers, CURRENCY_PATTERNS)
+  if (currency) {
+    state.currencyMode = 'column'
+    state.currencyColumn = currency
+  }
+  return state
+}
+
 /** Pre-fill the form from a saved template's mapping (reverse of build). */
 export function formStateFromMapping(mapping: ColumnMapping): MappingFormState {
   const state = emptyFormState()

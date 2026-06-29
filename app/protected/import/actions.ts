@@ -10,11 +10,12 @@ import {
   CHUNK_SIZE,
   type CommitRow,
 } from '@/lib/domain/import/commit'
-import { parseCsv, rowsToRecords } from '@/lib/domain/import/csv'
-import { decodeBytes } from '@/lib/domain/import/encoding'
 import {
   type ParseUploadData,
+  type ParseUploadOutcome,
+  parseExcelUpload,
   parseUploadBytes,
+  recordsFromUpload,
 } from '@/lib/domain/import/parse-upload'
 import { type ReviewRow, reviewRows } from '@/lib/domain/import/review'
 import { buildStoragePath, safeName } from '@/lib/domain/import/storage-path'
@@ -50,7 +51,6 @@ const VALIDATION_FAILED = 'validationFailed'
 const UNEXPECTED = 'unexpected'
 const NO_FILE = 'noFile'
 const STORAGE_FAILED = 'storageFailed'
-const EXCEL_NOT_SUPPORTED = 'excelNotSupported'
 const BUCKET = 'imports'
 
 export type ParseResult =
@@ -121,7 +121,12 @@ export async function uploadImport(
 
   // 2. Record the batch. If this fails after a successful upload, best-effort
   //    delete the now-orphaned object so the bucket doesn't accumulate junk.
+  // Pin the row id to the same UUID used for the storage path, so the batchId
+  // returned to the client matches the row that review/commit later look up.
+  // (Without an explicit id the DB default generates a *different* uuid, and
+  // every review/commit then fails with "batch not found".)
   const insert = await supabase.from('import_batches').insert({
+    id: batchId,
     user_id: userId,
     storage_path: path,
     filename: safeName(file.name),
@@ -134,16 +139,14 @@ export async function uploadImport(
     return { ok: false, error: UNEXPECTED }
   }
 
-  // 3. Excel uploads are stored but not yet parsed (P2-03 deferral); the file
-  //    and batch persist so a future ticket can parse them.
-  if (valid.kind === 'excel') {
-    return { ok: false, error: EXCEL_NOT_SUPPORTED }
-  }
-
-  // 4. Parse the same bytes (no second download).
-  let outcome: ReturnType<typeof parseUploadBytes>
+  // 3. Parse the same bytes (no second download). Excel goes through the
+  //    workbook reader; CSV through the text parser — both yield identical data.
+  let outcome: ParseUploadOutcome
   try {
-    outcome = parseUploadBytes(file.name, bytes)
+    outcome =
+      valid.kind === 'excel'
+        ? await parseExcelUpload(file.name, bytes)
+        : parseUploadBytes(file.name, bytes)
   } catch {
     return { ok: false, error: UNEXPECTED }
   }
@@ -240,7 +243,7 @@ export async function reviewBatch(input: {
   // 1. Load the batch (RLS scopes it to the caller).
   const { data: batch, error: batchErr } = await supabase
     .from('import_batches')
-    .select('id, storage_path, status')
+    .select('id, storage_path, status, filename')
     .eq('id', input.batchId)
     .maybeSingle()
   if (batchErr || !batch) {
@@ -275,9 +278,7 @@ export async function reviewBatch(input: {
       return { ok: false, error: DOWNLOAD_FAILED }
     }
     const bytes = new Uint8Array(await dl.data.arrayBuffer())
-    const { text } = decodeBytes(bytes)
-    const parsed = parseCsv(text)
-    records = rowsToRecords(parsed)
+    records = await recordsFromUpload(batch.filename ?? '', bytes)
   } catch {
     return { ok: false, error: UNEXPECTED }
   }
@@ -353,7 +354,7 @@ export async function commitBatch(input: {
   // 1. Load the batch (RLS scopes it to the caller).
   const { data: batch, error: batchErr } = await supabase
     .from('import_batches')
-    .select('id, storage_path, status, account_id, mapping')
+    .select('id, storage_path, status, account_id, mapping, filename')
     .eq('id', input.batchId)
     .maybeSingle()
   if (batchErr || !batch) {
@@ -405,8 +406,7 @@ export async function commitBatch(input: {
       return { ok: false, error: DOWNLOAD_FAILED }
     }
     const bytes = new Uint8Array(await dl.data.arrayBuffer())
-    const { text } = decodeBytes(bytes)
-    records = rowsToRecords(parseCsv(text))
+    records = await recordsFromUpload(batch.filename ?? '', bytes)
   } catch {
     return { ok: false, error: UNEXPECTED }
   }

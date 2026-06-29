@@ -4,7 +4,9 @@ import { cn } from '@/lib/utils'
 
 export interface StatProps {
   className?: string
+  currency?: string
   format?: (n: number) => string
+  locale?: string
   value: number
 }
 
@@ -17,9 +19,22 @@ function prefersReducedMotion() {
 
 export function Stat({
   value,
-  format = (n) => n.toLocaleString(),
+  format,
+  currency,
+  locale,
   className,
 }: StatProps) {
+  const fmt =
+    format ??
+    (currency && locale
+      ? (n: number) =>
+          new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(n / 100)
+      : (n: number) => n.toLocaleString())
   const [display, setDisplay] = React.useState(value)
 
   React.useEffect(() => {
@@ -49,7 +64,7 @@ export function Stat({
         className
       )}
     >
-      {format(display)}
+      {fmt(display)}
     </span>
   )
 }

@@ -1,0 +1,2 @@
+DROP INDEX IF EXISTS "transactions_user_import_fingerprint_uniq";--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "transactions_user_import_fingerprint_uniq" ON "transactions" USING btree ("user_id","import_fingerprint");

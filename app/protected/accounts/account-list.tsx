@@ -9,9 +9,12 @@ import { AccountRow } from './AccountRow'
 export async function AccountList({
   accounts,
   baseCurrency,
+  balanceById,
 }: {
   accounts: Account[]
   baseCurrency: string
+  /** Live balance (cents) per account id, from {@link accountBalances}. */
+  balanceById: Record<string, number>
 }) {
   const t = await getTranslations('accounts')
   const active = accounts.filter((a) => !a.archived)
@@ -32,6 +35,7 @@ export async function AccountList({
               key={account.id}
               account={account}
               baseCurrency={baseCurrency}
+              balanceCents={balanceById[account.id] ?? account.opening_balance}
             />
           ))
         )}
@@ -47,6 +51,7 @@ export async function AccountList({
               key={account.id}
               account={account}
               baseCurrency={baseCurrency}
+              balanceCents={balanceById[account.id] ?? account.opening_balance}
             />
           ))}
         </section>

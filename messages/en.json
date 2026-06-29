@@ -76,6 +76,13 @@
     "emptyFiltered": "No transactions match these filters.",
     "needAccount": "Create an account first, then you can add transactions.",
     "tagsPlaceholder": "groceries, work (comma-separated)",
+    "recategorize": {
+      "button": "Auto-categorize",
+      "running": "Categorizing…",
+      "done": "{updated} of {scanned} categorized.",
+      "none": "Nothing to categorize — no uncategorized transactions matched a rule.",
+      "error": "Couldn't categorize. Please try again."
+    },
     "fields": {
       "account": "Account",
       "category": "Category",
@@ -118,10 +125,10 @@
   "import": {
     "nav": "Import",
     "title": "Import transactions",
-    "subtitle": "Upload a bank CSV, map its columns, and save a reusable template.",
+    "subtitle": "Upload a bank CSV or Excel file, map its columns, and save a reusable template.",
     "commitBanner": "Review your import below, then commit when the counts look right.",
     "upload": {
-      "label": "Bank CSV file",
+      "label": "Bank CSV or Excel file",
       "submit": "Parse file",
       "parsing": "Parsing…"
     },
@@ -222,8 +229,8 @@
       "noRows": "No data rows were found in that file.",
       "tooManyRows": "That file has too many rows.",
       "noFile": "Please choose a file to upload.",
-      "unsupportedType": "Please upload a .csv, .xls or .xlsx file.",
-      "excelNotSupported": "Excel files aren't supported yet — please export your statement as CSV.",
+      "unsupportedType": "Please upload a .csv or .xlsx file.",
+      "invalidExcel": "We couldn't read that Excel file. Please re-export it as .xlsx and try again.",
       "storageFailed": "We couldn't store that file. Please try again.",
       "unexpected": "Something went wrong. Please try again.",
       "saveFailed": "Couldn't save the template. Please try again."
@@ -234,7 +241,19 @@
     "subtitle": "Turn scattered bank statements and spreadsheets into one clear view — without connecting to your bank.",
     "ctaPrimary": "Get started",
     "ctaSecondary": "Sign in",
-    "disclaimer": "Finova is a personal-finance tool, not financial advice."
+    "disclaimer": "Finova is a personal-finance tool, not financial advice.",
+    "howItWorks": {
+      "title": "How Finova works",
+      "subtitle": "Four steps — and no bank connection required.",
+      "step1Title": "1 · Add your accounts",
+      "step1Body": "Create a checking, savings, cash or card account, with its own currency and opening balance.",
+      "step2Title": "2 · Add or import transactions",
+      "step2Body": "Type them in by hand, or upload a bank CSV — map the columns once, save a reusable template, and review before importing.",
+      "step3Title": "3 · Let rules categorize",
+      "step3Body": "Imported transactions are auto-categorized by built-in rules. Re-importing the same file never creates duplicates.",
+      "step4Title": "4 · See your dashboard & export",
+      "step4Body": "Track cash flow, balances, savings rate and spending by category — then export everything to CSV or JSON whenever you like."
+    }
   },
   "categories": {
     "title": "Categories",
@@ -316,6 +335,22 @@
       "incomeVsExpense": "Income vs expense",
       "balanceTrend": "Balance trend",
       "spendingByCategory": "Spending by category"
+    },
+    "accountsStrip": {
+      "title": "Accounts",
+      "netWorth": "Net worth"
+    },
+    "keyStats": {
+      "averageSpend": "Average spend",
+      "biggestExpense": "Biggest expense",
+      "busiestDay": "Busiest day",
+      "count": "Transactions",
+      "txnCount": "{count, plural, one {# transaction} other {# transactions}}"
+    },
+    "ranking": {
+      "topCategories": "Where you spend most",
+      "byAccount": "Spending across accounts",
+      "empty": "No spending in this period."
     },
     "balances": {
       "title": "Account balances"

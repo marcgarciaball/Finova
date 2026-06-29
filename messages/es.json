@@ -76,6 +76,13 @@
     "emptyFiltered": "Ninguna transacción coincide con estos filtros.",
     "needAccount": "Crea una cuenta primero y luego podrás añadir transacciones.",
     "tagsPlaceholder": "supermercado, trabajo (separadas por comas)",
+    "recategorize": {
+      "button": "Auto-categorizar",
+      "running": "Categorizando…",
+      "done": "{updated} de {scanned} categorizadas.",
+      "none": "Nada que categorizar — ninguna transacción sin categoría coincidió con una regla.",
+      "error": "No se pudo categorizar. Inténtalo de nuevo."
+    },
     "fields": {
       "account": "Cuenta",
       "category": "Categoría",
@@ -118,10 +125,10 @@
   "import": {
     "nav": "Importar",
     "title": "Importar transacciones",
-    "subtitle": "Sube un CSV del banco, asigna sus columnas y guarda una plantilla reutilizable.",
+    "subtitle": "Sube un CSV o Excel del banco, asigna sus columnas y guarda una plantilla reutilizable.",
     "commitBanner": "Revisa tu importación abajo y confírmala cuando los totales sean correctos.",
     "upload": {
-      "label": "Archivo CSV del banco",
+      "label": "Archivo CSV o Excel del banco",
       "submit": "Analizar archivo",
       "parsing": "Analizando…"
     },
@@ -222,8 +229,8 @@
       "noRows": "No se encontraron filas de datos en ese archivo.",
       "tooManyRows": "Ese archivo tiene demasiadas filas.",
       "noFile": "Elige un archivo para subir.",
-      "unsupportedType": "Sube un archivo .csv, .xls o .xlsx.",
-      "excelNotSupported": "Los archivos de Excel aún no son compatibles; exporta tu extracto como CSV.",
+      "unsupportedType": "Sube un archivo .csv o .xlsx.",
+      "invalidExcel": "No pudimos leer ese archivo de Excel. Vuelve a exportarlo como .xlsx e inténtalo de nuevo.",
       "storageFailed": "No pudimos guardar ese archivo. Inténtalo de nuevo.",
       "unexpected": "Algo salió mal. Inténtalo de nuevo.",
       "saveFailed": "No se pudo guardar la plantilla. Inténtalo de nuevo."
@@ -234,7 +241,19 @@
     "subtitle": "Convierte extractos bancarios y hojas de cálculo dispersos en una visión clara, sin conectar tu banco.",
     "ctaPrimary": "Empezar",
     "ctaSecondary": "Iniciar sesión",
-    "disclaimer": "Finova es una herramienta de finanzas personales, no asesoramiento financiero."
+    "disclaimer": "Finova es una herramienta de finanzas personales, no asesoramiento financiero.",
+    "howItWorks": {
+      "title": "Cómo funciona Finova",
+      "subtitle": "Cuatro pasos — y sin conectar tu banco.",
+      "step1Title": "1 · Añade tus cuentas",
+      "step1Body": "Crea una cuenta corriente, de ahorros, de efectivo o de tarjeta, con su propia moneda y saldo inicial.",
+      "step2Title": "2 · Añade o importa transacciones",
+      "step2Body": "Introdúcelas a mano o sube un CSV del banco: asigna las columnas una vez, guarda una plantilla reutilizable y revisa antes de importar.",
+      "step3Title": "3 · Deja que las reglas categoricen",
+      "step3Body": "Las transacciones importadas se categorizan automáticamente con reglas integradas. Volver a importar el mismo archivo nunca crea duplicados.",
+      "step4Title": "4 · Consulta tu panel y exporta",
+      "step4Body": "Controla el flujo de caja, los saldos, la tasa de ahorro y el gasto por categoría — y exporta todo a CSV o JSON cuando quieras."
+    }
   },
   "categories": {
     "title": "Categorías",
@@ -316,6 +335,22 @@
       "incomeVsExpense": "Ingresos vs gastos",
       "balanceTrend": "Evolución del saldo",
       "spendingByCategory": "Gasto por categoría"
+    },
+    "accountsStrip": {
+      "title": "Cuentas",
+      "netWorth": "Patrimonio neto"
+    },
+    "keyStats": {
+      "averageSpend": "Gasto medio",
+      "biggestExpense": "Mayor gasto",
+      "busiestDay": "Día más activo",
+      "count": "Movimientos",
+      "txnCount": "{count, plural, one {# movimiento} other {# movimientos}}"
+    },
+    "ranking": {
+      "topCategories": "Dónde más gastas",
+      "byAccount": "Gasto entre cuentas",
+      "empty": "No hay gastos en este periodo."
     },
     "balances": {
       "title": "Saldos por cuenta"

@@ -3,6 +3,11 @@
  * React, no FX fetching; every figure is per-currency and never summed across.
  */
 export {
+  type AccountSpend,
+  type AccountTxn,
+  spendingByAccount,
+} from '@/lib/domain/dashboard/by-account'
+export {
   type CategorizedTxn,
   type CategorySpend,
   spendingByCategory,
@@ -15,6 +20,13 @@ export {
   spendingToDonut,
 } from '@/lib/domain/dashboard/chart-data'
 export { pickDisplayCurrency } from '@/lib/domain/dashboard/display-currency'
+export {
+  type BiggestExpense,
+  type BusiestDay,
+  type KeyStats,
+  keyStats,
+  type StatTxn,
+} from '@/lib/domain/dashboard/key-stats'
 export {
   balanceTrend,
   type MonthBucket,

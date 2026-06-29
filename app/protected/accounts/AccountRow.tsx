@@ -13,9 +13,12 @@ import { deleteAccount, setArchived } from './actions'
 export function AccountRow({
   account,
   baseCurrency,
+  balanceCents,
 }: {
   account: Account
   baseCurrency: string
+  /** Live balance (opening + signed sum of transactions), in cents. */
+  balanceCents: number
 }) {
   const t = useTranslations('accounts')
   const locale = useLocale()
@@ -37,10 +40,12 @@ export function AccountRow({
     )
   }
 
-  const balance = format(
+  const balance = format(money(balanceCents, account.currency), locale)
+  const opening = format(
     money(account.opening_balance, account.currency),
     locale
   )
+  const showOpening = balanceCents !== account.opening_balance
 
   return (
     <Card>
@@ -53,7 +58,14 @@ export function AccountRow({
               <Badge variant="secondary">{t('archivedLabel')}</Badge>
             ) : null}
           </div>
-          <span className="text-ink-soft text-sm tabular-nums">{balance}</span>
+          <span className="font-semibold text-ink text-sm tabular-nums">
+            {balance}
+          </span>
+          {showOpening ? (
+            <span className="text-ink-soft text-xs tabular-nums">
+              {t('fields.openingBalance')}: {opening}
+            </span>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-2">

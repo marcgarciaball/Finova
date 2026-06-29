@@ -11,12 +11,14 @@ import {
   balanceTrend,
   balanceTrendToArea,
   filterByPeriod,
+  keyStats,
   monthlySeries,
   monthlySeriesToBars,
   parsePeriod,
   periodStartIso,
   pickDisplayCurrency,
   savingsRate,
+  spendingByAccount,
   spendingByCategory,
   spendingToDonut,
   totalBalanceByCurrency,
@@ -24,10 +26,13 @@ import {
 import { format, money } from '@/lib/domain/money'
 import { summarizeByCurrency } from '@/lib/domain/transactions/totals'
 import type { CategoryRow } from '@/lib/validation/category'
+import { AccountsStrip } from './AccountsStrip'
 import { DashboardEmptyState } from './DashboardEmptyState'
 import { getDashboardData } from './data'
+import { KeyStatsStrip } from './KeyStatsStrip'
 import { PeriodSelector } from './PeriodSelector'
 import { RecentTransactions } from './RecentTransactions'
+import { type RankRow, SpendingRanking } from './SpendingRanking'
 
 const RECENT_LIMIT = 8
 
@@ -54,9 +59,8 @@ export default async function DashboardPage({
 
   const todayIso = new Date().toISOString().slice(0, 10)
   const currency = pickDisplayCurrency(txns, baseCurrency)
-  const fmt = (n: number) => format(money(Math.round(n), currency), locale)
 
-  // Period-sensitive figures (cash flow, spending) use the sliced set;
+  // Period-sensitive figures (cash flow, spending, stats) use the sliced set;
   // balances + trend are cumulative and use the full history.
   const periodTxns = filterByPeriod(txns, period, todayIso)
   const totals = summarizeByCurrency(periodTxns)[currency] ?? {
@@ -90,13 +94,39 @@ export default async function DashboardPage({
   const area = balanceTrendToArea(trend)
   const netSparkline = months.map((m) => m.net / 100)
 
-  const spend = spendingByCategory(periodTxns)[currency] ?? []
   const byId = new Map(categories.map((c) => [c.id, c] as const))
   const labelFor = (categoryId: string | null): string =>
     categoryId === null
       ? t('table.uncategorized')
       : labelOf(byId.get(categoryId), tDefaults)
+
+  const spend = spendingByCategory(periodTxns)[currency] ?? []
   const donut = spendingToDonut(spend, labelFor)
+  const categoryRanking: RankRow[] = spend.map((s) => ({
+    key: s.categoryId ?? '__uncategorized__',
+    label: labelFor(s.categoryId),
+    total: s.total,
+    share: s.share,
+    currency,
+  }))
+
+  const accountById = new Map(accounts.map((a) => [a.id, a] as const))
+  const accountRanking: RankRow[] = (
+    spendingByAccount(periodTxns)[currency] ?? []
+  ).map((s) => ({
+    key: s.accountId,
+    label: accountById.get(s.accountId)?.name ?? s.accountId,
+    total: s.total,
+    share: s.share,
+    currency,
+  }))
+
+  const stats = keyStats(periodTxns)[currency] ?? {
+    averageSpend: null,
+    biggestExpense: null,
+    busiestDay: null,
+    count: 0,
+  }
 
   const currencyCount = new Set(txns.map((x) => x.currency)).size
 
@@ -113,21 +143,31 @@ export default async function DashboardPage({
         </p>
       )}
 
+      {/* Accounts strip — all accounts + net worth at a glance (UD-02). */}
+      <AccountsStrip
+        accounts={accounts}
+        balances={balances}
+        netWorthByCurrency={totalByCurrency}
+      />
+
+      {/* Money-health headline metrics (UD-07). */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         <HeroCard
           className="lg:col-span-2"
           label={`${t('kpi.net')} · ${currency}`}
           value={totals.net}
-          format={fmt}
+          currency={currency}
+          locale={locale}
           trend={netSparkline}
         />
-        <KpiCard label={t('kpi.income')} value={totals.income} format={fmt} />
-        <KpiCard label={t('kpi.expense')} value={totals.expense} format={fmt} />
+        <KpiCard label={t('kpi.income')} value={totals.income} currency={currency} locale={locale} />
+        <KpiCard label={t('kpi.expense')} value={totals.expense} currency={currency} locale={locale} />
         <KpiCard
           className="lg:col-span-2"
           label={`${t('kpi.totalBalance')} · ${currency}`}
           value={totalBalance}
-          format={fmt}
+          currency={currency}
+          locale={locale}
         />
         <GlassCard className="flex flex-col gap-2 lg:col-span-2">
           <span className="font-medium text-ink-soft text-xs uppercase tracking-wide">
@@ -146,6 +186,10 @@ export default async function DashboardPage({
         </GlassCard>
       </div>
 
+      {/* Key-stats strip (UD-08). */}
+      <KeyStatsStrip stats={stats} currency={currency} />
+
+      {/* Trends over time (UD-03/UD-04). */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <GlassCard className="flex flex-col gap-4">
           <h2 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
@@ -169,6 +213,7 @@ export default async function DashboardPage({
         </GlassCard>
       </div>
 
+      {/* Where the money goes — category breakdown (donut + table). */}
       {donut.length > 0 && (
         <GlassCard className="flex flex-col gap-4">
           <h2 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
@@ -214,35 +259,27 @@ export default async function DashboardPage({
         </GlassCard>
       )}
 
+      {/* Rankings — where you spend most (UD-05) + across accounts (UD-06). */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <RecentTransactions
-          txns={periodTxns.slice(0, RECENT_LIMIT)}
-          categories={categories}
+        <SpendingRanking
+          title={t('ranking.topCategories')}
+          rows={categoryRanking}
+          locale={locale}
+          emptyLabel={t('ranking.empty')}
         />
-        <GlassCard className="flex flex-col gap-3">
-          <h2 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
-            {t('balances.title')}
-          </h2>
-          <ul className="flex flex-col">
-            {balances.map((b) => {
-              const account = accounts.find((a) => a.id === b.accountId)
-              return (
-                <li
-                  key={b.accountId}
-                  className="flex items-center justify-between gap-3 border-glass-line border-b py-2 text-sm last:border-b-0"
-                >
-                  <span className="truncate text-ink">
-                    {account?.name ?? b.accountId}
-                  </span>
-                  <span className="font-medium text-ink tabular-nums">
-                    {format(money(b.balance, b.currency), locale)}
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
-        </GlassCard>
+        <SpendingRanking
+          title={t('ranking.byAccount')}
+          rows={accountRanking}
+          locale={locale}
+          emptyLabel={t('ranking.empty')}
+        />
       </div>
+
+      {/* Recent activity (UD-09). */}
+      <RecentTransactions
+        txns={periodTxns.slice(0, RECENT_LIMIT)}
+        categories={categories}
+      />
     </div>
   )
 }

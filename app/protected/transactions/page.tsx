@@ -13,6 +13,7 @@ import {
   listTransactions,
   listTransactionsForTotals,
 } from './data'
+import { RecategorizeButton } from './RecategorizeButton'
 import { TransactionFilters } from './TransactionFilters'
 import { TransactionsSummary } from './TransactionsSummary'
 import { TransactionList } from './transaction-list'
@@ -39,8 +40,9 @@ export default async function TransactionsPage({
 
   return (
     <div className="flex w-full flex-1 flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-bold text-2xl">{t('title')}</h1>
+        <RecategorizeButton />
       </div>
       <CreateTransactionPanel
         accounts={accounts}

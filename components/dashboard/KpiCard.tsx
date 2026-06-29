@@ -5,11 +5,13 @@ import { cn } from '@/lib/utils'
 
 export interface KpiCardProps {
   className?: string
+  currency?: string
   delta?: number
   deltaSuffix?: string
   footnote?: string
   format?: (n: number) => string
   label: string
+  locale?: string
   value: number
 }
 
@@ -17,6 +19,8 @@ export function KpiCard({
   label,
   value,
   format,
+  currency,
+  locale,
   delta,
   deltaSuffix,
   footnote,
@@ -28,7 +32,7 @@ export function KpiCard({
         {label}
       </span>
       <div className="flex items-end justify-between gap-3">
-        <Stat value={value} format={format} />
+        <Stat value={value} format={format} currency={currency} locale={locale} />
         {delta !== undefined && (
           <DeltaPill value={delta} suffix={deltaSuffix} />
         )}

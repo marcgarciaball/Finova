@@ -14,9 +14,15 @@
  * actually used. Any guard failure is a typed error — never a throw.
  */
 
-import { parseCsv, rowsToRecords } from './csv'
+import { type ParsedCsv, parseCsv, rowsToRecords } from './csv'
 import { decodeBytes, type ImportEncoding } from './encoding'
+import { parseSpreadsheetToParsed } from './excel'
 import { headerSignature } from './mapping'
+
+/** True for a filename the upload allowlist treats as Excel (.xls or .xlsx). */
+export function isExcelName(filename: string): boolean {
+  return /\.xlsx?$/i.test(filename.trim())
+}
 
 /** 5 MB — bank CSV exports are far smaller; this is a safety ceiling. */
 const DEFAULT_MAX_BYTES = 5 * 1024 * 1024
@@ -31,6 +37,7 @@ export type ParseUploadError =
   | 'tooLarge'
   | 'noRows'
   | 'tooManyRows'
+  | 'invalidExcel'
 
 export interface ParseUploadData {
   encoding: ImportEncoding
@@ -81,15 +88,78 @@ export function parseUploadBytes(
     return { ok: false, error: 'tooManyRows' }
   }
 
+  return { ok: true, data: dataFromParsed(parsed, encoding, sampleSize) }
+}
+
+/** Build the upload preview payload from parsed rows — shared by the CSV and
+ *  Excel paths. Excel has no text encoding, so it reports `utf-8`. */
+function dataFromParsed(
+  parsed: ParsedCsv,
+  encoding: ImportEncoding,
+  sampleSize: number
+): ParseUploadData {
   const records = rowsToRecords(parsed)
   return {
-    ok: true,
-    data: {
-      encoding,
-      headers: parsed.headers,
-      rowCount: records.length,
-      sampleRecords: records.slice(0, sampleSize),
-      signature: headerSignature(parsed.headers),
-    },
+    encoding,
+    headers: parsed.headers,
+    rowCount: records.length,
+    sampleRecords: records.slice(0, sampleSize),
+    signature: headerSignature(parsed.headers),
   }
+}
+
+/**
+ * Excel sibling of {@link parseUploadBytes}: the same size/row guards over an
+ * .xlsx file, parsed into the identical {@link ParseUploadData}. Async because
+ * the workbook reader is; a corrupt/non-OOXML file is a typed `invalidExcel`
+ * error rather than a throw.
+ */
+export async function parseExcelUpload(
+  filename: string,
+  bytes: Uint8Array,
+  opts: ParseUploadOptions = {}
+): Promise<ParseUploadOutcome> {
+  const maxBytes = opts.maxBytes ?? DEFAULT_MAX_BYTES
+  const maxRows = opts.maxRows ?? DEFAULT_MAX_ROWS
+  const sampleSize = opts.sampleSize ?? DEFAULT_SAMPLE_SIZE
+
+  if (bytes.length === 0) {
+    return { ok: false, error: 'emptyFile' }
+  }
+  if (bytes.length > maxBytes) {
+    return { ok: false, error: 'tooLarge' }
+  }
+
+  let parsed: ParsedCsv
+  try {
+    parsed = await parseSpreadsheetToParsed(filename, bytes)
+  } catch {
+    return { ok: false, error: 'invalidExcel' }
+  }
+
+  if (parsed.rows.length === 0) {
+    return { ok: false, error: 'noRows' }
+  }
+  if (parsed.rows.length > maxRows) {
+    return { ok: false, error: 'tooManyRows' }
+  }
+
+  return { ok: true, data: dataFromParsed(parsed, 'utf-8', sampleSize) }
+}
+
+/**
+ * Re-read a stored upload into header-keyed records, dispatching on the
+ * filename's extension — the single entry point review/commit use so those
+ * paths stay format-agnostic. CSV decodes bytes then parses; .xlsx parses the
+ * workbook. No guards here: the row caps were enforced at upload time.
+ */
+export async function recordsFromUpload(
+  filename: string,
+  bytes: Uint8Array
+): Promise<Record<string, string>[]> {
+  if (isExcelName(filename)) {
+    return rowsToRecords(await parseSpreadsheetToParsed(filename, bytes))
+  }
+  const { text } = decodeBytes(bytes)
+  return rowsToRecords(parseCsv(text))
 }

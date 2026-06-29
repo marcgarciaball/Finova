@@ -44,6 +44,32 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="w-full max-w-5xl px-5 pb-20">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h2 className="font-bold text-2xl sm:text-3xl">
+              {t('landing.howItWorks.title')}
+            </h2>
+            <p className="text-muted-foreground">
+              {t('landing.howItWorks.subtitle')}
+            </p>
+          </div>
+          <ol className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {(['step1', 'step2', 'step3', 'step4'] as const).map((step) => (
+              <li
+                key={step}
+                className="flex flex-col gap-2 rounded-2xl border border-glass-line bg-glass p-5"
+              >
+                <h3 className="font-semibold text-ink">
+                  {t(`landing.howItWorks.${step}Title`)}
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  {t(`landing.howItWorks.${step}Body`)}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
         <footer className="w-full border-t py-8 text-center">
           <p className="text-muted-foreground text-xs">
             {t('landing.disclaimer')}
