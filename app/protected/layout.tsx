@@ -22,6 +22,12 @@ export default function ProtectedLayout({
                 {t('app.name')}
               </Link>
               <Link
+                href="/protected"
+                className="text-ink-soft text-sm hover:text-ink"
+              >
+                {t('dashboard.nav')}
+              </Link>
+              <Link
                 href="/protected/accounts"
                 className="text-ink-soft text-sm hover:text-ink"
               >
@@ -38,6 +44,12 @@ export default function ProtectedLayout({
                 className="text-ink-soft text-sm hover:text-ink"
               >
                 {t('import.nav')}
+              </Link>
+              <Link
+                href="/protected/export"
+                className="text-ink-soft text-sm hover:text-ink"
+              >
+                {t('export.nav')}
               </Link>
             </div>
             <div className="flex items-center gap-2">
