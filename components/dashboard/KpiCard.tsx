@@ -32,7 +32,12 @@ export function KpiCard({
         {label}
       </span>
       <div className="flex items-end justify-between gap-3">
-        <Stat value={value} format={format} currency={currency} locale={locale} />
+        <Stat
+          value={value}
+          format={format}
+          currency={currency}
+          locale={locale}
+        />
         {delta !== undefined && (
           <DeltaPill value={delta} suffix={deltaSuffix} />
         )}

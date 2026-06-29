@@ -47,7 +47,13 @@ export function HeroCard({
         <span className="font-medium text-sm text-white/70 uppercase tracking-wide">
           {label}
         </span>
-        <Stat value={value} format={format} currency={currency} locale={locale} className="text-white" />
+        <Stat
+          value={value}
+          format={format}
+          currency={currency}
+          locale={locale}
+          className="text-white"
+        />
         {delta !== undefined && (
           <span className="inline-flex w-fit items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 font-medium text-sm tabular-nums">
             <Icon className="size-3.5" aria-hidden="true" />

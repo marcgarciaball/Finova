@@ -160,8 +160,18 @@ export default async function DashboardPage({
           locale={locale}
           trend={netSparkline}
         />
-        <KpiCard label={t('kpi.income')} value={totals.income} currency={currency} locale={locale} />
-        <KpiCard label={t('kpi.expense')} value={totals.expense} currency={currency} locale={locale} />
+        <KpiCard
+          label={t('kpi.income')}
+          value={totals.income}
+          currency={currency}
+          locale={locale}
+        />
+        <KpiCard
+          label={t('kpi.expense')}
+          value={totals.expense}
+          currency={currency}
+          locale={locale}
+        />
         <KpiCard
           className="lg:col-span-2"
           label={`${t('kpi.totalBalance')} · ${currency}`}
