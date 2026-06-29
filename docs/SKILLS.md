@@ -9,8 +9,8 @@ When a skill is built, create `docs/skills/<name>.md` with: trigger (when to use
 | [`setup-i18n-string`](skills/setup-i18n-string.md) | P0-09 | BUILT | Add a user-facing string: add key to `messages/en.json` + `messages/es.json`, reference via next-intl, never hardcode. Checklist guards against missing-key drift. |
 | [`write-rls-policy-and-tests`](skills/write-rls-policy-and-tests.md) | P0-08 | BUILT | Author a default-deny, ownership-scoped RLS policy for a table + a test proving user A cannot read/write user B's rows. The security backbone playbook. |
 | [`add-money-safe-feature`](skills/add-money-safe-feature.md) | P1-01 | BUILT | Any feature touching money: integer cents + ISO currency, all math through `lib/domain/money`, near-100% unit coverage, no floats, currency mismatch handling. |
-| `add-import-adapter` | P2-02 | PLANNED | Add one parser/adapter for a new statement format: register in the parser registry, map columns to the canonical transaction shape, fixtures from a real file, encoding/locale tests. |
-| `add-categorization-rule` | P3-01 | PLANNED | Add/extend a categorization rule: match shape (merchant/desc/amount/account), priority ordering, deterministic apply, test against fixtures. |
+| [`add-import-adapter`](skills/add-import-adapter.md) | P2-02 | BUILT | Add one parser/adapter for a new statement format: register in the parser registry, map columns to the canonical transaction shape, fixtures from a real file, encoding/locale tests. |
+| [`add-categorization-rule`](skills/add-categorization-rule.md) | P3-01 | BUILT | Add/extend a categorization rule: clause shape (description/amount/account), AND-only + priority ordering, conditions validated by `conditionsSchema`, owner-scoped RLS. |
 | `security-review-checklist` | P5-05 (used earlier ad hoc) | PLANNED | The Security agent's standing checklist: authz (app + RLS), input validation (Zod), file safety, headers, secrets, error leakage. Run on every security-sensitive change; formalized at P5-05. |
 
 ## Conventions for every skill

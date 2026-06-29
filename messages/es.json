@@ -261,5 +261,97 @@
       "gifts": "Regalos",
       "other_income": "Otros ingresos"
     }
+  },
+  "rules": {
+    "defaults": {
+      "mercadona": "Mercadona",
+      "carrefour": "Carrefour",
+      "lidl": "Lidl",
+      "dia": "Dia",
+      "aldi": "Aldi",
+      "consum": "Consum",
+      "eroski": "Eroski",
+      "glovo": "Glovo",
+      "uber_eats": "Uber Eats",
+      "just_eat": "Just Eat",
+      "deliveroo": "Deliveroo",
+      "mcdonalds": "McDonald's",
+      "starbucks": "Starbucks",
+      "telepizza": "Telepizza",
+      "uber": "Uber",
+      "cabify": "Cabify",
+      "renfe": "Renfe",
+      "repsol": "Repsol",
+      "cepsa": "Cepsa",
+      "endesa": "Endesa",
+      "iberdrola": "Iberdrola",
+      "naturgy": "Naturgy",
+      "movistar": "Movistar",
+      "vodafone": "Vodafone",
+      "orange": "Orange",
+      "nomina": "Nómina",
+      "payroll": "Pago de nómina"
+    }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "nav": "Panel",
+    "period": {
+      "label": "Periodo",
+      "30d": "30 días",
+      "90d": "90 días",
+      "ytd": "Año en curso",
+      "12m": "12 meses",
+      "all": "Todo"
+    },
+    "kpi": {
+      "income": "Ingresos",
+      "expense": "Gastos",
+      "net": "Flujo de caja neto",
+      "totalBalance": "Saldo total",
+      "savingsRate": "Tasa de ahorro",
+      "savingsRateNote": "Parte de los ingresos que conservas en este periodo"
+    },
+    "charts": {
+      "incomeVsExpense": "Ingresos vs gastos",
+      "balanceTrend": "Evolución del saldo",
+      "spendingByCategory": "Gasto por categoría"
+    },
+    "balances": {
+      "title": "Saldos por cuenta"
+    },
+    "recent": {
+      "title": "Movimientos recientes",
+      "viewAll": "Ver todos",
+      "empty": "No hay movimientos en este periodo."
+    },
+    "table": {
+      "category": "Categoría",
+      "amount": "Importe",
+      "share": "Porcentaje",
+      "uncategorized": "Sin categoría"
+    },
+    "otherCurrencies": "Mostrando {currency}. También tienes actividad en otras monedas — consulta los saldos por cuenta más abajo.",
+    "empty": {
+      "title": "Te damos la bienvenida a Finova",
+      "body": "Añade una cuenta o importa un extracto para ver tu panel cobrar vida.",
+      "addAccount": "Añadir una cuenta",
+      "import": "Importar un extracto"
+    }
+  },
+  "export": {
+    "title": "Exporta tus datos",
+    "nav": "Exportar",
+    "description": "Descarga una copia completa de tus datos. El CSV contiene el libro de movimientos; el JSON incluye cuentas, categorías y movimientos.",
+    "csv": {
+      "title": "Movimientos (CSV)",
+      "description": "Un libro de movimientos compatible con hojas de cálculo que se reimporta sin problemas.",
+      "download": "Descargar CSV"
+    },
+    "json": {
+      "title": "Todos los datos (JSON)",
+      "description": "Cuentas, categorías y movimientos en un único archivo legible por máquina.",
+      "download": "Descargar JSON"
+    }
   }
 }

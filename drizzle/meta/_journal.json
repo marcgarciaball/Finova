@@ -50,6 +50,20 @@
       "when": 1782222187966,
       "tag": "0006_yielding_captain_britain",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1782663392555,
+      "tag": "0007_fluffy_quasimodo",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1782672631048,
+      "tag": "0008_nebulous_karma",
+      "breakpoints": true
     }
   ]
 }

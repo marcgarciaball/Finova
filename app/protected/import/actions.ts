@@ -19,6 +19,7 @@ import {
 import { type ReviewRow, reviewRows } from '@/lib/domain/import/review'
 import { buildStoragePath, safeName } from '@/lib/domain/import/storage-path'
 import { validateUpload } from '@/lib/domain/import/upload-file'
+import type { Rule } from '@/lib/domain/rules/types'
 import { createClient } from '@/lib/supabase/server'
 import {
   columnMappingSchema,
@@ -26,7 +27,10 @@ import {
   importTemplateRowSchema,
   saveTemplateSchema,
 } from '@/lib/validation/import-template'
-import { existingFingerprintsForAccount } from './data'
+import {
+  existingFingerprintsForAccount,
+  listEnabledRulesForCategorization,
+} from './data'
 
 /**
  * Server Actions for the import flow.
@@ -436,8 +440,16 @@ export async function commitBatch(input: {
     .filter((r) => r.status === 'new' && r.txn !== undefined)
     .map((r) => r.txn as NonNullable<ReviewRow['txn']>)
 
-  // 5. Auto-categorize (seam; empty rules ⇒ all null today — P3-03 fills it).
-  const categoryIds = applyImportCategorization(newTxns, [])
+  // 5. Auto-categorize via the user's enabled rules (P3-03). Rules failing to
+  //    load degrades to uncategorized — categorization enhances, never blocks,
+  //    a commit. All rows in the batch share `accountId`.
+  let rules: Rule[] = []
+  try {
+    rules = await listEnabledRulesForCategorization()
+  } catch {
+    rules = []
+  }
+  const categoryIds = applyImportCategorization(newTxns, rules, accountId)
 
   // 6. Build the insert rows.
   const rows: CommitRow[] = buildCommitRows(newTxns, {
