@@ -387,6 +387,23 @@
       "title": "Todos los datos (JSON)",
       "description": "Cuentas, categorías y movimientos en un único archivo legible por máquina.",
       "download": "Descargar JSON"
+    },
+    "filters": {
+      "legend": "Qué exportar",
+      "presets": {
+        "all": "Todo el historial",
+        "month": "Este mes",
+        "quarter": "Últimos 3 meses",
+        "year": "Este año"
+      },
+      "from": "Desde",
+      "to": "Hasta",
+      "account": "Cuenta",
+      "allAccounts": "Todas las cuentas",
+      "category": "Categoría",
+      "allCategories": "Todas las categorías",
+      "uncategorized": "Sin categoría",
+      "filteredNote": "Los filtros se aplican a ambas descargas. El archivo JSON sigue incluyendo todas tus cuentas y categorías, pero solo las transacciones que coinciden."
     }
   }
 }

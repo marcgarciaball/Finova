@@ -387,6 +387,23 @@
       "title": "All data (JSON)",
       "description": "Accounts, categories and transactions in one machine-readable file.",
       "download": "Download JSON"
+    },
+    "filters": {
+      "legend": "What to export",
+      "presets": {
+        "all": "All time",
+        "month": "This month",
+        "quarter": "Last 3 months",
+        "year": "This year"
+      },
+      "from": "From",
+      "to": "To",
+      "account": "Account",
+      "allAccounts": "All accounts",
+      "category": "Category",
+      "allCategories": "All categories",
+      "uncategorized": "Uncategorized",
+      "filteredNote": "Filters apply to both downloads. The JSON file still includes all your accounts and categories, but only the matching transactions."
     }
   }
 }
