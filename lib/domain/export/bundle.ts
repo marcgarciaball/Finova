@@ -55,14 +55,24 @@ export function transactionsCsv(txns: TransactionRow[]): string {
   return toCsv([...TRANSACTIONS_HEADER], rows)
 }
 
-/** The full dataset as a JSON-serializable bundle with a meta header. */
+/**
+ * The full dataset as a JSON-serializable bundle with a meta header. When the
+ * export was filtered, `meta.filters` records the active query params so a
+ * partial export is self-describing; unfiltered bundles carry no `filters` key.
+ */
 export function buildJsonBundle(
   input: ExportInput,
-  meta: { exportedAt: string; version: string }
+  meta: {
+    exportedAt: string
+    version: string
+    filters?: Record<string, string>
+  }
 ): object {
+  const { filters, ...rest } = meta
   return {
     meta: {
-      ...meta,
+      ...rest,
+      ...(filters && Object.keys(filters).length > 0 ? { filters } : {}),
       counts: {
         accounts: input.accounts.length,
         categories: input.categories.length,

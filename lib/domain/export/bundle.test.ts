@@ -3,7 +3,12 @@ import { parseCsv, rowsToRecords } from '@/lib/domain/import/csv'
 import type { AccountRow } from '@/lib/validation/account'
 import type { CategoryRow } from '@/lib/validation/category'
 import type { TransactionRow } from '@/lib/validation/transaction'
-import { buildJsonBundle, TRANSACTIONS_HEADER, transactionsCsv } from './bundle'
+import {
+  buildJsonBundle,
+  type ExportInput,
+  TRANSACTIONS_HEADER,
+  transactionsCsv,
+} from './bundle'
 
 const txn = (over: Partial<TransactionRow> = {}): TransactionRow => ({
   id: 't1',
@@ -64,6 +69,12 @@ describe('transactionsCsv', () => {
   })
 })
 
+const EMPTY_INPUT = {
+  accounts: [],
+  categories: [],
+  transactions: [],
+} satisfies ExportInput
+
 describe('buildJsonBundle', () => {
   const accounts = [{ id: 'a1', name: 'Checking' }] as unknown as AccountRow[]
   const categories = [{ id: 'c1', name: 'Food' }] as unknown as CategoryRow[]
@@ -94,5 +105,34 @@ describe('buildJsonBundle', () => {
       categories: 0,
       transactions: 0,
     })
+  })
+})
+
+describe('buildJsonBundle meta.filters', () => {
+  it('records applied filters verbatim when given', () => {
+    const bundle = buildJsonBundle(EMPTY_INPUT, {
+      exportedAt: '2026-07-03T00:00:00.000Z',
+      version: '1',
+      filters: { from: '2026-01-01', account: 'acc-1' },
+    }) as { meta: { filters?: Record<string, string> } }
+    expect(bundle.meta.filters).toEqual({
+      from: '2026-01-01',
+      account: 'acc-1',
+    })
+  })
+
+  it('omits the filters key when absent or empty', () => {
+    const plain = buildJsonBundle(EMPTY_INPUT, {
+      exportedAt: '2026-07-03T00:00:00.000Z',
+      version: '1',
+    }) as { meta: object }
+    expect(plain.meta).not.toHaveProperty('filters')
+
+    const empty = buildJsonBundle(EMPTY_INPUT, {
+      exportedAt: '2026-07-03T00:00:00.000Z',
+      version: '1',
+      filters: {},
+    }) as { meta: object }
+    expect(empty.meta).not.toHaveProperty('filters')
   })
 })
