@@ -50,6 +50,8 @@ export const categoryRowSchema = z.object({
   name_key: z.string().nullable(),
   kind: categoryKindSchema,
   is_default: z.boolean(),
+  icon_name: z.string().nullable(),
+  color: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 })

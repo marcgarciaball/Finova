@@ -8,9 +8,9 @@ export interface HeroCardProps {
   currency?: string
   delta?: number
   deltaSuffix?: string
-  format?: (n: number) => string
   label: string
   locale?: string
+  suffix?: string
   trend?: number[]
   value: number
 }
@@ -18,7 +18,7 @@ export interface HeroCardProps {
 export function HeroCard({
   label,
   value,
-  format,
+  suffix,
   currency,
   locale,
   delta,
@@ -49,7 +49,7 @@ export function HeroCard({
         </span>
         <Stat
           value={value}
-          format={format}
+          suffix={suffix}
           currency={currency}
           locale={locale}
           className="text-white"

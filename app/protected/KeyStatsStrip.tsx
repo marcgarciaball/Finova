@@ -56,7 +56,7 @@ export async function KeyStatsStrip({
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4">
       {cells.map((c) => (
         <GlassCard key={c.key} hoverable className="flex flex-col gap-1">
           <span className="font-medium text-ink-soft text-xs uppercase tracking-wide">

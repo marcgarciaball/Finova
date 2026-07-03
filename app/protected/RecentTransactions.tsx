@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
+import { CategoryIcon } from '@/components/dashboard/CategoryIcon'
 import { ListRow } from '@/components/dashboard/ListRow'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { categoryLabel } from '@/lib/domain/categories/label'
@@ -14,9 +15,12 @@ import type { DashboardTxn } from './data'
 export async function RecentTransactions({
   txns,
   categories,
+  quickAdd,
 }: {
   txns: DashboardTxn[]
   categories: CategoryRow[]
+  /** Quick-add trigger rendered next to the title (nav IA priority 2). */
+  quickAdd?: React.ReactNode
 }) {
   const t = await getTranslations('dashboard.recent')
   const tTypes = await getTranslations('transactions.types')
@@ -35,6 +39,17 @@ export async function RecentTransactions({
     return c ? categoryLabel(c, tDefaults) : undefined
   }
 
+  const iconFor = (categoryId: string | null) => {
+    const c = categoryId === null ? undefined : byId.get(categoryId)
+    return (
+      <CategoryIcon
+        iconName={c?.icon_name}
+        color={c?.color}
+        className={c?.color ? undefined : 'text-ink-soft'}
+      />
+    )
+  }
+
   const quickFilters: { key: string; href: string }[] = [
     { key: 'income', href: '/protected/transactions?type=income' },
     { key: 'expense', href: '/protected/transactions?type=expense' },
@@ -47,12 +62,15 @@ export async function RecentTransactions({
         <h2 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
           {t('title')}
         </h2>
-        <Link
-          href="/protected/transactions"
-          className="text-brand-600 text-sm hover:underline"
-        >
-          {t('viewAll')}
-        </Link>
+        <div className="flex items-center gap-3">
+          {quickAdd}
+          <Link
+            href="/protected/transactions"
+            className="text-brand-600 text-sm hover:underline"
+          >
+            {t('viewAll')}
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -86,6 +104,7 @@ export async function RecentTransactions({
                 subtitle={subtitle}
                 amount={tx.amount_cents}
                 income={income}
+                icon={iconFor(tx.category_id)}
                 format={(n) => format(money(n, tx.currency), locale)}
               />
             )

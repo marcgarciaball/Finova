@@ -75,6 +75,25 @@ describe('DEFAULT_RULES matching behavior', () => {
   it('leaves an unknown merchant uncategorized', () => {
     expect(match('SOME LOCAL SHOP 1234')).toBeNull()
   })
+
+  it('routes an English salary description to salary', () => {
+    expect(
+      selectCategory(asRules, {
+        description: 'Salary June',
+        amountCents: 200000,
+        accountId: 'acct',
+      })
+    ).toBe('salary')
+  })
+
+  it('routes an English coffee shop to restaurants', () => {
+    expect(match('Coffee Shop NYC')).toBe('restaurants')
+  })
+
+  it('routes English grocery/supermarket keywords to groceries', () => {
+    expect(match('Corner Grocery Store')).toBe('groceries')
+    expect(match('City Supermarket')).toBe('groceries')
+  })
 })
 
 describe('DEFAULT_RULES i18n coverage', () => {

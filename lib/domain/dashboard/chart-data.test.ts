@@ -62,4 +62,17 @@ describe('spendingToDonut', () => {
   it('returns empty slices for no spend', () => {
     expect(spendingToDonut([], label)).toEqual([])
   })
+
+  it('attaches a per-slice color when a resolver is given', () => {
+    const spend: CategorySpend[] = [
+      { categoryId: 'groceries', total: 50_000, count: 4, share: 0.5 },
+      { categoryId: null, total: 25_000, count: 2, share: 0.25 },
+    ]
+    const color = (id: string | null) =>
+      id === 'groceries' ? 'var(--cat-teal)' : undefined
+    expect(spendingToDonut(spend, label, color)).toEqual([
+      { name: 'groceries', value: 500, color: 'var(--cat-teal)' },
+      { name: 'Uncategorized', value: 250 },
+    ])
+  })
 })

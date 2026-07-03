@@ -47,10 +47,15 @@ export function balanceTrendToArea(points: TrendPoint[]): AreaSeries {
 
 export function spendingToDonut(
   spend: CategorySpend[],
-  label: (categoryId: string | null) => string
-): { name: string; value: number }[] {
-  return spend.map((s) => ({
-    name: label(s.categoryId),
-    value: toMajor(s.total),
-  }))
+  label: (categoryId: string | null) => string,
+  color?: (categoryId: string | null) => string | undefined
+): { name: string; value: number; color?: string }[] {
+  return spend.map((s) => {
+    const c = color?.(s.categoryId)
+    return {
+      name: label(s.categoryId),
+      value: toMajor(s.total),
+      ...(c ? { color: c } : {}),
+    }
+  })
 }

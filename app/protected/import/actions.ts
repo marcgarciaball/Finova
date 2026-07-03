@@ -493,9 +493,9 @@ export async function commitBatch(input: {
     })
     .eq('id', input.batchId)
 
-  // 9. Refresh the transactions list and the import page.
+  // 9. Refresh the transactions list and the data (import/export) page.
   revalidatePath('/protected/transactions')
-  revalidatePath('/protected/import')
+  revalidatePath('/protected/data')
 
   return { ok: true, committed, skipped, failed }
 }

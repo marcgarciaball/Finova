@@ -71,6 +71,27 @@
       "when": 1782721000063,
       "tag": "0009_jittery_agent_brand",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1782997871062,
+      "tag": "0010_add_category_icon_color",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1782997872000,
+      "tag": "0011_expand_default_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1783074960802,
+      "tag": "0012_english_keyword_rules",
+      "breakpoints": true
     }
   ]
 }

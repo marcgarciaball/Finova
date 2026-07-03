@@ -19,6 +19,13 @@ export {
   monthlySeriesToBars,
   spendingToDonut,
 } from '@/lib/domain/dashboard/chart-data'
+export {
+  pctChange,
+  previousPeriodRange,
+  previousPeriodTxns,
+  type Trend,
+  trendOf,
+} from '@/lib/domain/dashboard/compare'
 export { pickDisplayCurrency } from '@/lib/domain/dashboard/display-currency'
 export {
   type BiggestExpense,

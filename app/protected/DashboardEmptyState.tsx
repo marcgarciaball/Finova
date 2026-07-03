@@ -28,7 +28,7 @@ export async function DashboardEmptyState() {
           </Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="/protected/import">
+          <Link href="/protected/data?tab=import">
             <Upload aria-hidden="true" />
             {t('import')}
           </Link>

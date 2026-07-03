@@ -1,14 +1,22 @@
+import { ArrowDown, ArrowUp } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { GlassCard } from '@/components/ui/GlassCard'
+import type { Trend } from '@/lib/domain/dashboard'
 import { format, money } from '@/lib/domain/money'
+import { cn } from '@/lib/utils'
 
 export interface RankRow {
   currency: string
+  /** Leading marker — typically a `CategoryIcon` (absent for e.g. accounts). */
+  icon?: ReactNode
   key: string
   label: string
   /** Fraction of the whole (0..1). */
   share: number
   /** Positive magnitude in cents. */
   total: number
+  /** Direction vs. the previous period (optional; absent ⇒ no arrow). */
+  trend?: Trend
 }
 
 /**
@@ -23,18 +31,20 @@ export function SpendingRanking({
   locale,
   emptyLabel,
   limit = 6,
+  className,
 }: {
   title: string
   rows: RankRow[]
   locale: string
   emptyLabel: string
   limit?: number
+  className?: string
 }) {
   const top = rows.slice(0, limit)
   const max = top.reduce((m, r) => Math.max(m, r.total), 0)
 
   return (
-    <GlassCard className="flex flex-col gap-4">
+    <GlassCard className={cn('flex flex-col gap-4', className)}>
       <h2 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
         {title}
       </h2>
@@ -45,7 +55,22 @@ export function SpendingRanking({
           {top.map((r) => (
             <li key={r.key} className="flex flex-col gap-1">
               <div className="flex items-baseline justify-between gap-3 text-sm">
-                <span className="truncate text-ink">{r.label}</span>
+                <span className="flex min-w-0 items-center gap-1.5 text-ink">
+                  {r.icon}
+                  {r.trend === 'up' && (
+                    <ArrowUp
+                      className="size-3.5 shrink-0 text-neg"
+                      aria-label="trend-up"
+                    />
+                  )}
+                  {r.trend === 'down' && (
+                    <ArrowDown
+                      className="size-3.5 shrink-0 text-pos"
+                      aria-label="trend-down"
+                    />
+                  )}
+                  <span className="truncate">{r.label}</span>
+                </span>
                 <span className="shrink-0 text-ink tabular-nums">
                   {format(money(r.total, r.currency), locale)}
                   <span className="ml-2 text-ink-soft text-xs">

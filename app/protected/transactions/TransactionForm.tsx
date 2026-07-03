@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -33,12 +33,20 @@ function toDateInput(iso: string): string {
   return iso.slice(0, 10)
 }
 
+/** Snapshot of the account/category a create submission used, for last-used defaults. */
+export interface SubmittedTransactionRefs {
+  accountId: string
+  categoryId: string | null
+}
+
 export function TransactionForm({
   transaction,
   accounts,
   categories,
   baseCurrency,
   todayIso,
+  defaultAccountId,
+  defaultCategoryId,
   onDone,
 }: {
   transaction?: TransactionRow
@@ -47,7 +55,11 @@ export function TransactionForm({
   baseCurrency: string
   /** Today's date as YYYY-MM-DD (computed on the server to avoid hydration drift). */
   todayIso: string
-  onDone?: () => void
+  /** Preselected account for a new transaction (ignored when editing). */
+  defaultAccountId?: string
+  /** Preselected category for a new transaction (ignored when editing). */
+  defaultCategoryId?: string
+  onDone?: (submitted?: SubmittedTransactionRefs) => void
 }) {
   const t = useTranslations('transactions')
   const tCat = useTranslations('categories.defaults')
@@ -61,10 +73,11 @@ export function TransactionForm({
   const [direction, setDirection] = useState<'income' | 'expense'>(
     transaction && transaction.amount_cents < 0 ? 'expense' : 'income'
   )
+  const submittedRef = useRef<SubmittedTransactionRefs | undefined>(undefined)
 
   useEffect(() => {
     if (state?.ok) {
-      onDone?.()
+      onDone?.(submittedRef.current)
     }
   }, [state, onDone])
 
@@ -89,7 +102,17 @@ export function TransactionForm({
     : todayIso
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form
+      action={formAction}
+      onSubmit={(e) => {
+        const fd = new FormData(e.currentTarget)
+        submittedRef.current = {
+          accountId: String(fd.get('accountId') ?? ''),
+          categoryId: String(fd.get('categoryId') ?? '') || null,
+        }
+      }}
+      className="flex flex-col gap-4"
+    >
       {isEdit && transaction ? (
         <input type="hidden" name="id" value={transaction.id} />
       ) : null}
@@ -108,7 +131,9 @@ export function TransactionForm({
         <select
           id="tx-account"
           name="accountId"
-          defaultValue={transaction?.account_id ?? accounts[0]?.id ?? ''}
+          defaultValue={
+            transaction?.account_id ?? defaultAccountId ?? accounts[0]?.id ?? ''
+          }
           className={SELECT_CLASS}
           required
         >
@@ -179,7 +204,7 @@ export function TransactionForm({
         <select
           id="tx-category"
           name="categoryId"
-          defaultValue={transaction?.category_id ?? ''}
+          defaultValue={transaction?.category_id ?? defaultCategoryId ?? ''}
           className={SELECT_CLASS}
         >
           <option value="">{t('uncategorized')}</option>
@@ -256,7 +281,7 @@ export function TransactionForm({
           {isEdit ? t('save') : t('create')}
         </Button>
         {onDone ? (
-          <Button type="button" variant="ghost" onClick={onDone}>
+          <Button type="button" variant="ghost" onClick={() => onDone?.()}>
             {t('cancel')}
           </Button>
         ) : null}

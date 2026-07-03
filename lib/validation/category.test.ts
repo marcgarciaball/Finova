@@ -94,6 +94,8 @@ describe('categoryRowSchema', () => {
       name_key: 'housing',
       kind: 'expense',
       is_default: true,
+      icon_name: 'Home',
+      color: 'var(--cat-blue)',
       created_at: '2026-06-22T00:00:00Z',
       updated_at: '2026-06-22T00:00:00Z',
     })
@@ -109,6 +111,8 @@ describe('categoryRowSchema', () => {
       name_key: null,
       kind: 'expense',
       is_default: false,
+      icon_name: null,
+      color: null,
       created_at: '2026-06-22T00:00:00Z',
       updated_at: '2026-06-22T00:00:00Z',
     })

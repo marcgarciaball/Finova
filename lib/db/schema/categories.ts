@@ -42,6 +42,11 @@ export const categories = pgTable(
     nameKey: text('name_key'),
     kind: text('kind').notNull(),
     isDefault: boolean('is_default').notNull().default(false),
+    // Lucide icon name (e.g. 'Home') + a `--cat-*` CSS-var reference. Both
+    // null for custom categories until a picker exists; defaults are seeded
+    // with these set — see `lib/domain/categories/icons.ts`.
+    iconName: text('icon_name'),
+    color: text('color'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
