@@ -686,7 +686,8 @@
         "1y": "1Y",
         "all": "All"
       },
-      "historyPending": "Value history appears after the next refresh downloads historical prices (needs FMP_API_KEY for stocks/ETFs)."
+      "historyPending": "Value history appears after the next refresh downloads historical prices (needs FMP_API_KEY for stocks/ETFs).",
+      "refreshSummary": "Updated: {quotes} quotes, {history} history rows."
     },
     "tabs": {
       "overview": "Overview",

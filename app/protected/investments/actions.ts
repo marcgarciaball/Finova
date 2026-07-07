@@ -363,17 +363,37 @@ function toHoldingTxn(r: Record<string, unknown>): HoldingTxn {
  * User-triggered price refresh (same job the cron route runs). Also fired
  * automatically by the page when quotes are missing or older than 30 min.
  */
-export async function refreshInvestmentPrices(): Promise<ActionResult> {
+export type RefreshOutcome =
+  | {
+      ok: true
+      summary: {
+        errors: string[]
+        historyRows: number
+        quotesFailed: number
+        quotesRefreshed: number
+      }
+    }
+  | { ok: false; error: string }
+
+export async function refreshInvestmentPrices(): Promise<RefreshOutcome> {
   await requireUser()
   try {
-    await refreshPrices()
+    const s = await refreshPrices()
+    revalidatePath(INVESTMENTS_PATH)
+    revalidatePath('/protected')
+    return {
+      ok: true,
+      summary: {
+        errors: s.errors,
+        historyRows: s.historyRows,
+        quotesFailed: s.quotesFailed,
+        quotesRefreshed: s.quotesRefreshed,
+      },
+    }
   } catch (e) {
     console.error('manual price refresh failed:', e)
     return { ok: false, error: UNEXPECTED }
   }
-  revalidatePath(INVESTMENTS_PATH)
-  revalidatePath('/protected')
-  return { ok: true }
 }
 
 export async function deleteInvestmentTransaction(

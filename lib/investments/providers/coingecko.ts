@@ -109,7 +109,7 @@ export async function getCoinGeckoDailyPrices(
   opts: CoinGeckoOpts = {}
 ): Promise<CoinGeckoDailyPrice[]> {
   const raw = await getJson(
-    `/coins/${encodeURIComponent(coingeckoId)}/market_chart?vs_currency=${vsCurrency.toLowerCase()}&days=365&interval=daily`,
+    `/coins/${encodeURIComponent(coingeckoId)}/market_chart?vs_currency=${vsCurrency.toLowerCase()}&days=365`,
     opts
   )
   const parsed = chartSchema.safeParse(raw)

@@ -686,7 +686,8 @@
         "1y": "1A",
         "all": "Todo"
       },
-      "historyPending": "El histórico de valor aparecerá tras la próxima actualización, cuando se descarguen los precios históricos (requiere FMP_API_KEY para acciones/ETF)."
+      "historyPending": "El histórico de valor aparecerá tras la próxima actualización, cuando se descarguen los precios históricos (requiere FMP_API_KEY para acciones/ETF).",
+      "refreshSummary": "Actualizado: {quotes} cotizaciones, {history} filas de histórico."
     },
     "tabs": {
       "overview": "Resumen",

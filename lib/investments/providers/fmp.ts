@@ -77,13 +77,17 @@ export interface FmpDailyPrice {
 
 const priceItemSchema = z.object({ date: z.string(), price: z.number() })
 
-/** Daily closes (EOD "light" series, ~5y on the free tier), oldest first. */
+/**
+ * Daily closes (EOD "light" series), oldest first. `fromIso` is required —
+ * without it the endpoint returns only a short recent window.
+ */
 export async function getFmpDailyPrices(
   ticker: string,
+  fromIso: string,
   opts: FmpOpts = {}
 ): Promise<FmpDailyPrice[]> {
   const raw = await getJson(
-    `/historical-price-eod/light?symbol=${encodeURIComponent(ticker)}`,
+    `/historical-price-eod/light?symbol=${encodeURIComponent(ticker)}&from=${fromIso}`,
     opts
   )
   const parsed = z.array(z.unknown()).safeParse(raw)
