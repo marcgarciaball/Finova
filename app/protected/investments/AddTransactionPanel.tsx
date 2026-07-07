@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useState, useTransition } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { Button } from '@/components/ui/Button'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { Input } from '@/components/ui/Input'
@@ -39,21 +39,38 @@ export function AddTransactionPanel({
   const [results, setResults] = useState<AssetOption[] | null>(null)
   const [asset, setAsset] = useState<ResolvedAsset | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [searching, startSearch] = useTransition()
+  const [searching, setSearching] = useState(false)
   const [resolving, startResolve] = useTransition()
+  // Discards responses that arrive after a newer keystroke.
+  const searchSeq = useRef(0)
 
-  function onSearch() {
-    setError(null)
-    startSearch(async () => {
-      const res = await searchAction(query, assetType)
+  // Search-as-you-type: debounced, min 2 chars. The local assets table is
+  // tried first server-side, so most keystrokes never hit a provider.
+  useEffect(() => {
+    const q = query.trim()
+    const seq = ++searchSeq.current
+    if (q.length < 2) {
+      setResults(null)
+      setSearching(false)
+      return
+    }
+    const timer = setTimeout(async () => {
+      setSearching(true)
+      const res = await searchAction(q, assetType)
+      if (searchSeq.current !== seq) {
+        return
+      }
+      setSearching(false)
       if (res.ok) {
         setResults(res.results)
+        setError(null)
       } else {
         setResults(null)
         setError(t(`errors.${res.error}`))
       }
-    })
-  }
+    }, 350)
+    return () => clearTimeout(timer)
+  }, [query, assetType, searchAction, t])
 
   function onPick(option: AssetOption) {
     setError(null)
@@ -99,12 +116,6 @@ export function AddTransactionPanel({
             value={query}
             placeholder={t('search.placeholder')}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                onSearch()
-              }
-            }}
           />
         </div>
         <div className="flex flex-col gap-1.5">
@@ -122,15 +133,11 @@ export function AddTransactionPanel({
             ))}
           </select>
         </div>
-        <Button
-          type="button"
-          onClick={onSearch}
-          disabled={searching || query.trim().length === 0}
-        >
-          {searching ? t('search.searching') : t('search.button')}
-        </Button>
       </div>
 
+      {searching ? (
+        <p className="text-ink-soft text-sm">{t('search.searching')}</p>
+      ) : null}
       {error ? <p className="text-neg text-sm">{error}</p> : null}
       {resolving ? (
         <p className="text-ink-soft text-sm">{t('search.resolving')}</p>
