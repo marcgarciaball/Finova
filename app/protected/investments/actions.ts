@@ -137,6 +137,7 @@ export async function resolveAsset(
   await requireUser()
   const parsed = assetOptionSchema.safeParse(option)
   if (!parsed.success) {
+    console.error('resolveAsset: option validation failed', parsed.error.issues)
     return { ok: false, error: 'assetResolve' }
   }
   const opt = parsed.data
@@ -150,6 +151,7 @@ export async function resolveAsset(
         .eq('id', opt.assetId)
         .single()
       if (error) {
+        console.error('resolveAsset: read of known asset failed', error)
         return { ok: false, error: 'assetResolve' }
       }
       const row = assetRowSchema.parse(data)
@@ -221,6 +223,7 @@ export async function resolveAsset(
       .select()
       .single()
     if (error) {
+      console.error('resolveAsset: asset upsert failed', error)
       return { ok: false, error: 'assetResolve' }
     }
     const row = assetRowSchema.parse(data)
@@ -234,7 +237,8 @@ export async function resolveAsset(
         type: row.type,
       },
     }
-  } catch {
+  } catch (e) {
+    console.error('resolveAsset: unexpected failure', e)
     return { ok: false, error: 'assetResolve' }
   }
 }
