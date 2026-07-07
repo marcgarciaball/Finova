@@ -1,30 +1,33 @@
 import { getTranslations } from 'next-intl/server'
 import { requireUser } from '@/lib/auth/require-user'
 import { refreshPrices } from '@/lib/investments/jobs/refresh-prices'
-import { AddTransactionPanel } from './AddTransactionPanel'
-import { addInvestmentTransaction, resolveAsset, searchAssets } from './actions'
+import { AddInvestmentButton } from './AddInvestmentButton'
 import { getOrCreatePortfolio, listInvestmentTransactions } from './data'
+import { IncomeSection } from './IncomeSection'
 import { InvestmentsOverviewSection } from './InvestmentsOverview'
+import { InvestmentsTabs } from './InvestmentsTabs'
+import { getInvestmentsIncome } from './income-data'
+import { parseInvestmentsTab } from './investments-tab'
 import { getInvestmentsOverview } from './overview-data'
 import { InvestmentTransactionList } from './transaction-list'
 
 /**
- * Inversiones (P-investments, slice A4): manual portfolio tracker. This
- * slice ships asset search + the buy/sell log; holdings, KPIs and charts
- * arrive with Phase B once the refresh job (A5) fills cached_quotes.
+ * Inversiones: manual portfolio tracker. URL-driven tabs (Overview / Income /
+ * Transactions); the add flow lives in a header dialog. Prices self-refresh
+ * when quotes are missing or older than 30 minutes.
  */
-export default async function InvestmentsPage() {
+export default async function InvestmentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>
+}) {
   await requireUser()
   await getOrCreatePortfolio() // first-visit bootstrap
-  const [t, transactions] = await Promise.all([
-    getTranslations('investments'),
-    listInvestmentTransactions(),
-  ])
-  let overview = await getInvestmentsOverview()
+  const tab = parseInvestmentsTab((await searchParams).tab)
+  const t = await getTranslations('investments')
+  const todayIso = new Date().toISOString().slice(0, 10)
 
-  // Prices should just be there: refresh inline when quotes are missing or
-  // older than 30 minutes, then recompute. Failures fall back to whatever is
-  // cached — the page never breaks on a provider outage.
+  let overview = await getInvestmentsOverview()
   const STALE_MS = 30 * 60 * 1000
   const stale =
     overview.hasTransactions &&
@@ -39,31 +42,37 @@ export default async function InvestmentsPage() {
       console.error('inline price refresh failed:', e)
     }
   }
-  const todayIso = new Date().toISOString().slice(0, 10)
 
   return (
     <div className="flex w-full flex-1 flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="font-bold text-2xl">{t('title')}</h1>
-        <p className="text-ink-soft text-sm">{t('subtitle')}</p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="font-bold text-2xl">{t('title')}</h1>
+          <p className="text-ink-soft text-sm">{t('subtitle')}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <InvestmentsTabs
+            value={tab}
+            ariaLabel={t('title')}
+            overviewLabel={t('tabs.overview')}
+            incomeLabel={t('tabs.income')}
+            transactionsLabel={t('tabs.transactions')}
+          />
+          <AddInvestmentButton todayIso={todayIso} />
+        </div>
       </div>
 
-      <InvestmentsOverviewSection overview={overview} />
-
-      <section className="flex flex-col gap-2">
-        <h2 className="font-semibold text-lg">{t('addTitle')}</h2>
-        <AddTransactionPanel
-          addAction={addInvestmentTransaction}
-          resolveAction={resolveAsset}
-          searchAction={searchAssets}
-          todayIso={todayIso}
+      {tab === 'overview' ? (
+        <InvestmentsOverviewSection overview={overview} />
+      ) : null}
+      {tab === 'income' ? (
+        <IncomeSection income={await getInvestmentsIncome()} />
+      ) : null}
+      {tab === 'transactions' ? (
+        <InvestmentTransactionList
+          transactions={await listInvestmentTransactions()}
         />
-      </section>
-
-      <section className="flex flex-col gap-2">
-        <h2 className="font-semibold text-lg">{t('list.title')}</h2>
-        <InvestmentTransactionList transactions={transactions} />
-      </section>
+      ) : null}
     </div>
   )
 }

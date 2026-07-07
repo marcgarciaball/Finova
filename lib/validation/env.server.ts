@@ -14,6 +14,7 @@ import { parseEnv } from '@/lib/validation/env'
 export const serverEnvSchema = z.object({
   CRON_SECRET: z.string().min(10).optional(),
   FINNHUB_API_KEY: z.string().min(1).optional(),
+  FMP_API_KEY: z.string().min(1).optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(10).optional(),
   DATABASE_URL: z.url().optional(),
   DIRECT_URL: z.url().optional(),

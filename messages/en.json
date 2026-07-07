@@ -675,7 +675,32 @@
       "partial": "Some positions are unpriced or missing an FX rate and are excluded from totals.",
       "chart": "Portfolio over time",
       "refresh": "Refresh prices",
-      "refreshing": "Refreshing…"
+      "refreshing": "Refreshing…",
+      "fxNote": "Foreign-currency positions are converted to {base} using ECB daily rates.",
+      "granularity": "Granularity",
+      "granularities": {
+        "day": "Days",
+        "week": "Weeks",
+        "month": "Months",
+        "year": "Years"
+      }
+    },
+    "tabs": {
+      "overview": "Overview",
+      "income": "Income",
+      "transactions": "Transactions"
+    },
+    "income": {
+      "empty": "No dividend data yet. Prices sync it automatically once an FMP_API_KEY is configured and a refresh runs.",
+      "totalReceived": "Dividends received",
+      "forwardAnnual": "Est. annual income",
+      "forwardNote": "Based on the last 12 months of dividends and your current shares.",
+      "yieldOnCost": "Yield on cost",
+      "byYear": "Dividends by year",
+      "upcoming": "Upcoming payments",
+      "perAsset": "Per asset",
+      "received": "Received",
+      "perShare12m": "12m / share"
     }
   }
 }

@@ -34,5 +34,6 @@ export function searchSymbol(
 }
 
 export { getFinnhubStockProfile } from './finnhub'
+export { type FmpDividendEvent, getFmpDividends } from './fmp'
 export { type DailyFxRates, fetchDailyRates } from './fx'
 export * from './types'

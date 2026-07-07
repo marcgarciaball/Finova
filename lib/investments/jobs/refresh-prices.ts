@@ -5,7 +5,11 @@ import {
   type QuoteForRebuild,
   type RebuildTxn,
 } from '@/lib/domain/investments/rebuild'
-import { fetchDailyRates, getQuote } from '@/lib/investments/providers'
+import {
+  fetchDailyRates,
+  getFmpDividends,
+  getQuote,
+} from '@/lib/investments/providers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { assetRowSchema } from '@/lib/validation/investments'
 
@@ -19,6 +23,7 @@ import { assetRowSchema } from '@/lib/validation/investments'
  */
 
 export interface RefreshSummary {
+  dividendAssets: number
   fxPairs: number
   holdings: number
   quotesFailed: number
@@ -146,6 +151,42 @@ export async function refreshPrices(): Promise<RefreshSummary> {
     }
   }
 
+  // 2b. Dividend history for listed held assets (FMP; skipped without a key).
+  let dividendAssets = 0
+  if (process.env.FMP_API_KEY && heldAssetIds.length > 0) {
+    const { data: listedData } = await admin
+      .from('assets')
+      .select('id, ticker, currency, type')
+      .in('id', heldAssetIds)
+      .neq('type', 'crypto')
+    const listed = (listedData ?? []).filter((a) => a.ticker)
+    await mapLimit(listed, 2, async (asset) => {
+      try {
+        const events = await getFmpDividends(String(asset.ticker))
+        if (events.length === 0) {
+          return
+        }
+        const { error } = await admin.from('dividend_events').upsert(
+          events.map((e) => ({
+            amount_per_share: e.amountPerShare,
+            asset_id: asset.id,
+            currency: asset.currency,
+            ex_date: e.exDate,
+            pay_date: e.payDate,
+            provider: 'fmp',
+          })),
+          { onConflict: 'asset_id,ex_date' }
+        )
+        if (error) {
+          throw new Error(error.message)
+        }
+        dividendAssets += 1
+      } catch (e) {
+        console.error(`dividend sync failed for ${asset.id}:`, e)
+      }
+    })
+  }
+
   // 3. Rebuild holdings (full replace: derived data, transactions are truth).
   const { rows, skipped } = buildHoldingRows(txns, quotes)
   const { error: clearError } = await admin
@@ -265,6 +306,7 @@ export async function refreshPrices(): Promise<RefreshSummary> {
   }
 
   return {
+    dividendAssets,
     fxPairs,
     holdings: rows.length,
     quotesFailed,

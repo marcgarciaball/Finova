@@ -1,9 +1,9 @@
 import { getLocale, getTranslations } from 'next-intl/server'
-import { AreaChart } from '@/components/charts/AreaChart'
 import { DonutChart } from '@/components/charts/DonutChart'
 import { KpiCard } from '@/components/dashboard/KpiCard'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { format, money } from '@/lib/domain/money'
+import { InvestmentsHistoryChart } from './InvestmentsHistoryChart'
 import type { InvestmentsOverview } from './overview-data'
 import { RefreshPricesButton } from './RefreshPricesButton'
 
@@ -65,7 +65,11 @@ export async function InvestmentsOverviewSection({
           value={totals.totalPlCents}
           currency={baseCurrency}
           locale={locale}
-          delta={totals.totalPlPct ?? undefined}
+          delta={
+            totals.totalPlPct === null
+              ? undefined
+              : Math.round(totals.totalPlPct * 10) / 10
+          }
           deltaSuffix="%"
         />
         <KpiCard
@@ -76,27 +80,13 @@ export async function InvestmentsOverviewSection({
         />
       </div>
 
-      {overview.history.length > 1 ? (
-        <GlassCard className="flex flex-col gap-2">
-          <p className="text-ink-soft text-sm">{t('overview.chart')}</p>
-          <AreaChart
-            index="date"
-            categories={
-              overview.history.some((h) => h.valueCents !== null)
-                ? [t('overview.invested'), t('overview.value')]
-                : [t('overview.invested')]
-            }
-            data={overview.history.map((h) => {
-              const point: Record<string, number | string> = {
-                date: h.date,
-                [t('overview.invested')]: Math.round(h.investedCents / 100),
-              }
-              if (h.valueCents !== null) {
-                point[t('overview.value')] = Math.round(h.valueCents / 100)
-              }
-              return point
-            })}
-          />
+      <p className="text-ink-soft text-xs">
+        {t('overview.fxNote', { base: baseCurrency })}
+      </p>
+
+      {overview.history.length > 0 ? (
+        <GlassCard>
+          <InvestmentsHistoryChart history={overview.history} />
         </GlassCard>
       ) : null}
 

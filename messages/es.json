@@ -675,7 +675,32 @@
       "partial": "Algunas posiciones no tienen precio o tipo de cambio y quedan fuera de los totales.",
       "chart": "Evolución de la cartera",
       "refresh": "Actualizar precios",
-      "refreshing": "Actualizando…"
+      "refreshing": "Actualizando…",
+      "fxNote": "Las posiciones en otras divisas se convierten a {base} con los tipos diarios del BCE.",
+      "granularity": "Granularidad",
+      "granularities": {
+        "day": "Días",
+        "week": "Semanas",
+        "month": "Meses",
+        "year": "Años"
+      }
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "income": "Ingresos",
+      "transactions": "Operaciones"
+    },
+    "income": {
+      "empty": "Aún no hay datos de dividendos. Se sincronizan automáticamente cuando se configura FMP_API_KEY y se ejecuta una actualización.",
+      "totalReceived": "Dividendos cobrados",
+      "forwardAnnual": "Ingreso anual estimado",
+      "forwardNote": "Basado en los dividendos de los últimos 12 meses y tus acciones actuales.",
+      "yieldOnCost": "Rentabilidad sobre coste",
+      "byYear": "Dividendos por año",
+      "upcoming": "Próximos pagos",
+      "perAsset": "Por activo",
+      "received": "Cobrado",
+      "perShare12m": "12m / acción"
     }
   }
 }

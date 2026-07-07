@@ -47,7 +47,7 @@ export interface PriceProvider {
   searchSymbol(query: string): Promise<SymbolResult[]>
 }
 
-export type ProviderName = 'finnhub' | 'coingecko' | 'frankfurter'
+export type ProviderName = 'finnhub' | 'coingecko' | 'frankfurter' | 'fmp'
 export type ProviderErrorKind =
   | 'http'
   | 'malformed'
