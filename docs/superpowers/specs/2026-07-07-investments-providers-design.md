@@ -86,8 +86,13 @@ class ProviderError extends Error {
 
 ### finnhub.ts
 
-Base `https://finnhub.io/api/v1`; key from `FINNHUB_API_KEY` (new optional
-entry in `serverEnvSchema`; `missing_key` ProviderError when unset).
+Base `https://finnhub.io/api/v1`; key from `opts.apiKey ??
+process.env.FINNHUB_API_KEY` (`missing_key` ProviderError when unset).
+`FINNHUB_API_KEY` is also added to `serverEnvSchema` for documentation, but
+the clients must NOT import `env.server` — its `server-only` import is a
+Next-compiler-provided module that vitest cannot resolve, and these clients
+need unit tests. They are kept server-side by usage (only server actions /
+route handlers import them), same posture as the A5 job code.
 
 - `GET /quote?symbol=X` → `{ c, d, dp, h, l, o, pc, t }` (floats, major
   units). `c === 0 && t === 0` means unknown symbol → `not_found`.

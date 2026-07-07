@@ -997,12 +997,12 @@ git commit -m "feat(export): shared filter bar for CSV/JSON downloads"
 
 **Files:** none (verification only).
 
-- [ ] **Step 1: Full suite**
+- [x] **Step 1: Full suite** — PASS 2026-07-06 (706 tests / 63 files, typecheck clean, biome clean).
 
 Run: `npm run test && npm run typecheck && npm run lint`
 Expected: PASS.
 
-- [ ] **Step 2: Exercise the running app**
+- [ ] **Step 2: Exercise the running app** — BLOCKED for the agent (sandbox denies socket listen + `.env.local` read + Supabase egress); needs a human run.
 
 Start `npm run dev`, sign in, open **Datos → Export** and verify:
 - Preset pills fill the date inputs; editing a date un-highlights the pill.
