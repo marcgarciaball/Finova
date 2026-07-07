@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { after } from 'next/server'
 import { z } from 'zod'
 import { getBaseCurrency } from '@/app/protected/accounts/data'
 import { getOrCreatePortfolio } from '@/app/protected/investments/data'
@@ -18,7 +19,9 @@ import {
 } from '@/lib/investments/asset-option'
 import { refreshPrices } from '@/lib/investments/jobs/refresh-prices'
 import {
+  fetchDailyRates,
   getFinnhubStockProfile,
+  getQuote,
   ProviderError,
   searchSymbol,
 } from '@/lib/investments/providers'
@@ -339,6 +342,84 @@ export async function addInvestmentTransaction(
     if (error) {
       return { ok: false, error: UNEXPECTED }
     }
+
+    // The position must be priced IMMEDIATELY, not on the next 30-min cycle:
+    // fetch this asset's quote (and a missing FX pair) inline — one or two
+    // cheap calls — and store them. Failures are non-fatal; the row shows as
+    // unpriced with the usual note.
+    try {
+      const { data: quoteRow } = await supabase
+        .from('cached_quotes')
+        .select('fetched_at')
+        .eq('asset_id', input.assetId)
+        .maybeSingle()
+      const freshMs = 30 * 60 * 1000
+      const fresh =
+        quoteRow &&
+        Date.now() - new Date(String(quoteRow.fetched_at)).getTime() < freshMs
+      if (!fresh) {
+        const { data: assetRow } = await supabase
+          .from('assets')
+          .select('*')
+          .eq('id', input.assetId)
+          .single()
+        const asset = assetRowSchema.parse(assetRow)
+        const quote = await getQuote({
+          coingeckoId: asset.coingecko_id,
+          currency: asset.currency,
+          ticker: asset.ticker,
+          type: asset.type,
+        })
+        const admin = createAdminClient()
+        await admin.from('cached_quotes').upsert(
+          {
+            asset_id: asset.id,
+            currency: quote.currency,
+            fetched_at: quote.fetchedAt,
+            price_cents: quote.priceCents,
+            provider: asset.type === 'crypto' ? 'coingecko' : 'finnhub',
+            quote_type: quote.quoteType,
+            stale: false,
+          },
+          { onConflict: 'asset_id' }
+        )
+      }
+      if (input.currency !== portfolio.base_currency) {
+        const { data: pair } = await supabase
+          .from('fx_rates')
+          .select('id')
+          .eq('from_ccy', input.currency)
+          .eq('to_ccy', portfolio.base_currency)
+          .limit(1)
+        if (!pair || pair.length === 0) {
+          const daily = await fetchDailyRates(input.currency, [
+            portfolio.base_currency,
+          ])
+          const admin = createAdminClient()
+          await admin.from('fx_rates').upsert(
+            daily.rates.map((r) => ({
+              from_ccy: r.fromCcy,
+              rate: r.rate,
+              rate_date: daily.rateDate,
+              to_ccy: r.toCcy,
+            })),
+            { onConflict: 'from_ccy,to_ccy,rate_date' }
+          )
+        }
+      }
+    } catch (e) {
+      console.error('inline quote fetch after add failed:', e)
+    }
+
+    // History/dividends for a brand-new asset sync right after the response
+    // is sent (throttled by sync_state, so existing assets are untouched).
+    after(async () => {
+      try {
+        await refreshPrices()
+      } catch (e) {
+        console.error('post-add background sync failed:', e)
+      }
+    })
   } catch {
     return { ok: false, error: UNEXPECTED }
   }
