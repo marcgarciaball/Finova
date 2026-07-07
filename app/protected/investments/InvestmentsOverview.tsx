@@ -89,6 +89,7 @@ export async function InvestmentsOverviewSection({
           <InvestmentsHistoryChart
             baseCurrency={baseCurrency}
             history={overview.history}
+            trades={overview.trades}
           />
         </GlassCard>
       ) : null}

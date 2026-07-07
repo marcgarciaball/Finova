@@ -47,6 +47,15 @@ export interface HistoryPoint {
   valueCents: number | null // snapshot value when one exists for that day
 }
 
+export interface TradeMarker {
+  currency: string
+  date: string
+  priceCents: number
+  quantity: number
+  ticker: string
+  type: 'buy' | 'sell'
+}
+
 export interface InvestmentsOverview {
   baseCurrency: string
   hasTransactions: boolean
@@ -56,6 +65,7 @@ export interface InvestmentsOverview {
   realizedPlBaseCents: number
   staleCount: number
   totals: PortfolioTotals
+  trades: TradeMarker[]
   unconvertibleCount: number // priced, but no FX rate to base yet
   unpricedCount: number
 }
@@ -101,6 +111,7 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
       baseCurrency: base,
       hasTransactions: false,
       history: [],
+      trades: [],
       holdings: [],
       latestFetchedAt: null,
       realizedPlBaseCents: 0,
@@ -297,11 +308,21 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
     }
   }
 
+  const trades: TradeMarker[] = txns.map((t) => ({
+    currency: t.currency,
+    date: t.tradedAt,
+    priceCents: t.priceCents,
+    quantity: t.quantity,
+    ticker: assetMeta.get(t.assetId)?.ticker ?? '',
+    type: t.type,
+  }))
+
   return {
     baseCurrency: base,
     hasTransactions: true,
     history,
     holdings,
+    trades,
     latestFetchedAt: fetchTimes.at(-1) ?? null,
     realizedPlBaseCents,
     staleCount: holdings.filter((h) => h.stale).length,
