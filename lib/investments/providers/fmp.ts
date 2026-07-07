@@ -62,3 +62,42 @@ export async function getFmpDividends(
   }
   return events
 }
+
+export interface FmpDailyPrice {
+  closeCents: number
+  date: string
+}
+
+const pricesSchema = z.object({ historical: z.array(z.unknown()).optional() })
+const priceItemSchema = z.object({ close: z.number(), date: z.string() })
+
+/** Daily closes (EOD, ~5y on the free tier), oldest first. */
+export async function getFmpDailyPrices(
+  ticker: string,
+  opts: FmpOpts = {}
+): Promise<FmpDailyPrice[]> {
+  const key = opts.apiKey ?? process.env.FMP_API_KEY
+  if (!key) {
+    throw new ProviderError('fmp', 'missing_key')
+  }
+  const fetchImpl = opts.fetchImpl ?? fetch
+  const res = await fetchImpl(
+    `${BASE_URL}/historical-price-full/${encodeURIComponent(ticker)}?serietype=line&apikey=${key}`
+  )
+  if (!res.ok) {
+    throw new ProviderError('fmp', 'http', res.status)
+  }
+  const parsed = pricesSchema.safeParse(await res.json())
+  if (!parsed.success) {
+    throw new ProviderError('fmp', 'malformed')
+  }
+  const out: FmpDailyPrice[] = []
+  for (const item of parsed.data.historical ?? []) {
+    const p = priceItemSchema.safeParse(item)
+    if (!p.success) {
+      continue
+    }
+    out.push({ closeCents: Math.round(p.data.close * 100), date: p.data.date })
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date))
+}

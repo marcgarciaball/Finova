@@ -677,13 +677,16 @@
       "refresh": "Refresh prices",
       "refreshing": "Refreshing…",
       "fxNote": "Foreign-currency positions are converted to {base} using ECB daily rates.",
-      "granularity": "Granularity",
-      "granularities": {
-        "day": "Days",
-        "week": "Weeks",
-        "month": "Months",
-        "year": "Years"
-      }
+      "range": "Range",
+      "ranges": {
+        "1w": "1W",
+        "1m": "1M",
+        "3m": "3M",
+        "ytd": "YTD",
+        "1y": "1Y",
+        "all": "All"
+      },
+      "historyPending": "Value history appears after the next refresh downloads historical prices (needs FMP_API_KEY for stocks/ETFs)."
     },
     "tabs": {
       "overview": "Overview",

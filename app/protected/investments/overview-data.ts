@@ -1,5 +1,6 @@
 import 'server-only'
 import { requireUser } from '@/lib/auth/require-user'
+import { dailyValueSeries } from '@/lib/domain/investments/history'
 import {
   computePortfolioTotals,
   convertCents,
@@ -111,7 +112,7 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
   }
 
   const assetIds = [...new Set(txns.map((t) => t.assetId))]
-  const [assetRes, quoteRes, fxRes, snapshotRes] = await Promise.all([
+  const [assetRes, quoteRes, fxRes, historyRes] = await Promise.all([
     supabase.from('assets').select('id, name, ticker, type').in('id', assetIds),
     supabase
       .from('cached_quotes')
@@ -122,9 +123,10 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
       .select('from_ccy, to_ccy, rate, rate_date')
       .order('rate_date', { ascending: true }),
     supabase
-      .from('portfolio_snapshots')
-      .select('snapshot_date, total_value_cents')
-      .order('snapshot_date', { ascending: true }),
+      .from('historical_prices')
+      .select('asset_id, date, close_cents')
+      .in('asset_id', assetIds)
+      .order('date', { ascending: true }),
   ])
   const assetMeta = new Map(
     (assetRes.data ?? []).map((a) => [
@@ -221,8 +223,38 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
     .filter((v): v is string => Boolean(v))
     .sort()
 
-  // Contributions over time (buys add cost, sells remove proceeds), merged
-  // with the daily value snapshots the refresh job records.
+  // Real value history: daily closes (historical_prices) × held quantities ×
+  // that day's ECB rate — plus the cumulative contributions line. Today's
+  // point uses the live cached quotes so the chart always ends at "now".
+  const todayIso = new Date().toISOString().slice(0, 10)
+  const { data: fxHistData } = await supabase
+    .from('fx_rates')
+    .select('from_ccy, to_ccy, rate, rate_date')
+    .order('rate_date', { ascending: true })
+  const series = dailyValueSeries(
+    txns.map((t) => ({
+      assetId: t.assetId,
+      currency: t.currency,
+      quantity: t.quantity,
+      tradedAt: t.tradedAt,
+      type: t.type,
+    })),
+    (historyRes.data ?? []).map((r) => ({
+      assetId: String(r.asset_id),
+      closeCents: Number(r.close_cents),
+      date: String(r.date),
+    })),
+    (fxHistData ?? []).map((r) => ({
+      date: String(r.rate_date),
+      fromCcy: String(r.from_ccy),
+      rate: Number(r.rate),
+      toCcy: String(r.to_ccy),
+    })),
+    base,
+    todayIso
+  )
+  const valueByDate = new Map(series.map((p) => [p.date, p.valueCents]))
+
   const investedByDate = new Map<string, number>()
   let cumInvested = 0
   for (const txn of [...txns].sort((a, b) =>
@@ -238,12 +270,6 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
       investedByDate.set(txn.tradedAt, cumInvested)
     }
   }
-  const valueByDate = new Map(
-    (snapshotRes.data ?? []).map((r) => [
-      String(r.snapshot_date),
-      Number(r.total_value_cents),
-    ])
-  )
   const historyDates = [
     ...new Set([...investedByDate.keys(), ...valueByDate.keys()]),
   ].sort()
@@ -257,6 +283,20 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
     }
   })
 
+  const totals = computePortfolioTotals(valued, base, rates)
+  if (totals.totalValueCents > 0) {
+    const last = history.at(-1)
+    if (last && last.date === todayIso) {
+      last.valueCents = totals.totalValueCents
+    } else {
+      history.push({
+        date: todayIso,
+        investedCents: cumInvested,
+        valueCents: totals.totalValueCents,
+      })
+    }
+  }
+
   return {
     baseCurrency: base,
     hasTransactions: true,
@@ -265,7 +305,7 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
     latestFetchedAt: fetchTimes.at(-1) ?? null,
     realizedPlBaseCents,
     staleCount: holdings.filter((h) => h.stale).length,
-    totals: computePortfolioTotals(valued, base, rates),
+    totals,
     unconvertibleCount,
     unpricedCount: holdings.filter((h) => h.currentPriceCents === null).length,
   }

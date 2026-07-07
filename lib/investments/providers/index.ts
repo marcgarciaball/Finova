@@ -1,5 +1,8 @@
 import type { AssetType } from '@/lib/domain/investments/types'
 import { getCoinGeckoQuote, searchCoinGeckoSymbols } from './coingecko'
+
+export { getCoinGeckoDailyPrices } from './coingecko'
+
 import { getFinnhubQuote, searchFinnhubSymbols } from './finnhub'
 import type { Quote, QuoteTarget, SymbolResult } from './types'
 
@@ -34,6 +37,16 @@ export function searchSymbol(
 }
 
 export { getFinnhubStockProfile } from './finnhub'
-export { type FmpDividendEvent, getFmpDividends } from './fmp'
-export { type DailyFxRates, fetchDailyRates } from './fx'
+export {
+  type FmpDailyPrice,
+  type FmpDividendEvent,
+  getFmpDailyPrices,
+  getFmpDividends,
+} from './fmp'
+export {
+  type DailyFxRates,
+  type FxRateRowInput,
+  fetchDailyRates,
+  fetchRateHistory,
+} from './fx'
 export * from './types'

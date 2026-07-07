@@ -55,7 +55,12 @@ export function TransactionRowActions({
     <div className="flex items-center justify-end gap-1">
       <Dialog>
         <DialogTrigger asChild>
-          <Button type="button" variant="ghost" size="sm">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-brand-600 hover:bg-brand-500/10 hover:text-brand-600"
+          >
             {t('list.edit')}
           </Button>
         </DialogTrigger>
@@ -77,6 +82,7 @@ export function TransactionRowActions({
         type="button"
         variant="ghost"
         size="sm"
+        className="text-neg hover:bg-neg/10 hover:text-neg"
         onClick={onDelete}
         disabled={deleting}
       >

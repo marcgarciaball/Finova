@@ -677,13 +677,16 @@
       "refresh": "Actualizar precios",
       "refreshing": "Actualizando…",
       "fxNote": "Las posiciones en otras divisas se convierten a {base} con los tipos diarios del BCE.",
-      "granularity": "Granularidad",
-      "granularities": {
-        "day": "Días",
-        "week": "Semanas",
-        "month": "Meses",
-        "year": "Años"
-      }
+      "range": "Periodo",
+      "ranges": {
+        "1w": "1S",
+        "1m": "1M",
+        "3m": "3M",
+        "ytd": "Año",
+        "1y": "1A",
+        "all": "Todo"
+      },
+      "historyPending": "El histórico de valor aparecerá tras la próxima actualización, cuando se descarguen los precios históricos (requiere FMP_API_KEY para acciones/ETF)."
     },
     "tabs": {
       "overview": "Resumen",

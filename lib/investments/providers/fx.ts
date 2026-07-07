@@ -46,3 +46,43 @@ export async function fetchDailyRates(
     })),
   }
 }
+
+const rangeSchema = z.object({
+  base: z.string(),
+  rates: z.record(z.string(), z.record(z.string(), z.number())),
+})
+
+export interface FxRateRowInput {
+  date: string
+  fromCcy: string
+  rate: number
+  toCcy: string
+}
+
+/** Daily ECB rates for a date range (business days; callers carry forward). */
+export async function fetchRateHistory(
+  from: string,
+  to: string[],
+  startIso: string,
+  endIso: string,
+  opts: { fetchImpl?: typeof fetch } = {}
+): Promise<FxRateRowInput[]> {
+  const fetchImpl = opts.fetchImpl ?? fetch
+  const res = await fetchImpl(
+    `${BASE_URL}/${startIso}..${endIso}?from=${encodeURIComponent(from)}&to=${to.map(encodeURIComponent).join(',')}`
+  )
+  if (!res.ok) {
+    throw new ProviderError('frankfurter', 'http', res.status)
+  }
+  const parsed = rangeSchema.safeParse(await res.json())
+  if (!parsed.success) {
+    throw new ProviderError('frankfurter', 'malformed')
+  }
+  const out: FxRateRowInput[] = []
+  for (const [date, byCcy] of Object.entries(parsed.data.rates)) {
+    for (const [toCcy, rate] of Object.entries(byCcy)) {
+      out.push({ date, fromCcy: parsed.data.base, rate, toCcy })
+    }
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date))
+}

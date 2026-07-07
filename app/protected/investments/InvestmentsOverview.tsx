@@ -86,7 +86,10 @@ export async function InvestmentsOverviewSection({
 
       {overview.history.length > 0 ? (
         <GlassCard>
-          <InvestmentsHistoryChart history={overview.history} />
+          <InvestmentsHistoryChart
+            baseCurrency={baseCurrency}
+            history={overview.history}
+          />
         </GlassCard>
       ) : null}
 

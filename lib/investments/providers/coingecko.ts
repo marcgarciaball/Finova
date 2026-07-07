@@ -92,3 +92,35 @@ export async function searchCoinGeckoSymbols(
   }
   return results
 }
+
+const chartSchema = z.object({
+  prices: z.array(z.tuple([z.number(), z.number()])),
+})
+
+export interface CoinGeckoDailyPrice {
+  closeCents: number
+  date: string
+}
+
+/** Daily prices in `vsCurrency` for up to 365 days (free-tier cap). */
+export async function getCoinGeckoDailyPrices(
+  coingeckoId: string,
+  vsCurrency: string,
+  opts: CoinGeckoOpts = {}
+): Promise<CoinGeckoDailyPrice[]> {
+  const raw = await getJson(
+    `/coins/${encodeURIComponent(coingeckoId)}/market_chart?vs_currency=${vsCurrency.toLowerCase()}&days=365&interval=daily`,
+    opts
+  )
+  const parsed = chartSchema.safeParse(raw)
+  if (!parsed.success) {
+    throw new ProviderError('coingecko', 'malformed')
+  }
+  const byDate = new Map<string, number>()
+  for (const [ms, price] of parsed.data.prices) {
+    byDate.set(new Date(ms).toISOString().slice(0, 10), Math.round(price * 100))
+  }
+  return [...byDate.entries()]
+    .map(([date, closeCents]) => ({ closeCents, date }))
+    .sort((a, b) => a.date.localeCompare(b.date))
+}
