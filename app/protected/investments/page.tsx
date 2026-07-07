@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import { requireUser } from '@/lib/auth/require-user'
+import { refreshPrices } from '@/lib/investments/jobs/refresh-prices'
 import { AddTransactionPanel } from './AddTransactionPanel'
 import { addInvestmentTransaction, resolveAsset, searchAssets } from './actions'
 import { getOrCreatePortfolio, listInvestmentTransactions } from './data'
@@ -15,11 +16,29 @@ import { InvestmentTransactionList } from './transaction-list'
 export default async function InvestmentsPage() {
   await requireUser()
   await getOrCreatePortfolio() // first-visit bootstrap
-  const [t, transactions, overview] = await Promise.all([
+  const [t, transactions] = await Promise.all([
     getTranslations('investments'),
     listInvestmentTransactions(),
-    getInvestmentsOverview(),
   ])
+  let overview = await getInvestmentsOverview()
+
+  // Prices should just be there: refresh inline when quotes are missing or
+  // older than 30 minutes, then recompute. Failures fall back to whatever is
+  // cached — the page never breaks on a provider outage.
+  const STALE_MS = 30 * 60 * 1000
+  const stale =
+    overview.hasTransactions &&
+    (overview.unpricedCount > 0 ||
+      !overview.latestFetchedAt ||
+      Date.now() - new Date(overview.latestFetchedAt).getTime() > STALE_MS)
+  if (stale) {
+    try {
+      await refreshPrices()
+      overview = await getInvestmentsOverview()
+    } catch (e) {
+      console.error('inline price refresh failed:', e)
+    }
+  }
   const todayIso = new Date().toISOString().slice(0, 10)
 
   return (

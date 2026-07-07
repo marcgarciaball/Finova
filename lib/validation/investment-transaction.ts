@@ -42,6 +42,21 @@ export type CreateInvestmentTransactionInput = z.infer<
   typeof createInvestmentTransactionSchema
 >
 
+export const updateInvestmentTransactionSchema =
+  createInvestmentTransactionSchema.extend({
+    editReason: z
+      .string()
+      .trim()
+      .max(200, 'invalid')
+      .optional()
+      .transform((v) => (v ? v : undefined)),
+    id: z.string().uuid(),
+  })
+
+export type UpdateInvestmentTransactionInput = z.infer<
+  typeof updateInvestmentTransactionSchema
+>
+
 /** Decimal-string major units → integer cents (money module, no floats). */
 export function parseAmountToCents(input: string, currency: string): number {
   return fromDecimal(Number(input), currency).amount

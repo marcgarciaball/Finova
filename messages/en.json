@@ -623,7 +623,9 @@
       "fees": "Fees",
       "notes": "Notes",
       "submit": "Add transaction",
-      "saved": "Added"
+      "saved": "Added",
+      "save": "Save changes",
+      "editReason": "Reason for edit (optional)"
     },
     "list": {
       "title": "Transactions",
@@ -633,7 +635,10 @@
       "type": "Type",
       "quantity": "Quantity",
       "price": "Price",
-      "fees": "Fees"
+      "fees": "Fees",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Delete this transaction permanently? This cannot be undone."
     },
     "errors": {
       "invalidAmount": "Enter a valid amount.",
@@ -648,7 +653,8 @@
       "assetResolve": "Couldn't load the asset details. Try again.",
       "searchFailed": "Search failed. Try again.",
       "invalid": "Invalid value.",
-      "unexpected": "Something went wrong. Your change was not saved."
+      "unexpected": "Something went wrong. Your change was not saved.",
+      "wouldOversell": "Can't remove it: a later sell would exceed the held quantity."
     },
     "overview": {
       "title": "Overview",
@@ -666,7 +672,10 @@
       "stale": "Last known price — provider unreachable",
       "updated": "Prices updated {time}",
       "neverUpdated": "Prices not fetched yet — run a refresh.",
-      "partial": "Some positions are unpriced or missing an FX rate and are excluded from totals."
+      "partial": "Some positions are unpriced or missing an FX rate and are excluded from totals.",
+      "chart": "Portfolio over time",
+      "refresh": "Refresh prices",
+      "refreshing": "Refreshing…"
     }
   }
 }

@@ -623,7 +623,9 @@
       "fees": "Comisiones",
       "notes": "Notas",
       "submit": "Añadir operación",
-      "saved": "Añadida"
+      "saved": "Añadida",
+      "save": "Guardar cambios",
+      "editReason": "Motivo del cambio (opcional)"
     },
     "list": {
       "title": "Operaciones",
@@ -633,7 +635,10 @@
       "type": "Tipo",
       "quantity": "Cantidad",
       "price": "Precio",
-      "fees": "Comisiones"
+      "fees": "Comisiones",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar esta operación de forma permanente? No se puede deshacer."
     },
     "errors": {
       "invalidAmount": "Introduce un importe válido.",
@@ -648,7 +653,8 @@
       "assetResolve": "No se pudieron cargar los datos del activo. Inténtalo de nuevo.",
       "searchFailed": "La búsqueda ha fallado. Inténtalo de nuevo.",
       "invalid": "Valor no válido.",
-      "unexpected": "Algo ha ido mal. El cambio no se ha guardado."
+      "unexpected": "Algo ha ido mal. El cambio no se ha guardado.",
+      "wouldOversell": "No se puede eliminar: una venta posterior superaría la cantidad en cartera."
     },
     "overview": {
       "title": "Resumen",
@@ -666,7 +672,10 @@
       "stale": "Último precio conocido — proveedor no disponible",
       "updated": "Precios actualizados {time}",
       "neverUpdated": "Precios aún no descargados — ejecuta una actualización.",
-      "partial": "Algunas posiciones no tienen precio o tipo de cambio y quedan fuera de los totales."
+      "partial": "Algunas posiciones no tienen precio o tipo de cambio y quedan fuera de los totales.",
+      "chart": "Evolución de la cartera",
+      "refresh": "Actualizar precios",
+      "refreshing": "Actualizando…"
     }
   }
 }

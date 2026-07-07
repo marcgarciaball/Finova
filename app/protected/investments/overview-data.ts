@@ -40,9 +40,16 @@ export interface HoldingView {
   unrealizedPlPct: number | null
 }
 
+export interface HistoryPoint {
+  date: string
+  investedCents: number
+  valueCents: number | null // snapshot value when one exists for that day
+}
+
 export interface InvestmentsOverview {
   baseCurrency: string
   hasTransactions: boolean
+  history: HistoryPoint[]
   holdings: HoldingView[] // open positions only (quantity > 0)
   latestFetchedAt: string | null
   realizedPlBaseCents: number
@@ -92,6 +99,7 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
     return {
       baseCurrency: base,
       hasTransactions: false,
+      history: [],
       holdings: [],
       latestFetchedAt: null,
       realizedPlBaseCents: 0,
@@ -103,7 +111,7 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
   }
 
   const assetIds = [...new Set(txns.map((t) => t.assetId))]
-  const [assetRes, quoteRes, fxRes] = await Promise.all([
+  const [assetRes, quoteRes, fxRes, snapshotRes] = await Promise.all([
     supabase.from('assets').select('id, name, ticker, type').in('id', assetIds),
     supabase
       .from('cached_quotes')
@@ -113,6 +121,10 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
       .from('fx_rates')
       .select('from_ccy, to_ccy, rate, rate_date')
       .order('rate_date', { ascending: true }),
+    supabase
+      .from('portfolio_snapshots')
+      .select('snapshot_date, total_value_cents')
+      .order('snapshot_date', { ascending: true }),
   ])
   const assetMeta = new Map(
     (assetRes.data ?? []).map((a) => [
@@ -209,9 +221,46 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
     .filter((v): v is string => Boolean(v))
     .sort()
 
+  // Contributions over time (buys add cost, sells remove proceeds), merged
+  // with the daily value snapshots the refresh job records.
+  const investedByDate = new Map<string, number>()
+  let cumInvested = 0
+  for (const txn of [...txns].sort((a, b) =>
+    a.tradedAt.localeCompare(b.tradedAt)
+  )) {
+    const gross = Math.round(txn.quantity * txn.priceCents)
+    const delta =
+      txn.type === 'buy' ? gross + txn.feesCents : -(gross - txn.feesCents)
+    const convertible =
+      txn.currency === base || rates.has(fxKey(txn.currency, base))
+    if (convertible) {
+      cumInvested += convertCents(delta, txn.currency, base, rates)
+      investedByDate.set(txn.tradedAt, cumInvested)
+    }
+  }
+  const valueByDate = new Map(
+    (snapshotRes.data ?? []).map((r) => [
+      String(r.snapshot_date),
+      Number(r.total_value_cents),
+    ])
+  )
+  const historyDates = [
+    ...new Set([...investedByDate.keys(), ...valueByDate.keys()]),
+  ].sort()
+  let carried = 0
+  const history: HistoryPoint[] = historyDates.map((date) => {
+    carried = investedByDate.get(date) ?? carried
+    return {
+      date,
+      investedCents: carried,
+      valueCents: valueByDate.get(date) ?? null,
+    }
+  })
+
   return {
     baseCurrency: base,
     hasTransactions: true,
+    history,
     holdings,
     latestFetchedAt: fetchTimes.at(-1) ?? null,
     realizedPlBaseCents,

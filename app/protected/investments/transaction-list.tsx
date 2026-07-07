@@ -1,7 +1,9 @@
 import { getLocale, getTranslations } from 'next-intl/server'
 import { GlassCard } from '@/components/ui/GlassCard'
+import type { AssetType } from '@/lib/domain/investments/types'
 import { format, money } from '@/lib/domain/money'
 import type { InvestmentTransactionWithAsset } from './data'
+import { TransactionRowActions } from './TransactionRowActions'
 
 /** Chronological buy/sell log (Inversiones A4). Edit/delete arrive in Phase D. */
 export async function InvestmentTransactionList({
@@ -13,6 +15,7 @@ export async function InvestmentTransactionList({
     getTranslations('investments'),
     getLocale(),
   ])
+  const todayIso = new Date().toISOString().slice(0, 10)
 
   if (transactions.length === 0) {
     return (
@@ -37,6 +40,7 @@ export async function InvestmentTransactionList({
               {t('list.price')}
             </th>
             <th className="py-2 text-right font-medium">{t('list.fees')}</th>
+            <th className="py-2" />
           </tr>
         </thead>
         <tbody>
@@ -62,6 +66,28 @@ export async function InvestmentTransactionList({
               </td>
               <td className="py-2 text-right text-ink-soft">
                 {format(money(txn.fees_cents, txn.currency), locale)}
+              </td>
+              <td className="py-2 pl-2">
+                <TransactionRowActions
+                  asset={{
+                    currency: txn.currency,
+                    id: txn.asset_id,
+                    name: txn.assets.name,
+                    ticker: txn.assets.ticker ?? '',
+                    type: txn.assets.type as AssetType,
+                  }}
+                  todayIso={todayIso}
+                  txn={{
+                    currency: txn.currency,
+                    fees: (txn.fees_cents / 100).toFixed(2),
+                    id: txn.id,
+                    notes: txn.notes ?? '',
+                    price: (txn.price_cents / 100).toFixed(2),
+                    quantity: String(txn.quantity),
+                    tradedAt: txn.traded_at,
+                    type: txn.type,
+                  }}
+                />
               </td>
             </tr>
           ))}

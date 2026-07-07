@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import type { z } from 'zod'
+import { z } from 'zod'
 import { getBaseCurrency } from '@/app/protected/accounts/data'
 import { getOrCreatePortfolio } from '@/app/protected/investments/data'
 import { requireUser } from '@/lib/auth/require-user'
@@ -16,6 +16,7 @@ import {
   assetOptionSchema,
   type ResolvedAsset,
 } from '@/lib/investments/asset-option'
+import { refreshPrices } from '@/lib/investments/jobs/refresh-prices'
 import {
   getFinnhubStockProfile,
   ProviderError,
@@ -26,6 +27,7 @@ import { createClient } from '@/lib/supabase/server'
 import {
   createInvestmentTransactionSchema,
   parseAmountToCents,
+  updateInvestmentTransactionSchema,
 } from '@/lib/validation/investment-transaction'
 import { assetRowSchema } from '@/lib/validation/investments'
 
@@ -334,6 +336,181 @@ export async function addInvestmentTransaction(
       type: input.type,
       user_id: claims.sub,
     })
+    if (error) {
+      return { ok: false, error: UNEXPECTED }
+    }
+  } catch {
+    return { ok: false, error: UNEXPECTED }
+  }
+
+  revalidatePath(INVESTMENTS_PATH)
+  return { ok: true }
+}
+
+/** Row → domain shape for the holdings engine. */
+function toHoldingTxn(r: Record<string, unknown>): HoldingTxn {
+  return {
+    currency: String(r.currency),
+    feesCents: Number(r.fees_cents),
+    priceCents: Number(r.price_cents),
+    quantity: Number(r.quantity),
+    tradedAt: String(r.traded_at),
+    type: r.type === 'sell' ? 'sell' : 'buy',
+  }
+}
+
+/**
+ * User-triggered price refresh (same job the cron route runs). Also fired
+ * automatically by the page when quotes are missing or older than 30 min.
+ */
+export async function refreshInvestmentPrices(): Promise<ActionResult> {
+  await requireUser()
+  try {
+    await refreshPrices()
+  } catch (e) {
+    console.error('manual price refresh failed:', e)
+    return { ok: false, error: UNEXPECTED }
+  }
+  revalidatePath(INVESTMENTS_PATH)
+  revalidatePath('/protected')
+  return { ok: true }
+}
+
+export async function deleteInvestmentTransaction(
+  id: string
+): Promise<ActionResult> {
+  await requireUser()
+  if (!z.string().uuid().safeParse(id).success) {
+    return { ok: false, error: UNEXPECTED }
+  }
+  const supabase = await createClient()
+
+  // Removing a buy must not make a later sell exceed the held quantity.
+  const { data: target } = await supabase
+    .from('investment_transactions')
+    .select('asset_id')
+    .eq('id', id)
+    .single()
+  if (target) {
+    const { data: siblings } = await supabase
+      .from('investment_transactions')
+      .select(
+        'id, type, quantity, price_cents, fees_cents, currency, traded_at'
+      )
+      .eq('asset_id', target.asset_id)
+    try {
+      computeHolding(
+        (siblings ?? [])
+          .filter((r) => String(r.id) !== id)
+          .map((r) => toHoldingTxn(r))
+      )
+    } catch (e) {
+      if (e instanceof OversellError) {
+        return { ok: false, error: 'wouldOversell' }
+      }
+      throw e
+    }
+  }
+
+  const { error } = await supabase
+    .from('investment_transactions')
+    .delete()
+    .eq('id', id)
+  if (error) {
+    return { ok: false, error: UNEXPECTED }
+  }
+  revalidatePath(INVESTMENTS_PATH)
+  return { ok: true }
+}
+
+export async function editInvestmentTransaction(
+  _prev: ActionResult | undefined,
+  formData: FormData
+): Promise<ActionResult> {
+  await requireUser()
+
+  const parsed = updateInvestmentTransactionSchema.safeParse({
+    assetId: formData.get('assetId'),
+    currency: formData.get('currency'),
+    editReason: formData.get('editReason') ?? undefined,
+    fees: formData.get('fees') || undefined,
+    id: formData.get('id'),
+    notes: formData.get('notes') ?? undefined,
+    price: formData.get('price'),
+    quantity: formData.get('quantity'),
+    tradedAt: formData.get('tradedAt'),
+    type: formData.get('type'),
+  })
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: 'validationFailed',
+      fieldErrors: toFieldErrors(parsed.error),
+    }
+  }
+  const input = parsed.data
+
+  try {
+    const priceCents = parseAmountToCents(input.price, input.currency)
+    const feesCents = parseAmountToCents(input.fees, input.currency)
+    const supabase = await createClient()
+
+    // Replay the whole log with the edited values — an edit anywhere in the
+    // history can break later sells (oversell) or mix currencies.
+    const { data: siblings, error: readError } = await supabase
+      .from('investment_transactions')
+      .select(
+        'id, type, quantity, price_cents, fees_cents, currency, traded_at'
+      )
+      .eq('asset_id', input.assetId)
+    if (readError) {
+      return { ok: false, error: UNEXPECTED }
+    }
+    const edited: HoldingTxn = {
+      currency: input.currency,
+      feesCents,
+      priceCents,
+      quantity: Number(input.quantity),
+      tradedAt: input.tradedAt,
+      type: input.type,
+    }
+    const replayed = (siblings ?? []).map((r) =>
+      String(r.id) === input.id ? edited : toHoldingTxn(r)
+    )
+    if (replayed.some((t) => t.currency !== edited.currency)) {
+      return {
+        ok: false,
+        error: 'validationFailed',
+        fieldErrors: { currency: 'mixedCurrency' },
+      }
+    }
+    try {
+      computeHolding(replayed)
+    } catch (e) {
+      if (e instanceof OversellError) {
+        return {
+          ok: false,
+          error: 'validationFailed',
+          fieldErrors: { quantity: 'oversell' },
+        }
+      }
+      throw e
+    }
+
+    const { error } = await supabase
+      .from('investment_transactions')
+      .update({
+        currency: input.currency,
+        edit_reason: input.editReason ?? null,
+        edited_at: new Date().toISOString(),
+        fees_cents: feesCents,
+        notes: input.notes ?? null,
+        price_cents: priceCents,
+        quantity: input.quantity,
+        traded_at: input.tradedAt,
+        type: input.type,
+      })
+      .eq('id', input.id)
     if (error) {
       return { ok: false, error: UNEXPECTED }
     }
