@@ -7,6 +7,9 @@ import {
 } from '@/lib/domain/investments/rebuild'
 import {
   fetchDailyRates,
+  fetchRateHistory,
+  getCoinGeckoDailyPrices,
+  getFmpDailyPrices,
   getFmpDividends,
   getQuote,
 } from '@/lib/investments/providers'
@@ -151,13 +154,36 @@ export async function refreshPrices(): Promise<RefreshSummary> {
     }
   }
 
-  // 2b. Dividend history for listed held assets (FMP; skipped without a key).
+  // 2b. Slow-moving data (dividends, price history, FX history) syncs at
+  // most once per day per asset: it lives in the database and every page
+  // view reads it from there — provider quota is only spent on the daily
+  // top-up. "Needs sync" = no stored daily close newer than yesterday.
+  const { data: maxDates } = await admin
+    .from('historical_prices')
+    .select('asset_id, date')
+    .in('asset_id', heldAssetIds.length > 0 ? heldAssetIds : ['-'])
+    .order('date', { ascending: false })
+  const latestByAsset = new Map<string, string>()
+  for (const r of maxDates ?? []) {
+    const id = String(r.asset_id)
+    if (!latestByAsset.has(id)) {
+      latestByAsset.set(id, String(r.date))
+    }
+  }
+  const cutoff = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10)
+  const needsSync = new Set(
+    heldAssetIds.filter((id) => {
+      const latest = latestByAsset.get(id)
+      return latest === undefined || latest < cutoff
+    })
+  )
+
   let dividendAssets = 0
-  if (process.env.FMP_API_KEY && heldAssetIds.length > 0) {
+  if (process.env.FMP_API_KEY && needsSync.size > 0) {
     const { data: listedData } = await admin
       .from('assets')
       .select('id, ticker, currency, type')
-      .in('id', heldAssetIds)
+      .in('id', [...needsSync])
       .neq('type', 'crypto')
     const listed = (listedData ?? []).filter((a) => a.ticker)
     await mapLimit(listed, 2, async (asset) => {
@@ -185,6 +211,110 @@ export async function refreshPrices(): Promise<RefreshSummary> {
         console.error(`dividend sync failed for ${asset.id}:`, e)
       }
     })
+  }
+
+  // 2c. Historical backfill so the evolution chart has real data: daily
+  // closes per held asset (FMP for listed, CoinGecko for crypto — 365d cap)
+  // and daily ECB rates per needed pair, from the first transaction onward.
+  // Skipped for assets already current (max stored date within 3 days).
+  if (needsSync.size > 0) {
+    const firstTradedAt = txns.reduce(
+      (min, t) => (t.tradedAt < min ? t.tradedAt : min),
+      today
+    )
+    const { data: assetData2 } = await admin
+      .from('assets')
+      .select('id, ticker, coingecko_id, currency, type')
+      .in('id', [...needsSync])
+    const needing = assetData2 ?? []
+    await mapLimit(needing, 2, async (asset) => {
+      try {
+        const assetFirst = txns
+          .filter((t) => t.assetId === String(asset.id))
+          .reduce((min, t) => (t.tradedAt < min ? t.tradedAt : min), today)
+        let daily: { closeCents: number; date: string }[] = []
+        if (asset.type === 'crypto' && asset.coingecko_id) {
+          daily = await getCoinGeckoDailyPrices(
+            String(asset.coingecko_id),
+            String(asset.currency)
+          )
+        } else if (asset.ticker && process.env.FMP_API_KEY) {
+          daily = await getFmpDailyPrices(String(asset.ticker))
+        }
+        const rows = daily
+          .filter((d) => d.date >= assetFirst)
+          .map((d) => ({
+            asset_id: asset.id,
+            close_cents: d.closeCents,
+            currency: asset.currency,
+            date: d.date,
+          }))
+        for (let i = 0; i < rows.length; i += 500) {
+          const { error } = await admin
+            .from('historical_prices')
+            .upsert(rows.slice(i, i + 500), { onConflict: 'asset_id,date' })
+          if (error) {
+            throw new Error(error.message)
+          }
+        }
+      } catch (e) {
+        console.error(`price history backfill failed for ${asset.id}:`, e)
+      }
+    })
+
+    // FX history for every (asset currency → portfolio base) pair.
+    try {
+      const { data: pfData } = await admin
+        .from('portfolios')
+        .select('base_currency')
+      const baseSet = new Set(
+        (pfData ?? []).map((p) => String(p.base_currency))
+      )
+      const ccySet = new Set(txns.map((t) => t.currency))
+      const { data: fxMax } = await admin
+        .from('fx_rates')
+        .select('from_ccy, to_ccy, rate_date')
+        .order('rate_date', { ascending: false })
+        .limit(1000)
+      const latestPair = new Map<string, string>()
+      for (const r of fxMax ?? []) {
+        const key = `${r.from_ccy}->${r.to_ccy}`
+        if (!latestPair.has(key)) {
+          latestPair.set(key, String(r.rate_date))
+        }
+      }
+      for (const base of baseSet) {
+        for (const ccy of ccySet) {
+          if (ccy === base) {
+            continue
+          }
+          const have = latestPair.get(`${ccy}->${base}`)
+          const start = have && have > firstTradedAt ? have : firstTradedAt
+          if (have && have >= cutoff) {
+            continue
+          }
+          const history = await fetchRateHistory(ccy, [base], start, today)
+          const rows = history.map((r) => ({
+            from_ccy: r.fromCcy,
+            rate: r.rate,
+            rate_date: r.date,
+            to_ccy: r.toCcy,
+          }))
+          for (let i = 0; i < rows.length; i += 500) {
+            const { error } = await admin
+              .from('fx_rates')
+              .upsert(rows.slice(i, i + 500), {
+                onConflict: 'from_ccy,to_ccy,rate_date',
+              })
+            if (error) {
+              throw new Error(error.message)
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error('fx history backfill failed:', e)
+    }
   }
 
   // 3. Rebuild holdings (full replace: derived data, transactions are truth).

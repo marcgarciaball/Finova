@@ -29,10 +29,11 @@ export default async function InvestmentsPage({
 
   let overview = await getInvestmentsOverview()
   const STALE_MS = 30 * 60 * 1000
+  // Only quote AGE triggers the inline refresh — never unpriced assets, so a
+  // symbol without provider coverage can't burn API quota on every load.
   const stale =
     overview.hasTransactions &&
-    (overview.unpricedCount > 0 ||
-      !overview.latestFetchedAt ||
+    (!overview.latestFetchedAt ||
       Date.now() - new Date(overview.latestFetchedAt).getTime() > STALE_MS)
   if (stale) {
     try {
