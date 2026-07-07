@@ -213,7 +213,11 @@
       "newCount": "{count, plural, one {# new} other {# new}}",
       "duplicateCount": "{count, plural, one {# duplicate} other {# duplicates}}",
       "errorCount": "{count, plural, one {# error} other {# errors}}",
-      "status": { "new": "New", "duplicate": "Duplicate", "error": "Error" },
+      "status": {
+        "new": "New",
+        "duplicate": "Duplicate",
+        "error": "Error"
+      },
       "fuzzy": "Possible duplicate",
       "truncated": "Showing {shown} of {total} rows",
       "errors": {
@@ -585,6 +589,66 @@
       "allCategories": "All categories",
       "uncategorized": "Uncategorized",
       "filteredNote": "Filters apply to both downloads. The JSON file still includes all your accounts and categories, but only the matching transactions."
+    }
+  },
+  "investments": {
+    "nav": "Investments",
+    "title": "Investments",
+    "subtitle": "Track your portfolio manually — prices update automatically.",
+    "addTitle": "Add investment",
+    "search": {
+      "label": "Search asset",
+      "placeholder": "Ticker or name (e.g. AAPL, Bitcoin)",
+      "button": "Search",
+      "typeLabel": "Asset type",
+      "types": {
+        "stock": "Stock",
+        "etf": "ETF",
+        "fund": "Fund",
+        "crypto": "Crypto"
+      },
+      "noResults": "No results found.",
+      "searching": "Searching…",
+      "resolving": "Loading asset…",
+      "change": "Change asset"
+    },
+    "form": {
+      "type": "Type",
+      "buy": "Buy",
+      "sell": "Sell",
+      "date": "Trade date",
+      "quantity": "Quantity",
+      "price": "Price per unit",
+      "currency": "Currency",
+      "fees": "Fees",
+      "notes": "Notes",
+      "submit": "Add transaction",
+      "saved": "Added"
+    },
+    "list": {
+      "title": "Transactions",
+      "empty": "Add your first investment to get started.",
+      "date": "Date",
+      "asset": "Asset",
+      "type": "Type",
+      "quantity": "Quantity",
+      "price": "Price",
+      "fees": "Fees"
+    },
+    "errors": {
+      "invalidAmount": "Enter a valid amount.",
+      "tooManyDecimals": "Maximum 8 decimal places.",
+      "mustBePositive": "Must be greater than zero.",
+      "invalidDate": "Enter a valid date.",
+      "futureDate": "The date can't be in the future.",
+      "invalidCurrency": "Enter a valid currency code.",
+      "notesTooLong": "Notes are too long.",
+      "oversell": "You can't sell more than you hold.",
+      "mixedCurrency": "Use the same currency as this asset's earlier transactions.",
+      "assetResolve": "Couldn't load the asset details. Try again.",
+      "searchFailed": "Search failed. Try again.",
+      "invalid": "Invalid value.",
+      "unexpected": "Something went wrong. Your change was not saved."
     }
   }
 }

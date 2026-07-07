@@ -213,7 +213,11 @@
       "newCount": "{count, plural, one {# nueva} other {# nuevas}}",
       "duplicateCount": "{count, plural, one {# duplicada} other {# duplicadas}}",
       "errorCount": "{count, plural, one {# error} other {# errores}}",
-      "status": { "new": "Nueva", "duplicate": "Duplicada", "error": "Error" },
+      "status": {
+        "new": "Nueva",
+        "duplicate": "Duplicada",
+        "error": "Error"
+      },
       "fuzzy": "Posible duplicado",
       "truncated": "Mostrando {shown} de {total} filas",
       "errors": {
@@ -585,6 +589,66 @@
       "allCategories": "Todas las categorías",
       "uncategorized": "Sin categoría",
       "filteredNote": "Los filtros se aplican a ambas descargas. El archivo JSON sigue incluyendo todas tus cuentas y categorías, pero solo las transacciones que coinciden."
+    }
+  },
+  "investments": {
+    "nav": "Inversiones",
+    "title": "Inversiones",
+    "subtitle": "Registra tu cartera manualmente — los precios se actualizan solos.",
+    "addTitle": "Añadir inversión",
+    "search": {
+      "label": "Buscar activo",
+      "placeholder": "Ticker o nombre (p. ej. AAPL, Bitcoin)",
+      "button": "Buscar",
+      "typeLabel": "Tipo de activo",
+      "types": {
+        "stock": "Acción",
+        "etf": "ETF",
+        "fund": "Fondo",
+        "crypto": "Cripto"
+      },
+      "noResults": "Sin resultados.",
+      "searching": "Buscando…",
+      "resolving": "Cargando activo…",
+      "change": "Cambiar activo"
+    },
+    "form": {
+      "type": "Tipo",
+      "buy": "Compra",
+      "sell": "Venta",
+      "date": "Fecha de operación",
+      "quantity": "Cantidad",
+      "price": "Precio por unidad",
+      "currency": "Moneda",
+      "fees": "Comisiones",
+      "notes": "Notas",
+      "submit": "Añadir operación",
+      "saved": "Añadida"
+    },
+    "list": {
+      "title": "Operaciones",
+      "empty": "Añade tu primera inversión para empezar.",
+      "date": "Fecha",
+      "asset": "Activo",
+      "type": "Tipo",
+      "quantity": "Cantidad",
+      "price": "Precio",
+      "fees": "Comisiones"
+    },
+    "errors": {
+      "invalidAmount": "Introduce un importe válido.",
+      "tooManyDecimals": "Máximo 8 decimales.",
+      "mustBePositive": "Debe ser mayor que cero.",
+      "invalidDate": "Introduce una fecha válida.",
+      "futureDate": "La fecha no puede ser futura.",
+      "invalidCurrency": "Introduce un código de moneda válido.",
+      "notesTooLong": "Las notas son demasiado largas.",
+      "oversell": "No puedes vender más de lo que tienes.",
+      "mixedCurrency": "Usa la misma moneda que las operaciones anteriores de este activo.",
+      "assetResolve": "No se pudieron cargar los datos del activo. Inténtalo de nuevo.",
+      "searchFailed": "La búsqueda ha fallado. Inténtalo de nuevo.",
+      "invalid": "Valor no válido.",
+      "unexpected": "Algo ha ido mal. El cambio no se ha guardado."
     }
   }
 }
