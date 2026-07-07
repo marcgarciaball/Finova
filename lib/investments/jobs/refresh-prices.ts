@@ -157,51 +157,31 @@ export async function refreshPrices(): Promise<RefreshSummary> {
   }
 
   // 2b. Slow-moving data (dividends, price history, FX history) syncs at
-  // most once per day per asset: it lives in the database and every page
-  // view reads it from there — provider quota is only spent on the daily
-  // top-up. "Needs sync" = no stored daily close newer than yesterday.
-  const { data: histDates } = await admin
-    .from('historical_prices')
-    .select('asset_id, date')
-    .in('asset_id', heldAssetIds.length > 0 ? heldAssetIds : ['-'])
-    .order('date', { ascending: false })
-  const latestByAsset = new Map<string, string>()
-  const earliestByAsset = new Map<string, string>()
-  for (const r of histDates ?? []) {
-    const id = String(r.asset_id)
-    if (!latestByAsset.has(id)) {
-      latestByAsset.set(id, String(r.date)) // first seen = max (desc order)
-    }
-    earliestByAsset.set(id, String(r.date)) // last seen = min
+  // most once per ~20h per asset. The gate is the last sync ATTEMPT
+  // (sync_state), NOT data freshness — EOD market data is legitimately 1–3
+  // days behind, and gating on it re-downloaded everything on every refresh
+  // and burned the FMP free-tier quota.
+  const SYNC_TTL_MS = 20 * 60 * 60 * 1000
+  const { data: syncData } = await admin
+    .from('sync_state')
+    .select('key, synced_at')
+  const syncedAt = new Map(
+    (syncData ?? []).map((r) => [String(r.key), String(r.synced_at)])
+  )
+  const attemptDue = (key: string): boolean => {
+    const at = syncedAt.get(key)
+    return at === undefined || Date.now() - new Date(at).getTime() > SYNC_TTL_MS
   }
-  const firstTradedByAsset = new Map<string, string>()
-  for (const t of txns) {
-    const current = firstTradedByAsset.get(t.assetId)
-    if (current === undefined || t.tradedAt < current) {
-      firstTradedByAsset.set(t.assetId, t.tradedAt)
-    }
-  }
-  const cutoff = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10)
-  const needsSync = new Set(
-    heldAssetIds.filter((id) => {
-      const latest = latestByAsset.get(id)
-      if (latest === undefined || latest < cutoff) {
-        return true // never synced, or missing recent days
-      }
-      // Partial backfill detection: the stored history must reach back to
-      // (roughly) the first transaction, else re-download the full range.
-      const earliest = earliestByAsset.get(id)
-      const firstTraded = firstTradedByAsset.get(id)
-      if (earliest === undefined || firstTraded === undefined) {
-        return true
-      }
-      const graceMs = 14 * 86_400_000 // listing gaps, weekends, holidays
-      return (
-        new Date(`${earliest}T00:00:00Z`).getTime() -
-          new Date(`${firstTraded}T00:00:00Z`).getTime() >
-        graceMs
+  const markAttempt = async (key: string) => {
+    await admin
+      .from('sync_state')
+      .upsert(
+        { key, synced_at: new Date().toISOString() },
+        { onConflict: 'key' }
       )
-    })
+  }
+  const needsSync = new Set(
+    heldAssetIds.filter((id) => attemptDue(`history:${id}`))
   )
 
   const errors: string[] = []
@@ -295,6 +275,9 @@ export async function refreshPrices(): Promise<RefreshSummary> {
       } catch (e) {
         console.error(`price history backfill failed for ${asset.id}:`, e)
         errors.push(`history ${asset.ticker ?? asset.id}: ${String(e)}`)
+      } finally {
+        // Even failures wait for the next window — no retry storms on quota.
+        await markAttempt(`history:${asset.id}`)
       }
     })
 
@@ -324,11 +307,12 @@ export async function refreshPrices(): Promise<RefreshSummary> {
           if (ccy === base) {
             continue
           }
+          if (!attemptDue(`fx:${ccy}->${base}`)) {
+            continue // attempted within the TTL — no API call
+          }
           const have = latestPair.get(`${ccy}->${base}`)
           const start = have && have > firstTradedAt ? have : firstTradedAt
-          if (have && have >= cutoff) {
-            continue
-          }
+          await markAttempt(`fx:${ccy}->${base}`)
           const history = await fetchRateHistory(ccy, [base], start, today)
           const rows = history.map((r) => ({
             from_ccy: r.fromCcy,
