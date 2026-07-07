@@ -649,6 +649,24 @@
       "searchFailed": "La búsqueda ha fallado. Inténtalo de nuevo.",
       "invalid": "Valor no válido.",
       "unexpected": "Algo ha ido mal. El cambio no se ha guardado."
+    },
+    "overview": {
+      "title": "Resumen",
+      "value": "Valor de la cartera",
+      "invested": "Invertido",
+      "unrealized": "P/G latente",
+      "realized": "P/G realizada",
+      "byType": "Distribución por tipo",
+      "byCurrency": "Distribución por moneda",
+      "holdings": "Posiciones",
+      "avgCost": "Coste medio",
+      "price": "Precio",
+      "pl": "P/G",
+      "unpriced": "Sin precio aún",
+      "stale": "Último precio conocido — proveedor no disponible",
+      "updated": "Precios actualizados {time}",
+      "neverUpdated": "Precios aún no descargados — ejecuta una actualización.",
+      "partial": "Algunas posiciones no tienen precio o tipo de cambio y quedan fuera de los totales."
     }
   }
 }

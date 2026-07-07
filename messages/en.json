@@ -649,6 +649,24 @@
       "searchFailed": "Search failed. Try again.",
       "invalid": "Invalid value.",
       "unexpected": "Something went wrong. Your change was not saved."
+    },
+    "overview": {
+      "title": "Overview",
+      "value": "Portfolio value",
+      "invested": "Invested",
+      "unrealized": "Unrealized P/L",
+      "realized": "Realized P/L",
+      "byType": "Allocation by type",
+      "byCurrency": "Allocation by currency",
+      "holdings": "Holdings",
+      "avgCost": "Avg cost",
+      "price": "Price",
+      "pl": "P/L",
+      "unpriced": "No price yet",
+      "stale": "Last known price — provider unreachable",
+      "updated": "Prices updated {time}",
+      "neverUpdated": "Prices not fetched yet — run a refresh.",
+      "partial": "Some positions are unpriced or missing an FX rate and are excluded from totals."
     }
   }
 }

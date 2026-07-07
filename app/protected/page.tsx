@@ -40,6 +40,7 @@ import { DashboardEmptyState } from './DashboardEmptyState'
 import { DataHealthBanner } from './DataHealthBanner'
 import { getDashboardData } from './data'
 import { InsightsPlaceholder } from './InsightsPlaceholder'
+import { getInvestmentsOverview } from './investments/overview-data'
 import { KeyStatsStrip } from './KeyStatsStrip'
 import { PeriodSelector } from './PeriodSelector'
 import { RecentTransactions } from './RecentTransactions'
@@ -106,6 +107,14 @@ export default async function DashboardPage({
   }))
   const balances = accountBalances(balanceAccounts, txns)
   const totalByCurrency = totalBalanceByCurrency(balances)
+  // Net worth = cash accounts + investment portfolio value (priced positions,
+  // in the portfolio's base currency).
+  const investments = await getInvestmentsOverview()
+  if (investments.totals.totalValueCents > 0) {
+    totalByCurrency[investments.baseCurrency] =
+      (totalByCurrency[investments.baseCurrency] ?? 0) +
+      investments.totals.totalValueCents
+  }
   const totalBalance = totalByCurrency[currency] ?? 0
 
   // Trend opening = balance carried into the period start (full history before).
