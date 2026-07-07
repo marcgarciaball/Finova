@@ -32,7 +32,7 @@
 - Consumes: `authUsers`, `authenticatedRole` from `drizzle-orm/supabase`; `assets` from Task 2's `lib/db/schema/investments-reference.ts` — **implement Task 2's file first if working out of order** (Task 3 generates the migration only after Tasks 1–2).
 - Produces: `portfolios`, `investmentAccounts`, `investmentTransactions` pgTable exports.
 
-- [ ] **Step 1: Create `lib/db/schema/investments-portfolios.ts`**
+- [x] **Step 1: Create `lib/db/schema/investments-portfolios.ts`**
 
 ```ts
 import { sql } from 'drizzle-orm'
@@ -150,7 +150,7 @@ export const investmentAccounts = pgTable(
 )
 ```
 
-- [ ] **Step 2: Create `lib/db/schema/investments-transactions.ts`**
+- [x] **Step 2: Create `lib/db/schema/investments-transactions.ts`**
 
 ```ts
 import { sql } from 'drizzle-orm'
@@ -258,7 +258,7 @@ export const investmentTransactions = pgTable(
 )
 ```
 
-- [ ] **Step 3: Add both modules to the barrel**
+- [x] **Step 3: Add both modules to the barrel**
 
 In `lib/db/schema/index.ts`, add (keeping alphabetical order):
 
@@ -270,7 +270,7 @@ export * from '@/lib/db/schema/investments-transactions'
 
 (`investments-reference` is Task 2's file — the barrel line lands here so one commit at the end of Task 2 compiles; if committing Task 1 standalone, omit that line until Task 2.)
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `npm run typecheck`
 Expected: PASS only once Task 2's `investments-reference.ts` exists (the transactions module imports `assets`). Implement Tasks 1–2 back-to-back, then verify.
@@ -288,7 +288,7 @@ Expected: PASS only once Task 2's `investments-reference.ts` exists (the transac
 - Consumes: `portfolios` from Task 1.
 - Produces: `assets`, `cachedQuotes`, `historicalPrices`, `dividendEvents`, `fxRates`, `holdings`, `portfolioSnapshots` pgTable exports. Task 1's transactions module imports `assets`.
 
-- [ ] **Step 1: Create `lib/db/schema/investments-reference.ts`**
+- [x] **Step 1: Create `lib/db/schema/investments-reference.ts`**
 
 ```ts
 import { sql } from 'drizzle-orm'
@@ -481,7 +481,7 @@ export const fxRates = pgTable(
 )
 ```
 
-- [ ] **Step 2: Create `lib/db/schema/investments-derived.ts`**
+- [x] **Step 2: Create `lib/db/schema/investments-derived.ts`**
 
 ```ts
 import { sql } from 'drizzle-orm'
@@ -587,7 +587,7 @@ export const portfolioSnapshots = pgTable(
 )
 ```
 
-- [ ] **Step 3: Complete the barrel**
+- [x] **Step 3: Complete the barrel**
 
 `lib/db/schema/index.ts` now includes all four new modules:
 
@@ -598,7 +598,7 @@ export * from '@/lib/db/schema/investments-reference'
 export * from '@/lib/db/schema/investments-transactions'
 ```
 
-- [ ] **Step 4: Verify and commit Tasks 1+2 together**
+- [x] **Step 4: Verify and commit Tasks 1+2 together**
 
 Run: `npm run typecheck && npm run lint`
 Expected: PASS.
@@ -620,12 +620,12 @@ git commit -m "feat(investments): drizzle schema for portfolios, transactions, d
 - Consumes: Tasks 1–2 schema modules via the barrel.
 - Produces: the migration a human applies with `npm run db:migrate`.
 
-- [ ] **Step 1: Generate**
+- [x] **Step 1: Generate**
 
 Run: `npm run db:generate`
 Expected: a new `drizzle/00XX_<name>.sql` creating ten tables with policies and `ENABLE ROW LEVEL SECURITY` on each.
 
-- [ ] **Step 2: Hand-append updated_at triggers**
+- [x] **Step 2: Hand-append updated_at triggers**
 
 The `set_updated_at()` function exists from migration 0000. Append to the generated SQL file (after the last generated statement, using the `--> statement-breakpoint` separator convention):
 
@@ -648,11 +648,11 @@ CREATE TRIGGER cached_quotes_set_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 ```
 
-- [ ] **Step 3: Review the generated SQL**
+- [x] **Step 3: Review the generated SQL**
 
 Read the file and confirm: table names `investment_accounts`/`investment_transactions` (no collision), every user table has 4 policies, `holdings`/`portfolio_snapshots` have exactly 1 SELECT policy, shared tables have exactly 1 SELECT policy with `USING (true)`, RLS enabled on all ten.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add drizzle/
@@ -674,7 +674,7 @@ Human runs `npm run db:migrate` against the project DB (agent sandbox has no DB 
 - Consumes: `getServerEnv()` from `@/lib/validation/env.server` (already exposes optional `SUPABASE_SERVICE_ROLE_KEY`), `getClientEnv()` from `@/lib/validation/env`.
 - Produces: `createAdminClient(): SupabaseClient` — throws if the key is unset. Slices A4/A5 use it for every shared/derived-table write.
 
-- [ ] **Step 1: Create `lib/supabase/admin.ts`**
+- [x] **Step 1: Create `lib/supabase/admin.ts`**
 
 ```ts
 import 'server-only'
@@ -705,7 +705,7 @@ export function createAdminClient() {
 }
 ```
 
-- [ ] **Step 2: Verify and commit**
+- [x] **Step 2: Verify and commit**
 
 Run: `npm run typecheck && npm run lint`
 Expected: PASS.
@@ -731,7 +731,7 @@ git commit -m "feat(investments): service-role admin client for shared-table wri
   - Row schemas + inferred types: `assetRowSchema`/`AssetRow`, `portfolioRowSchema`/`PortfolioRow`, `investmentAccountRowSchema`/`InvestmentAccountRow`, `investmentTransactionRowSchema`/`InvestmentTransactionRow`, `holdingRowSchema`/`HoldingRow`, `cachedQuoteRowSchema`/`CachedQuoteRow`, `portfolioSnapshotRowSchema`/`PortfolioSnapshotRow`, `fxRateRowSchema`/`FxRateRow`.
   - `decimalPlacesAtMost(n)` refinement helper (exported for reuse).
 
-- [ ] **Step 1: Create `lib/domain/investments/types.ts`**
+- [x] **Step 1: Create `lib/domain/investments/types.ts`**
 
 ```ts
 /** Inversiones (A1): closed vocabularies shared by schema, domain and UI. */
@@ -745,7 +745,7 @@ export const INVESTMENT_TXN_TYPES = ['buy', 'sell'] as const
 export type InvestmentTxnType = (typeof INVESTMENT_TXN_TYPES)[number]
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `lib/validation/investments.test.ts`:
 
@@ -928,12 +928,12 @@ describe('remaining row schemas', () => {
 })
 ```
 
-- [ ] **Step 3: Run tests to verify they fail**
+- [x] **Step 3: Run tests to verify they fail**
 
 Run: `npx vitest run lib/validation/investments.test.ts`
 Expected: FAIL — cannot resolve `./investments`.
 
-- [ ] **Step 4: Implement `lib/validation/investments.ts`**
+- [x] **Step 4: Implement `lib/validation/investments.ts`**
 
 ```ts
 import { z } from 'zod'
@@ -1085,12 +1085,12 @@ export const fxRateRowSchema = z.object({
 export type FxRateRow = z.infer<typeof fxRateRowSchema>
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `npx vitest run lib/validation/investments.test.ts`
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add lib/domain/investments/types.ts lib/validation/investments.ts lib/validation/investments.test.ts
@@ -1122,7 +1122,7 @@ Semantics (average-cost):
 - Output: `avgCostCents = qty > 0 ? Math.round(basis / qty) : 0`, `investedCents = Math.round(basis)` (0 when fully liquidated), `realizedPlCents = Math.round(realized)`.
 - Any two txns with different `currency` → `MixedCurrencyError` (one holding is single-currency by construction).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `lib/domain/investments/holdings.test.ts`:
 
@@ -1273,12 +1273,12 @@ describe('computeHolding', () => {
 })
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `npx vitest run lib/domain/investments/holdings.test.ts`
 Expected: FAIL — cannot resolve `./holdings`.
 
-- [ ] **Step 3: Implement `lib/domain/investments/holdings.ts`**
+- [x] **Step 3: Implement `lib/domain/investments/holdings.ts`**
 
 ```ts
 /**
@@ -1368,12 +1368,12 @@ export function computeHolding(txns: HoldingTxn[]): HoldingComputation {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run lib/domain/investments/holdings.test.ts`
 Expected: PASS (11 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add lib/domain/investments/holdings.ts lib/domain/investments/holdings.test.ts
@@ -1392,7 +1392,7 @@ git commit -m "feat(investments): average-cost holdings engine"
 - Consumes: nothing external (pure).
 - Produces: `valueHolding(h: { quantity: number; investedCents: number }, currentPriceCents: number | null): { currentValueCents: number | null; unrealizedPlCents: number | null; unrealizedPlPct: number | null }`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `lib/domain/investments/valuation.test.ts`:
 
@@ -1428,12 +1428,12 @@ describe('valueHolding', () => {
 })
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `npx vitest run lib/domain/investments/valuation.test.ts`
 Expected: FAIL — cannot resolve `./valuation`.
 
-- [ ] **Step 3: Implement `lib/domain/investments/valuation.ts`**
+- [x] **Step 3: Implement `lib/domain/investments/valuation.ts`**
 
 ```ts
 /**
@@ -1469,12 +1469,12 @@ export function valueHolding(
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run lib/domain/investments/valuation.test.ts`
 Expected: PASS (4 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add lib/domain/investments/valuation.ts lib/domain/investments/valuation.test.ts
@@ -1505,7 +1505,7 @@ Semantics:
 - `totalPlPct` is null when `pricedInvestedCents` is 0; allocations are fractions of `totalValueCents` (empty objects when 0).
 - `topMovers` considers only holdings with non-null `unrealizedPlPct`; winners sorted descending, losers ascending; stable order on ties.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `lib/domain/investments/portfolio.test.ts`:
 
@@ -1644,12 +1644,12 @@ describe('topMovers', () => {
 })
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `npx vitest run lib/domain/investments/portfolio.test.ts`
 Expected: FAIL — cannot resolve `./portfolio`.
 
-- [ ] **Step 3: Implement `lib/domain/investments/portfolio.ts`**
+- [x] **Step 3: Implement `lib/domain/investments/portfolio.ts`**
 
 ```ts
 import type { AssetType } from '@/lib/domain/investments/types'
@@ -1789,12 +1789,12 @@ export function topMovers(
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run lib/domain/investments/portfolio.test.ts`
 Expected: PASS (10 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add lib/domain/investments/portfolio.ts lib/domain/investments/portfolio.test.ts
@@ -1807,7 +1807,7 @@ git commit -m "feat(investments): FX conversion + portfolio totals"
 
 **Files:** none (verification only).
 
-- [ ] **Step 1: Full suite**
+- [x] **Step 1: Full suite**
 
 Run: `npm run test && npm run typecheck && npm run lint`
 Expected: PASS.
