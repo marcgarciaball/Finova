@@ -746,5 +746,76 @@
       "received": "Received",
       "perShare12m": "12m / share"
     }
+  },
+  "realEstate": {
+    "nav": "Real Estate",
+    "title": "Real Estate",
+    "subtitle": "Your properties, mortgages, rental income, and returns.",
+    "addTitle": "Add property",
+    "empty": {
+      "title": "No properties yet",
+      "body": "Register your first property to see its equity, yield, and cash flow."
+    },
+    "types": {
+      "primary_home": "Primary home",
+      "investment": "Investment",
+      "vacation": "Vacation home",
+      "land": "Land",
+      "commercial": "Commercial",
+      "other": "Other"
+    },
+    "overview": {
+      "totalsTitle": "Portfolio · {currency}",
+      "equity": "Net equity",
+      "value": "Property value",
+      "debt": "Outstanding debt",
+      "netProfit": "Net profit (all time)",
+      "propertyCount": "{count, plural, =1 {1 property} other {# properties}}",
+      "rentTitle": "Rental income · {currency}",
+      "rentPerDay": "Per day",
+      "rentPerMonth": "Per month",
+      "rentPerYear": "Per year",
+      "propertiesTitle": "Properties"
+    },
+    "card": {
+      "value": "Value",
+      "equity": "Equity",
+      "ltv": "LTV",
+      "grossYield": "Gross yield",
+      "netYield": "Net yield",
+      "cashFlow": "Cash flow / mo",
+      "roi": "ROI",
+      "rented": "Rented",
+      "sold": "Sold"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "e.g. Eixample apartment",
+      "type": "Property type",
+      "address": "Address",
+      "city": "City",
+      "country": "Country code",
+      "currency": "Currency",
+      "purchaseDate": "Purchase date",
+      "purchasePrice": "Purchase price",
+      "purchaseFees": "Purchase fees (notary, taxes, agency)",
+      "currentValue": "Current estimated value",
+      "isRented": "Currently rented out",
+      "rentalStartDate": "Rental start",
+      "rentalEndDate": "Rental end (optional)",
+      "notes": "Notes",
+      "submit": "Save property"
+    },
+    "errors": {
+      "invalidAmount": "Enter a valid amount",
+      "invalidDate": "Enter a valid date",
+      "invalidPercent": "Enter a valid percentage",
+      "invalidCountry": "Use a two-letter code (e.g. ES)",
+      "required": "Required",
+      "tooLong": "Too long",
+      "endBeforeStart": "End date is before the start",
+      "invalid": "Invalid value",
+      "unexpected": "Something went wrong. Try again."
+    }
   }
 }

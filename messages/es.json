@@ -746,5 +746,76 @@
       "received": "Cobrado",
       "perShare12m": "12m / acción"
     }
+  },
+  "realEstate": {
+    "nav": "Inmuebles",
+    "title": "Inmuebles",
+    "subtitle": "Tus propiedades, hipotecas, ingresos por alquiler y rentabilidad.",
+    "addTitle": "Añadir propiedad",
+    "empty": {
+      "title": "Aún no hay propiedades",
+      "body": "Registra tu primera propiedad para ver su patrimonio, rentabilidad y flujo de caja."
+    },
+    "types": {
+      "primary_home": "Vivienda habitual",
+      "investment": "Inversión",
+      "vacation": "Vivienda vacacional",
+      "land": "Terreno",
+      "commercial": "Local comercial",
+      "other": "Otro"
+    },
+    "overview": {
+      "totalsTitle": "Cartera · {currency}",
+      "equity": "Patrimonio neto",
+      "value": "Valor de las propiedades",
+      "debt": "Deuda pendiente",
+      "netProfit": "Beneficio neto (total)",
+      "propertyCount": "{count, plural, =1 {1 propiedad} other {# propiedades}}",
+      "rentTitle": "Ingresos por alquiler · {currency}",
+      "rentPerDay": "Por día",
+      "rentPerMonth": "Por mes",
+      "rentPerYear": "Por año",
+      "propertiesTitle": "Propiedades"
+    },
+    "card": {
+      "value": "Valor",
+      "equity": "Patrimonio",
+      "ltv": "LTV",
+      "grossYield": "Rentabilidad bruta",
+      "netYield": "Rentabilidad neta",
+      "cashFlow": "Flujo de caja / mes",
+      "roi": "ROI",
+      "rented": "Alquilada",
+      "sold": "Vendida"
+    },
+    "form": {
+      "name": "Nombre",
+      "namePlaceholder": "p. ej. Piso del Eixample",
+      "type": "Tipo de propiedad",
+      "address": "Dirección",
+      "city": "Ciudad",
+      "country": "Código de país",
+      "currency": "Divisa",
+      "purchaseDate": "Fecha de compra",
+      "purchasePrice": "Precio de compra",
+      "purchaseFees": "Gastos de compra (notaría, impuestos, agencia)",
+      "currentValue": "Valor estimado actual",
+      "isRented": "Actualmente alquilada",
+      "rentalStartDate": "Inicio del alquiler",
+      "rentalEndDate": "Fin del alquiler (opcional)",
+      "notes": "Notas",
+      "submit": "Guardar propiedad"
+    },
+    "errors": {
+      "invalidAmount": "Introduce un importe válido",
+      "invalidDate": "Introduce una fecha válida",
+      "invalidPercent": "Introduce un porcentaje válido",
+      "invalidCountry": "Usa un código de dos letras (p. ej. ES)",
+      "required": "Obligatorio",
+      "tooLong": "Demasiado largo",
+      "endBeforeStart": "La fecha de fin es anterior al inicio",
+      "invalid": "Valor no válido",
+      "unexpected": "Algo ha ido mal. Inténtalo de nuevo."
+    }
   }
 }
