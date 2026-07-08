@@ -187,6 +187,27 @@ export default async function DashboardPage({
 
   const months = incomeExpenseSeries(periodTxns, granularity)[currency] ?? []
   const bars = monthlySeriesToBars(months)
+
+  // Earnings over time: income per bucket (same granularity), dividends
+  // folded into their pay-date bucket so the chart matches the KPI total.
+  const bucketLen = granularity === 'day' ? 10 : granularity === 'month' ? 7 : 4
+  const earningsByBucket = new Map<string, number>(
+    months.map((b) => [b.period, b.income])
+  )
+  if (invIncome.baseCurrency === currency) {
+    for (const e of invIncome.receivedEventsBase) {
+      if (
+        (periodStart === null || e.date >= periodStart) &&
+        e.date <= todayIso
+      ) {
+        const key = e.date.slice(0, bucketLen)
+        earningsByBucket.set(key, (earningsByBucket.get(key) ?? 0) + e.cents)
+      }
+    }
+  }
+  const earningsBars = [...earningsByBucket.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([period, cents]) => ({ period, income: cents / 100 }))
   const area = balanceTrendToArea(trend)
   const balanceSparkline = trend.map((p) => p.balance / 100)
 
@@ -404,12 +425,25 @@ export default async function DashboardPage({
           />
         </GlassCard>
         <SpendingRanking
-          className="col-span-12"
+          className="col-span-12 lg:col-span-5"
           title={t('ranking.incomeSources')}
           rows={incomeRanking}
           locale={locale}
           emptyLabel={t('ranking.empty')}
         />
+        <GlassCard className="col-span-12 flex flex-col gap-4 lg:col-span-7">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
+              {t('charts.earnings')}
+            </h3>
+            <GranularitySelector value={granularity} />
+          </div>
+          <BarChart
+            index="period"
+            categories={['income']}
+            data={earningsBars}
+          />
+        </GlassCard>
       </BandSection>
 
       {/* Band 3 — Where does my money go? */}

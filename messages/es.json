@@ -525,7 +525,8 @@
     "charts": {
       "incomeVsExpense": "Ingresos vs gastos",
       "balanceTrend": "Evolución del saldo",
-      "spendingByCategory": "Gasto por categoría"
+      "spendingByCategory": "Gasto por categoría",
+      "earnings": "Cuánto ganas"
     },
     "accountsStrip": {
       "title": "Cuentas",

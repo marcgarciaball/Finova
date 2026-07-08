@@ -525,7 +525,8 @@
     "charts": {
       "incomeVsExpense": "Income vs expense",
       "balanceTrend": "Balance trend",
-      "spendingByCategory": "Spending by category"
+      "spendingByCategory": "Spending by category",
+      "earnings": "How much you earn"
     },
     "accountsStrip": {
       "title": "Accounts",
