@@ -14,6 +14,11 @@ export {
   spendingByCategory,
 } from '@/lib/domain/dashboard/by-category'
 export {
+  type MerchantSpend,
+  type MerchantTxn,
+  spendingByMerchant,
+} from '@/lib/domain/dashboard/by-merchant'
+export {
   type AreaSeries,
   type BarSeries,
   balanceTrendToArea,
@@ -57,3 +62,8 @@ export {
   savingsRate,
   totalBalanceByCurrency,
 } from '@/lib/domain/dashboard/summary'
+export {
+  type ExpenseTxn,
+  type TopExpense,
+  topExpenses,
+} from '@/lib/domain/dashboard/top-expenses'

@@ -29,6 +29,7 @@ export default async function ProtectedLayout({
   const navLinks = [
     { href: '/protected', label: t('dashboard.nav') },
     { href: '/protected/transactions', label: t('transactions.nav') },
+    { href: '/protected/expenses', label: t('expenses.nav') },
     { href: '/protected/accounts', label: t('accounts.nav') },
     { href: '/protected/investments', label: t('investments.nav') },
   ]

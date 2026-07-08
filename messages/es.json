@@ -600,6 +600,29 @@
       "filteredNote": "Los filtros se aplican a ambas descargas. El archivo JSON sigue incluyendo todas tus cuentas y categorías, pero solo las transacciones que coinciden."
     }
   },
+  "expenses": {
+    "nav": "Gastos",
+    "title": "Gastos",
+    "empty": "No hay gastos en este periodo.",
+    "uncategorized": "Sin categoría",
+    "kpi": {
+      "total": "Total gastado",
+      "average": "Gasto medio",
+      "count": "Transacciones",
+      "uncategorized": "Sin categoría"
+    },
+    "charts": {
+      "byCategory": "Por categoría",
+      "trend": "Tendencia mensual"
+    },
+    "ranking": {
+      "byCategory": "Todas las categorías",
+      "byMerchant": "Comercios principales"
+    },
+    "biggest": {
+      "title": "Mayores gastos"
+    }
+  },
   "investments": {
     "nav": "Inversiones",
     "title": "Inversiones",

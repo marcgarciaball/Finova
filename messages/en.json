@@ -600,6 +600,29 @@
       "filteredNote": "Filters apply to both downloads. The JSON file still includes all your accounts and categories, but only the matching transactions."
     }
   },
+  "expenses": {
+    "nav": "Expenses",
+    "title": "Expenses",
+    "empty": "No spending in this period.",
+    "uncategorized": "Uncategorized",
+    "kpi": {
+      "total": "Total spent",
+      "average": "Average expense",
+      "count": "Transactions",
+      "uncategorized": "Uncategorized"
+    },
+    "charts": {
+      "byCategory": "By category",
+      "trend": "Monthly trend"
+    },
+    "ranking": {
+      "byCategory": "All categories",
+      "byMerchant": "Top merchants"
+    },
+    "biggest": {
+      "title": "Biggest expenses"
+    }
+  },
   "investments": {
     "nav": "Investments",
     "title": "Investments",
