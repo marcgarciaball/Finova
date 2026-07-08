@@ -15,6 +15,7 @@ import {
   balanceTrend,
   balanceTrendToArea,
   filterByPeriod,
+  incomeByCategory,
   keyStats,
   monthlySeries,
   monthlySeriesToBars,
@@ -178,6 +179,26 @@ export default async function DashboardPage({
     }
   })
 
+  const income = incomeByCategory(periodTxns)[currency] ?? []
+  const prevIncome = incomeByCategory(prevTxns)[currency] ?? []
+  const prevIncomeByCategory = new Map(
+    prevIncome.map(
+      (s) => [s.categoryId ?? '__uncategorized__', s.total] as const
+    )
+  )
+  const incomeRanking: RankRow[] = income.map((s) => {
+    const key = s.categoryId ?? '__uncategorized__'
+    return {
+      key,
+      label: labelFor(s.categoryId),
+      icon: iconFor(s.categoryId),
+      total: s.total,
+      share: s.share,
+      currency,
+      trend: trendOf(s.total, prevIncomeByCategory.get(key) ?? 0),
+    }
+  })
+
   const accountById = new Map(accounts.map((a) => [a.id, a] as const))
   const accountRanking: RankRow[] = (
     spendingByAccount(periodTxns)[currency] ?? []
@@ -312,6 +333,13 @@ export default async function DashboardPage({
             data={bars.data}
           />
         </GlassCard>
+        <SpendingRanking
+          className="col-span-12"
+          title={t('ranking.incomeSources')}
+          rows={incomeRanking}
+          locale={locale}
+          emptyLabel={t('ranking.empty')}
+        />
       </BandSection>
 
       {/* Band 3 — Where does my money go? */}

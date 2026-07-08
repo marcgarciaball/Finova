@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { type CategorizedTxn, spendingByCategory } from './by-category'
+import {
+  type CategorizedTxn,
+  incomeByCategory,
+  spendingByCategory,
+} from './by-category'
 
 const txn = (
   amount_cents: number,
@@ -74,5 +78,42 @@ describe('spendingByCategory', () => {
 
   it('returns an empty map for no rows', () => {
     expect(spendingByCategory([])).toEqual({})
+  })
+})
+
+describe('incomeByCategory', () => {
+  it('groups income by category and ignores expenses', () => {
+    const out = incomeByCategory([
+      txn(3_000, 'salary'),
+      txn(2_000, 'salary'),
+      txn(500, 'gifts'),
+      txn(-1_000, 'food'), // expense — ignored
+    ])
+    const eur = out.EUR ?? []
+    expect(eur.find((c) => c.categoryId === 'salary')).toMatchObject({
+      total: 5_000,
+      count: 2,
+    })
+    expect(eur.find((c) => c.categoryId === 'gifts')?.total).toBe(500)
+    expect(eur.some((c) => c.categoryId === 'food')).toBe(false)
+  })
+
+  it('excludes transfers even when categorized', () => {
+    const out = incomeByCategory([
+      txn(1_000, 'salary'),
+      txn(9_999, 'salary', 'EUR', true), // transfer — excluded
+    ])
+    expect(out.EUR?.[0]?.total).toBe(1_000)
+  })
+
+  it('aggregates null category into an uncategorized bucket', () => {
+    const out = incomeByCategory([txn(1_500, null), txn(500, null)])
+    expect(out.EUR).toEqual([
+      { categoryId: null, total: 2_000, count: 2, share: 1 },
+    ])
+  })
+
+  it('returns an empty map for no rows', () => {
+    expect(incomeByCategory([])).toEqual({})
   })
 })

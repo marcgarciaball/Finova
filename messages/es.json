@@ -538,6 +538,7 @@
     "ranking": {
       "topCategories": "Dónde más gastas",
       "byAccount": "Gasto entre cuentas",
+      "incomeSources": "De dónde viene tu ingreso",
       "empty": "No hay gastos en este periodo."
     },
     "balances": {

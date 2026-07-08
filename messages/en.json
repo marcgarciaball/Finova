@@ -538,6 +538,7 @@
     "ranking": {
       "topCategories": "Where you spend most",
       "byAccount": "Spending across accounts",
+      "incomeSources": "Where your income comes from",
       "empty": "No spending in this period."
     },
     "balances": {

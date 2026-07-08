@@ -10,6 +10,7 @@ export {
 export {
   type CategorizedTxn,
   type CategorySpend,
+  incomeByCategory,
   spendingByCategory,
 } from '@/lib/domain/dashboard/by-category'
 export {
