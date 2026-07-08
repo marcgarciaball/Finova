@@ -503,6 +503,10 @@
       "title": "Net worth by currency",
       "base": "Base"
     },
+    "wealthAllocation": {
+      "title": "Where is my money?",
+      "cash": "Cash"
+    },
     "donutEmpty": {
       "title": "Nothing categorized yet",
       "body": "All your spending is uncategorized. Organize it to see where your money goes.",

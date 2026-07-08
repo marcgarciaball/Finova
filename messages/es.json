@@ -503,6 +503,10 @@
       "title": "Patrimonio por moneda",
       "base": "Base"
     },
+    "wealthAllocation": {
+      "title": "¿Dónde está mi dinero?",
+      "cash": "Efectivo"
+    },
     "donutEmpty": {
       "title": "Aún no hay nada categorizado",
       "body": "Todo tu gasto está sin categorizar. Organízalo para ver a dónde va tu dinero.",

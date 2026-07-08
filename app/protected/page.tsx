@@ -45,6 +45,7 @@ import { KeyStatsStrip } from './KeyStatsStrip'
 import { PeriodSelector } from './PeriodSelector'
 import { RecentTransactions } from './RecentTransactions'
 import { type RankRow, SpendingRanking } from './SpendingRanking'
+import { WealthAllocation } from './WealthAllocation'
 
 const RECENT_LIMIT = 6
 const UNCATEGORIZED_THRESHOLD = 0.4
@@ -107,6 +108,7 @@ export default async function DashboardPage({
   }))
   const balances = accountBalances(balanceAccounts, txns)
   const totalByCurrency = totalBalanceByCurrency(balances)
+  const cashCents = totalByCurrency[currency] ?? 0
   // Net worth = cash accounts + investment portfolio value (priced positions,
   // in the portfolio's base currency).
   const investments = await getInvestmentsOverview()
@@ -116,6 +118,12 @@ export default async function DashboardPage({
       investments.totals.totalValueCents
   }
   const totalBalance = totalByCurrency[currency] ?? 0
+  // Investment amounts only line up with cash when the portfolio's base
+  // currency matches the dashboard's display currency.
+  const investedByType =
+    investments.baseCurrency === currency
+      ? investments.totals.allocationByType
+      : {}
 
   // Trend opening = balance carried into the period start (full history before).
   const start = periodStartIso(period, todayIso)
@@ -241,8 +249,14 @@ export default async function DashboardPage({
           title={t('currencyBreakdown.title')}
           baseLabel={t('currencyBreakdown.base')}
         />
+        <WealthAllocation
+          className="col-span-12 lg:col-span-4"
+          cashCents={cashCents}
+          investedByType={investedByType}
+          currency={currency}
+        />
         <AccountsStrip
-          className="col-span-12"
+          className="col-span-12 lg:col-span-8"
           accounts={accounts}
           balances={balances}
         />
