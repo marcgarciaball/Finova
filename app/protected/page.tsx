@@ -49,6 +49,7 @@ import { getInvestmentsOverview } from './investments/overview-data'
 import { KeyStatsStrip } from './KeyStatsStrip'
 import { PeriodSelector } from './PeriodSelector'
 import { RecentTransactions } from './RecentTransactions'
+import { getRealEstateEquityByCurrency } from './real-estate/data'
 import { type RankRow, SpendingRanking } from './SpendingRanking'
 import { WealthAllocation } from './WealthAllocation'
 
@@ -160,6 +161,17 @@ export default async function DashboardPage({
       (totalByCurrency[investments.baseCurrency] ?? 0) +
       investments.totals.totalValueCents
   }
+  // Real estate joins net worth as equity (value − outstanding loans),
+  // per property currency — never converted across currencies here.
+  const realEstateEquity = await getRealEstateEquityByCurrency()
+  for (const re of realEstateEquity) {
+    if (re.equityCents !== 0) {
+      totalByCurrency[re.currency] =
+        (totalByCurrency[re.currency] ?? 0) + re.equityCents
+    }
+  }
+  const realEstateCents =
+    realEstateEquity.find((re) => re.currency === currency)?.equityCents ?? 0
   const totalBalance = totalByCurrency[currency] ?? 0
   // Investment amounts only line up with cash when the portfolio's base
   // currency matches the dashboard's display currency. allocationByType is
@@ -362,6 +374,7 @@ export default async function DashboardPage({
           className="col-span-12 lg:col-span-4"
           cashCents={cashCents}
           investedByType={investedByType}
+          realEstateCents={realEstateCents}
           currency={currency}
         />
         <AccountsStrip

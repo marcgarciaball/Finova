@@ -508,7 +508,8 @@
     },
     "wealthAllocation": {
       "title": "Where is my money?",
-      "cash": "Cash"
+      "cash": "Cash",
+      "realEstate": "Real estate"
     },
     "donutEmpty": {
       "title": "Nothing categorized yet",

@@ -18,11 +18,13 @@ const toMajor = (cents: number): number => cents / 100
 export async function WealthAllocation({
   cashCents,
   investedByType,
+  realEstateCents = 0,
   currency,
   className,
 }: {
   cashCents: number
   investedByType: Partial<Record<AssetType, number>>
+  realEstateCents?: number
   currency: string
   className?: string
 }) {
@@ -39,6 +41,7 @@ export async function WealthAllocation({
         cents: investedByType[type] ?? 0,
       })
     ),
+    { key: 'realEstate', label: t('realEstate'), cents: realEstateCents },
   ].filter((r) => r.cents > 0)
 
   const total = rows.reduce((sum, r) => sum + r.cents, 0)
