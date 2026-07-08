@@ -4,6 +4,7 @@ import {
   Gamepad2,
   Gift,
   GraduationCap,
+  HandCoins,
   HeartPulse,
   Home,
   type LucideIcon,
@@ -37,6 +38,7 @@ const ICONS: Record<string, LucideIcon> = {
   Plane,
   Wallet,
   Gift,
+  HandCoins,
   CircleDashed,
 }
 

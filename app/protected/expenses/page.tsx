@@ -7,9 +7,10 @@ import { GlassCard } from '@/components/ui/GlassCard'
 import { categoryLabel } from '@/lib/domain/categories/label'
 import {
   filterByPeriod,
+  incomeExpenseSeries,
   keyStats,
-  monthlySeries,
   monthlySeriesToBars,
+  parseGranularity,
   parsePeriod,
   pickDisplayCurrency,
   spendingByCategory,
@@ -20,6 +21,7 @@ import {
 import { format, money } from '@/lib/domain/money'
 import type { CategoryRow } from '@/lib/validation/category'
 import { getDashboardData } from '../data'
+import { GranularitySelector } from '../GranularitySelector'
 import { PeriodSelector } from '../PeriodSelector'
 import { type RankRow, SpendingRanking } from '../SpendingRanking'
 
@@ -29,14 +31,16 @@ const BIGGEST_LIMIT = 8
 export default async function ExpensesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ period?: string }>
+  searchParams: Promise<{ granularity?: string; period?: string }>
 }) {
   const t = await getTranslations('expenses')
   const tDefaults = await getTranslations('categories.defaults')
   const locale = await getLocale()
 
   const { categories, txns, baseCurrency } = await getDashboardData()
-  const period = parsePeriod((await searchParams).period)
+  const params = await searchParams
+  const period = parsePeriod(params.period)
+  const granularity = parseGranularity(params.granularity)
   const todayIso = new Date().toISOString().slice(0, 10)
   const currency = pickDisplayCurrency(txns, baseCurrency)
   const periodTxns = filterByPeriod(txns, period, todayIso)
@@ -103,7 +107,7 @@ export default async function ExpensesPage({
   const uncategorizedShare =
     totalSpend === 0 ? 0 : Math.round((uncategorizedCents / totalSpend) * 100)
 
-  const months = monthlySeries(periodTxns)[currency] ?? []
+  const months = incomeExpenseSeries(periodTxns, granularity)[currency] ?? []
   const bars = monthlySeriesToBars(months)
 
   const biggest = (topExpenses(periodTxns, BIGGEST_LIMIT)[currency] ?? []).map(
@@ -171,9 +175,12 @@ export default async function ExpensesPage({
           limit={MERCHANT_LIMIT}
         />
         <GlassCard className="col-span-12 flex flex-col gap-4 lg:col-span-6">
-          <h3 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
-            {t('charts.trend')}
-          </h3>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
+              {t('charts.trend')}
+            </h3>
+            <GranularitySelector value={granularity} />
+          </div>
           <BarChart
             index={bars.index}
             categories={['expense']}

@@ -24,6 +24,7 @@ import {
   pctChange,
   periodStartIso,
   pickDisplayCurrency,
+  previousPeriodRange,
   previousPeriodTxns,
   savingsRate,
   spendingByAccount,
@@ -84,15 +85,51 @@ export default async function DashboardPage({
   const periodTxns = filterByPeriod(txns, period, todayIso)
   const prevTxns = previousPeriodTxns(txns, period, todayIso)
 
-  const totals = summarizeByCurrency(periodTxns)[currency] ?? {
+  const cashTotals = summarizeByCurrency(periodTxns)[currency] ?? {
     income: 0,
     expense: 0,
     net: 0,
   }
-  const prevTotals = summarizeByCurrency(prevTxns)[currency] ?? {
+  const prevCashTotals = summarizeByCurrency(prevTxns)[currency] ?? {
     income: 0,
     expense: 0,
     net: 0,
+  }
+
+  // Dividends live in the investments module, not the cash ledger — fold the
+  // period's received events into income (base currency only, by pay date).
+  const invIncome = await getInvestmentsIncome()
+  const periodStart = periodStartIso(period, todayIso)
+  const prevRange = previousPeriodRange(period, todayIso)
+  const dividendsIn = (
+    start: string | null,
+    endExclusive: string | null
+  ): number =>
+    invIncome.baseCurrency === currency
+      ? invIncome.receivedEventsBase
+          .filter(
+            (e) =>
+              (start === null || e.date >= start) &&
+              (endExclusive === null
+                ? e.date <= todayIso
+                : e.date < endExclusive)
+          )
+          .reduce((sum, e) => sum + e.cents, 0)
+      : 0
+  const dividendCents = dividendsIn(periodStart, null)
+  const prevDividendCents = prevRange
+    ? dividendsIn(prevRange.startIso, prevRange.endExclusiveIso)
+    : 0
+
+  const totals = {
+    income: cashTotals.income + dividendCents,
+    expense: cashTotals.expense,
+    net: cashTotals.net + dividendCents,
+  }
+  const prevTotals = {
+    income: prevCashTotals.income + prevDividendCents,
+    expense: prevCashTotals.expense,
+    net: prevCashTotals.net + prevDividendCents,
   }
   const rate = savingsRate(totals)
   const prevRate = savingsRate(prevTotals)
@@ -198,20 +235,6 @@ export default async function DashboardPage({
       (s) => [s.categoryId ?? '__uncategorized__', s.total] as const
     )
   )
-  // Dividends live in the investments module, not the cash ledger — fold the
-  // period's received events in as their own income source (base ccy only).
-  const invIncome = await getInvestmentsIncome()
-  const periodStart = periodStartIso(period, todayIso)
-  const dividendCents =
-    invIncome.baseCurrency === currency
-      ? invIncome.receivedEventsBase
-          .filter(
-            (e) =>
-              (periodStart === null || e.date >= periodStart) &&
-              e.date <= todayIso
-          )
-          .reduce((sum, e) => sum + e.cents, 0)
-      : 0
   const incomeRows = [
     ...income.map((s) => {
       const key = s.categoryId ?? '__uncategorized__'
@@ -223,14 +246,15 @@ export default async function DashboardPage({
         trend: trendOf(s.total, prevIncomeByCategory.get(key) ?? 0),
       }
     }),
+    // dividendCents computed with the KPI totals above (same source of truth).
     ...(dividendCents > 0
       ? [
           {
             key: '__dividends__',
             label: t('ranking.dividends'),
-            icon: undefined,
+            icon: <CategoryIcon iconName="HandCoins" />,
             total: dividendCents,
-            trend: undefined,
+            trend: trendOf(dividendCents, prevDividendCents),
           },
         ]
       : []),
