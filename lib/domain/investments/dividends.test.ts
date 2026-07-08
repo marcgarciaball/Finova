@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   dividendsByYearCents,
   dividendsReceivedCents,
+  dividendsReceivedEvents,
   quantityHeldOn,
   trailing12mPerShareCents,
 } from './dividends'
@@ -36,6 +37,22 @@ describe('trailing12mPerShareCents', () => {
   it('sums per-share amounts within the trailing year', () => {
     expect(trailing12mPerShareCents(events, '2026-01-15')).toBe(51)
     expect(trailing12mPerShareCents(events, '2025-06-30')).toBe(50)
+  })
+})
+
+describe('dividendsReceivedEvents', () => {
+  it('emits one dated cash event per held ex-date, using the pay date', () => {
+    expect(dividendsReceivedEvents(txns, events)).toEqual([
+      { cents: 2500, date: '2025-02-15' },
+      { cents: 1560, date: '2025-08-15' },
+    ])
+  })
+
+  it('falls back to the ex-date when there is no pay date', () => {
+    const out = dividendsReceivedEvents(txns, [
+      { amountPerShare: 0.25, exDate: '2025-02-01', payDate: null },
+    ])
+    expect(out).toEqual([{ cents: 2500, date: '2025-02-01' }])
   })
 })
 

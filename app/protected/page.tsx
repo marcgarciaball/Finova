@@ -16,9 +16,10 @@ import {
   balanceTrendToArea,
   filterByPeriod,
   incomeByCategory,
+  incomeExpenseSeries,
   keyStats,
-  monthlySeries,
   monthlySeriesToBars,
+  parseGranularity,
   parsePeriod,
   pctChange,
   periodStartIso,
@@ -40,7 +41,9 @@ import { CurrencyBreakdown } from './CurrencyBreakdown'
 import { DashboardEmptyState } from './DashboardEmptyState'
 import { DataHealthBanner } from './DataHealthBanner'
 import { getDashboardData } from './data'
+import { GranularitySelector } from './GranularitySelector'
 import { InsightsPlaceholder } from './InsightsPlaceholder'
+import { getInvestmentsIncome } from './investments/income-data'
 import { getInvestmentsOverview } from './investments/overview-data'
 import { KeyStatsStrip } from './KeyStatsStrip'
 import { PeriodSelector } from './PeriodSelector'
@@ -54,14 +57,16 @@ const UNCATEGORIZED_THRESHOLD = 0.4
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ period?: string }>
+  searchParams: Promise<{ granularity?: string; period?: string }>
 }) {
   const t = await getTranslations('dashboard')
   const tDefaults = await getTranslations('categories.defaults')
   const locale = await getLocale()
 
   const { accounts, categories, txns, baseCurrency } = await getDashboardData()
-  const period = parsePeriod((await searchParams).period)
+  const params = await searchParams
+  const period = parsePeriod(params.period)
+  const granularity = parseGranularity(params.granularity)
 
   if (accounts.length === 0 || txns.length === 0) {
     return (
@@ -143,7 +148,7 @@ export default async function DashboardPage({
   )
   const trend = balanceTrend(periodTxns, opening)[currency] ?? []
 
-  const months = monthlySeries(periodTxns)[currency] ?? []
+  const months = incomeExpenseSeries(periodTxns, granularity)[currency] ?? []
   const bars = monthlySeriesToBars(months)
   const area = balanceTrendToArea(trend)
   const balanceSparkline = trend.map((p) => p.balance / 100)
@@ -193,18 +198,49 @@ export default async function DashboardPage({
       (s) => [s.categoryId ?? '__uncategorized__', s.total] as const
     )
   )
-  const incomeRanking: RankRow[] = income.map((s) => {
-    const key = s.categoryId ?? '__uncategorized__'
-    return {
-      key,
-      label: labelFor(s.categoryId),
-      icon: iconFor(s.categoryId),
-      total: s.total,
-      share: s.share,
-      currency,
-      trend: trendOf(s.total, prevIncomeByCategory.get(key) ?? 0),
-    }
-  })
+  // Dividends live in the investments module, not the cash ledger — fold the
+  // period's received events in as their own income source (base ccy only).
+  const invIncome = await getInvestmentsIncome()
+  const periodStart = periodStartIso(period, todayIso)
+  const dividendCents =
+    invIncome.baseCurrency === currency
+      ? invIncome.receivedEventsBase
+          .filter(
+            (e) =>
+              (periodStart === null || e.date >= periodStart) &&
+              e.date <= todayIso
+          )
+          .reduce((sum, e) => sum + e.cents, 0)
+      : 0
+  const incomeRows = [
+    ...income.map((s) => {
+      const key = s.categoryId ?? '__uncategorized__'
+      return {
+        key,
+        label: labelFor(s.categoryId),
+        icon: iconFor(s.categoryId),
+        total: s.total,
+        trend: trendOf(s.total, prevIncomeByCategory.get(key) ?? 0),
+      }
+    }),
+    ...(dividendCents > 0
+      ? [
+          {
+            key: '__dividends__',
+            label: t('ranking.dividends'),
+            icon: undefined,
+            total: dividendCents,
+            trend: undefined,
+          },
+        ]
+      : []),
+  ].sort((a, b) => b.total - a.total)
+  const incomeTotal = incomeRows.reduce((sum, r) => sum + r.total, 0)
+  const incomeRanking: RankRow[] = incomeRows.map((r) => ({
+    ...r,
+    share: incomeTotal === 0 ? 0 : r.total / incomeTotal,
+    currency,
+  }))
 
   const accountById = new Map(accounts.map((a) => [a.id, a] as const))
   const accountRanking: RankRow[] = (
@@ -331,9 +367,12 @@ export default async function DashboardPage({
           />
         </div>
         <GlassCard className="col-span-12 flex flex-col gap-4 lg:col-span-7">
-          <h3 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
-            {t('charts.incomeVsExpense')}
-          </h3>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
+              {t('charts.incomeVsExpense')}
+            </h3>
+            <GranularitySelector value={granularity} />
+          </div>
           <BarChart
             index={bars.index}
             categories={bars.categories}

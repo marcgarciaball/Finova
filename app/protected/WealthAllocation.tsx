@@ -58,33 +58,37 @@ export async function WealthAllocation({
       <h3 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
         {t('title')}
       </h3>
-      <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-2">
-        <DonutChart data={donutData} />
-        <ul className="flex flex-col gap-3">
-          {rows.map((r, i) => (
-            <li
-              key={r.key}
-              className="flex items-baseline justify-between gap-3"
-            >
-              <span className="flex items-center gap-2 text-ink text-sm">
+      <DonutChart data={donutData} className="h-40" />
+      <ul className="flex flex-col gap-2.5">
+        {rows.map((r, i) => (
+          <li key={r.key} className="flex flex-col gap-1">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="flex min-w-0 items-center gap-2 text-ink text-sm">
                 <span
-                  className="h-2 w-2 rounded-full"
+                  className="h-2 w-2 shrink-0 rounded-full"
                   style={{ backgroundColor: seriesColor(i) }}
                 />
-                {r.label}
+                <span className="truncate">{r.label}</span>
               </span>
-              <span className="flex items-baseline gap-2">
-                <span className="font-display font-semibold text-ink tabular-nums">
-                  {format(money(r.cents, currency), locale)}
-                </span>
-                <span className="text-ink-soft text-xs tabular-nums">
+              <span className="shrink-0 text-ink text-sm tabular-nums">
+                {format(money(r.cents, currency), locale)}
+                <span className="ml-2 text-ink-soft text-xs">
                   {Math.round((r.cents / total) * 100)}%
                 </span>
               </span>
-            </li>
-          ))}
-        </ul>
-      </div>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-glass-line">
+              <div
+                className="h-full rounded-full"
+                style={{
+                  backgroundColor: seriesColor(i),
+                  width: `${(r.cents / total) * 100}%`,
+                }}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
     </GlassCard>
   )
 }

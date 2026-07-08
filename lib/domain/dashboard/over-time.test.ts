@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { balanceTrend, monthlySeries, type TimedTxn } from './over-time'
+import {
+  balanceTrend,
+  incomeExpenseSeries,
+  monthlySeries,
+  parseGranularity,
+  type TimedTxn,
+} from './over-time'
 
 const t = (
   occurred_at: string,
@@ -95,5 +101,50 @@ describe('balanceTrend', () => {
 
   it('returns an empty map for no rows', () => {
     expect(balanceTrend([])).toEqual({})
+  })
+})
+
+describe('incomeExpenseSeries', () => {
+  it('buckets by day', () => {
+    const out = incomeExpenseSeries(
+      [
+        t('2026-01-05T08:00:00Z', 5_000),
+        t('2026-01-05T20:00:00Z', -2_000),
+        t('2026-01-06T00:00:00Z', -1_000),
+      ],
+      'day'
+    )
+    expect(out.EUR).toEqual([
+      { period: '2026-01-05', income: 5_000, expense: 2_000, net: 3_000 },
+      { period: '2026-01-06', income: 0, expense: 1_000, net: -1_000 },
+    ])
+  })
+
+  it('buckets by year', () => {
+    const out = incomeExpenseSeries(
+      [t('2025-12-31T00:00:00Z', 5_000), t('2026-01-01T00:00:00Z', -2_000)],
+      'year'
+    )
+    expect(out.EUR).toEqual([
+      { period: '2025', income: 5_000, expense: 0, net: 5_000 },
+      { period: '2026', income: 0, expense: 2_000, net: -2_000 },
+    ])
+  })
+
+  it('month granularity matches monthlySeries', () => {
+    const txns = [
+      t('2026-01-05T00:00:00Z', 5_000),
+      t('2026-02-01T00:00:00Z', -1_000),
+    ]
+    expect(incomeExpenseSeries(txns, 'month')).toEqual(monthlySeries(txns))
+  })
+})
+
+describe('parseGranularity', () => {
+  it('accepts the three granularities and defaults to month', () => {
+    expect(parseGranularity('day')).toBe('day')
+    expect(parseGranularity('year')).toBe('year')
+    expect(parseGranularity('bogus')).toBe('month')
+    expect(parseGranularity(undefined)).toBe('month')
   })
 })

@@ -5,6 +5,7 @@ import {
   type DividendTxn,
   dividendsByYearCents,
   dividendsReceivedCents,
+  dividendsReceivedEvents,
   quantityHeldOn,
   trailing12mPerShareCents,
 } from '@/lib/domain/investments/dividends'
@@ -48,6 +49,9 @@ export interface InvestmentsIncome {
   hasEvents: boolean
   perAsset: AssetIncome[]
   portfolioYieldOnCostPct: number | null
+  /** Every received dividend as a dated cash event, in base cents — lets
+   * callers (e.g. the dashboard income breakdown) filter by period. */
+  receivedEventsBase: { cents: number; date: string }[]
   totalReceivedBaseCents: number
   upcoming: UpcomingPayment[]
 }
@@ -94,6 +98,7 @@ export async function getInvestmentsIncome(): Promise<InvestmentsIncome> {
     hasEvents: false,
     perAsset: [],
     portfolioYieldOnCostPct: null,
+    receivedEventsBase: [],
     totalReceivedBaseCents: 0,
     upcoming: [],
   }
@@ -151,6 +156,7 @@ export async function getInvestmentsIncome(): Promise<InvestmentsIncome> {
   const perAsset: AssetIncome[] = []
   const upcoming: UpcomingPayment[] = []
   const byYearBase = new Map<string, number>()
+  const receivedEventsBase: { cents: number; date: string }[] = []
   let totalReceivedBaseCents = 0
   let forwardAnnualBaseCents = 0
   let investedBaseCents = 0
@@ -179,6 +185,13 @@ export async function getInvestmentsIncome(): Promise<InvestmentsIncome> {
     totalReceivedBaseCents += toBase(receivedCents, currency) ?? 0
     forwardAnnualBaseCents += toBase(forwardAnnualCents, currency) ?? 0
     investedBaseCents += toBase(holding.investedCents, currency) ?? 0
+
+    for (const ev of dividendsReceivedEvents(txns, events)) {
+      const converted = toBase(ev.cents, currency)
+      if (converted !== null) {
+        receivedEventsBase.push({ cents: converted, date: ev.date })
+      }
+    }
 
     for (const [year, cents] of Object.entries(
       dividendsByYearCents(txns, events)
@@ -218,6 +231,9 @@ export async function getInvestmentsIncome(): Promise<InvestmentsIncome> {
       investedBaseCents > 0
         ? (forwardAnnualBaseCents / investedBaseCents) * 100
         : null,
+    receivedEventsBase: receivedEventsBase.sort((a, b) =>
+      a.date.localeCompare(b.date)
+    ),
     totalReceivedBaseCents,
     upcoming,
   }

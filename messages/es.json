@@ -543,7 +543,14 @@
       "topCategories": "Dónde más gastas",
       "byAccount": "Gasto entre cuentas",
       "incomeSources": "De dónde viene tu ingreso",
+      "dividends": "Dividendos",
       "empty": "No hay gastos en este periodo."
+    },
+    "granularity": {
+      "label": "Granularidad",
+      "day": "Día",
+      "month": "Mes",
+      "year": "Año"
     },
     "balances": {
       "title": "Saldos por cuenta"

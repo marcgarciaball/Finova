@@ -42,8 +42,27 @@ export interface TrendPoint {
 
 const monthOf = (occurredAt: string): string => occurredAt.slice(0, 7)
 
-/** Per-currency monthly income/expense/net, transfers excluded, period asc. */
-export function monthlySeries(txns: TimedTxn[]): Record<string, MonthBucket[]> {
+export const GRANULARITIES = ['day', 'month', 'year'] as const
+export type Granularity = (typeof GRANULARITIES)[number]
+
+/** `YYYY-MM-DD` / `YYYY-MM` / `YYYY` — the UTC ISO prefix per granularity. */
+const PREFIX_LEN: Record<Granularity, number> = { day: 10, month: 7, year: 4 }
+
+export function parseGranularity(raw: string | undefined): Granularity {
+  return (GRANULARITIES as readonly string[]).includes(raw ?? '')
+    ? (raw as Granularity)
+    : 'month'
+}
+
+/**
+ * Per-currency income/expense/net bucketed by day, month, or year —
+ * transfers excluded, period asc. `monthlySeries` is the month special case.
+ */
+export function incomeExpenseSeries(
+  txns: TimedTxn[],
+  granularity: Granularity
+): Record<string, MonthBucket[]> {
+  const len = PREFIX_LEN[granularity]
   // currency -> period -> {income, expense}
   const byCurrency = new Map<
     string,
@@ -52,21 +71,21 @@ export function monthlySeries(txns: TimedTxn[]): Record<string, MonthBucket[]> {
 
   for (const txn of txns) {
     if (txn.is_transfer) continue
-    let months = byCurrency.get(txn.currency)
-    if (!months) {
-      months = new Map()
-      byCurrency.set(txn.currency, months)
+    let periods = byCurrency.get(txn.currency)
+    if (!periods) {
+      periods = new Map()
+      byCurrency.set(txn.currency, periods)
     }
-    const period = monthOf(txn.occurred_at)
-    const bucket = months.get(period) ?? { income: 0, expense: 0 }
+    const period = txn.occurred_at.slice(0, len)
+    const bucket = periods.get(period) ?? { income: 0, expense: 0 }
     if (txn.amount_cents >= 0) bucket.income += txn.amount_cents
     else bucket.expense += Math.abs(txn.amount_cents)
-    months.set(period, bucket)
+    periods.set(period, bucket)
   }
 
   const out: Record<string, MonthBucket[]> = {}
-  for (const [currency, months] of byCurrency) {
-    out[currency] = [...months.entries()]
+  for (const [currency, periods] of byCurrency) {
+    out[currency] = [...periods.entries()]
       .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
       .map(([period, { income, expense }]) => ({
         period,
@@ -76,6 +95,11 @@ export function monthlySeries(txns: TimedTxn[]): Record<string, MonthBucket[]> {
       }))
   }
   return out
+}
+
+/** Per-currency monthly income/expense/net, transfers excluded, period asc. */
+export function monthlySeries(txns: TimedTxn[]): Record<string, MonthBucket[]> {
+  return incomeExpenseSeries(txns, 'month')
 }
 
 /**

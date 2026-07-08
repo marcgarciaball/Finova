@@ -42,8 +42,12 @@ export {
 } from '@/lib/domain/dashboard/key-stats'
 export {
   balanceTrend,
+  GRANULARITIES,
+  type Granularity,
+  incomeExpenseSeries,
   type MonthBucket,
   monthlySeries,
+  parseGranularity,
   type TimedTxn,
   type TrendPoint,
 } from '@/lib/domain/dashboard/over-time'

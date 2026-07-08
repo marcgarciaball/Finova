@@ -61,6 +61,27 @@ export function trailing12mPerShareCents(
   return Math.round(perShare * 100)
 }
 
+/**
+ * Every received dividend as a dated cash event (date = pay date when known,
+ * ex-date otherwise), so callers can period-filter. Integer cents per event.
+ */
+export function dividendsReceivedEvents(
+  txns: DividendTxn[],
+  events: DividendEvent[]
+): { cents: number; date: string }[] {
+  const out: { cents: number; date: string }[] = []
+  for (const e of events) {
+    const held = quantityHeldOn(txns, e.exDate)
+    if (held > 0) {
+      out.push({
+        cents: Math.round(held * e.amountPerShare * 100),
+        date: e.payDate ?? e.exDate,
+      })
+    }
+  }
+  return out
+}
+
 /** Received cents grouped by ex-date year, for the income bar chart. */
 export function dividendsByYearCents(
   txns: DividendTxn[],

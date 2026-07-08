@@ -543,7 +543,14 @@
       "topCategories": "Where you spend most",
       "byAccount": "Spending across accounts",
       "incomeSources": "Where your income comes from",
+      "dividends": "Dividends",
       "empty": "No spending in this period."
+    },
+    "granularity": {
+      "label": "Granularity",
+      "day": "Day",
+      "month": "Month",
+      "year": "Year"
     },
     "balances": {
       "title": "Account balances"
