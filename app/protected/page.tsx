@@ -120,11 +120,18 @@ export default async function DashboardPage({
   }
   const totalBalance = totalByCurrency[currency] ?? 0
   // Investment amounts only line up with cash when the portfolio's base
-  // currency matches the dashboard's display currency.
-  const investedByType =
-    investments.baseCurrency === currency
-      ? investments.totals.allocationByType
-      : {}
+  // currency matches the dashboard's display currency. allocationByType is
+  // a fraction of total value (0..1) — convert to cents for the card.
+  const investedByType: Partial<Record<string, number>> = {}
+  if (investments.baseCurrency === currency) {
+    for (const [type, share] of Object.entries(
+      investments.totals.allocationByType
+    )) {
+      investedByType[type] = Math.round(
+        share * investments.totals.totalValueCents
+      )
+    }
+  }
 
   // Trend opening = balance carried into the period start (full history before).
   const start = periodStartIso(period, todayIso)
