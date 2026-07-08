@@ -36,11 +36,28 @@ const nameSchema = z
   .min(1, 'nameRequired')
   .max(100, 'nameTooLong')
 
+/**
+ * Optional annual interest rate the form sends, as a percentage string
+ * (e.g. "2" or "2.5"). Empty/absent ⇒ no rate. `parseInterestRateToBps`
+ * converts the accepted value into the integer basis points the column
+ * stores (max 100.00%, matching the DB check constraint).
+ */
+export const interestRateSchema = z
+  .union([
+    z.literal(''),
+    z
+      .string()
+      .trim()
+      .regex(/^\d+(\.\d+)?$/, 'invalidRate'),
+  ])
+  .optional()
+
 export const createAccountSchema = z.object({
   name: nameSchema,
   type: accountTypeSchema,
   currency: currencySchema,
   openingBalance: openingBalanceSchema,
+  interestRate: interestRateSchema,
 })
 
 export const updateAccountSchema = createAccountSchema.extend({
@@ -64,6 +81,7 @@ export const accountRowSchema = z.object({
   type: accountTypeSchema,
   currency: currencySchema,
   opening_balance: z.coerce.number().int(),
+  interest_rate_bps: z.coerce.number().int().nullable(),
   archived: z.boolean(),
   created_at: z.string(),
   updated_at: z.string(),
@@ -81,4 +99,17 @@ export function parseOpeningBalanceToCents(
   currency: string
 ): number {
   return fromDecimal(Number(input), currency).amount
+}
+
+/**
+ * Convert a validated percentage string ("2", "2.5") into integer basis
+ * points (200, 250). Empty/undefined ⇒ no rate (null clears it on update).
+ */
+export function parseInterestRateToBps(
+  input: string | undefined
+): number | null {
+  if (!input) {
+    return null
+  }
+  return Math.round(Number(input) * 100)
 }

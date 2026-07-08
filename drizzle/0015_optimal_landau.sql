@@ -1,0 +1,2 @@
+ALTER TABLE "accounts" ADD COLUMN "interest_rate_bps" integer;--> statement-breakpoint
+ALTER TABLE "accounts" ADD CONSTRAINT "accounts_interest_rate_bps_check" CHECK ("accounts"."interest_rate_bps" is null or "accounts"."interest_rate_bps" between 0 and 10000);

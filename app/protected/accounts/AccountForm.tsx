@@ -15,6 +15,7 @@ const KNOWN_ERROR_KEYS = new Set([
   'nameTooLong',
   'invalidCurrency',
   'invalidAmount',
+  'invalidRate',
 ])
 
 export function AccountForm({
@@ -53,6 +54,10 @@ export function AccountForm({
   const balanceDefault = account
     ? (account.opening_balance / 100).toFixed(2)
     : '0'
+  const interestRateDefault =
+    account?.interest_rate_bps != null
+      ? (account.interest_rate_bps / 100).toString()
+      : ''
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
@@ -119,6 +124,23 @@ export function AccountForm({
         />
         {errorFor('openingBalance') ? (
           <p className="text-neg text-xs">{errorFor('openingBalance')}</p>
+        ) : null}
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="account-interest-rate">
+          {t('fields.interestRate')}
+        </Label>
+        <Input
+          id="account-interest-rate"
+          name="interestRate"
+          inputMode="decimal"
+          placeholder="0"
+          defaultValue={interestRateDefault}
+        />
+        <p className="text-ink-soft text-xs">{t('fields.interestRateNote')}</p>
+        {errorFor('interestRate') ? (
+          <p className="text-neg text-xs">{errorFor('interestRate')}</p>
         ) : null}
       </div>
 

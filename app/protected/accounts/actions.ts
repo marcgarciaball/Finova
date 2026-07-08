@@ -6,6 +6,7 @@ import { requireUser } from '@/lib/auth/require-user'
 import { createClient } from '@/lib/supabase/server'
 import {
   createAccountSchema,
+  parseInterestRateToBps,
   parseOpeningBalanceToCents,
   updateAccountSchema,
 } from '@/lib/validation/account'
@@ -51,6 +52,7 @@ export async function createAccount(
     type: formData.get('type'),
     currency: formData.get('currency'),
     openingBalance: formData.get('openingBalance') ?? undefined,
+    interestRate: formData.get('interestRate') ?? undefined,
   })
   if (!parsed.success) {
     return {
@@ -72,6 +74,7 @@ export async function createAccount(
       type: parsed.data.type,
       currency: parsed.data.currency,
       opening_balance: openingBalance,
+      interest_rate_bps: parseInterestRateToBps(parsed.data.interestRate),
     })
     if (error) {
       return { ok: false, error: UNEXPECTED }
@@ -96,6 +99,7 @@ export async function updateAccount(
     type: formData.get('type'),
     currency: formData.get('currency'),
     openingBalance: formData.get('openingBalance') ?? undefined,
+    interestRate: formData.get('interestRate') ?? undefined,
   })
   if (!parsed.success) {
     return {
@@ -119,6 +123,7 @@ export async function updateAccount(
         type: parsed.data.type,
         currency: parsed.data.currency,
         opening_balance: openingBalance,
+        interest_rate_bps: parseInterestRateToBps(parsed.data.interestRate),
       })
       .eq('id', parsed.data.id)
     if (error) {

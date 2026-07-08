@@ -4,6 +4,7 @@ import {
   boolean,
   check,
   index,
+  integer,
   pgPolicy,
   pgTable,
   text,
@@ -36,6 +37,11 @@ export const accounts = pgTable(
     openingBalance: bigint('opening_balance', { mode: 'number' })
       .notNull()
       .default(0),
+    // Nominal annual rate in basis points (e.g. 200 = 2.00%), for accounts
+    // that pay interest (typically 'savings'). Null = no rate set. Purely
+    // informational — drives a projected/accrued interest display, never
+    // posted as a real transaction.
+    interestRateBps: integer('interest_rate_bps'),
     archived: boolean('archived').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
@@ -54,6 +60,10 @@ export const accounts = pgTable(
       sql`${table.type} in ('checking', 'savings', 'cash', 'credit_card', 'investment')`
     ),
     check('accounts_currency_check', sql`${table.currency} ~ '^[A-Z]{3}$'`),
+    check(
+      'accounts_interest_rate_bps_check',
+      sql`${table.interestRateBps} is null or ${table.interestRateBps} between 0 and 10000`
+    ),
     index('accounts_user_id_idx').on(table.userId),
     pgPolicy('accounts_select_own', {
       for: 'select',

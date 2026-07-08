@@ -1,5 +1,6 @@
 import { getLocale, getTranslations } from 'next-intl/server'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { projectedAnnualInterestCents } from '@/lib/domain/accounts/interest'
 import type { AccountBalance } from '@/lib/domain/dashboard'
 import { format, money } from '@/lib/domain/money'
 import { cn } from '@/lib/utils'
@@ -49,6 +50,25 @@ export async function AccountsStrip({
               <span className="font-semibold text-ink tabular-nums">
                 {format(money(b.balance, b.currency), locale)}
               </span>
+              {account?.interest_rate_bps ? (
+                <span className="text-pos text-xs tabular-nums">
+                  {(account.interest_rate_bps / 100).toLocaleString(locale, {
+                    maximumFractionDigits: 2,
+                  })}
+                  % · +
+                  {format(
+                    money(
+                      projectedAnnualInterestCents(
+                        b.balance,
+                        account.interest_rate_bps
+                      ),
+                      b.currency
+                    ),
+                    locale
+                  )}
+                  /{t('perYear')}
+                </span>
+              ) : null}
             </div>
           )
         })}
