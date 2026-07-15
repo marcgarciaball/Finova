@@ -526,8 +526,7 @@
     "charts": {
       "incomeVsExpense": "Income vs expense",
       "balanceTrend": "Balance trend",
-      "spendingByCategory": "Spending by category",
-      "earnings": "How much you earn"
+      "spendingByCategory": "Spending by category"
     },
     "accountsStrip": {
       "title": "Accounts",
@@ -575,21 +574,67 @@
       "body": "Add an account or import a statement to see your dashboard come to life.",
       "addAccount": "Add an account",
       "import": "Import a statement"
+    },
+    "earnings": {
+      "title": "How much do I earn?",
+      "units": {
+        "day": "Per day",
+        "month": "Per month",
+        "year": "Per year"
+      },
+      "per": {
+        "day": "/ day",
+        "month": "/ month",
+        "year": "/ year"
+      },
+      "empty": "No income recorded yet.",
+      "basedOn": "Based on your income in {month}. Per day divides it by the days in the month; per year multiplies it by 12."
     }
   },
   "export": {
     "title": "Export your data",
     "nav": "Export",
-    "description": "Download a full copy of your data. CSV gives you the transaction ledger; JSON includes accounts, categories and transactions.",
-    "csv": {
-      "title": "Transactions (CSV)",
-      "description": "A spreadsheet-friendly ledger that re-imports cleanly.",
-      "download": "Download CSV"
+    "description": "Download a copy of your data. Pick a domain — or Everything for a full backup you can restore later. JSON is the restorable format; CSV is for spreadsheets.",
+    "domainsLegend": "What to export",
+    "domains": {
+      "everything": "Everything",
+      "transactions": "Transactions",
+      "investments": "Investments",
+      "realEstate": "Real estate"
     },
-    "json": {
-      "title": "All data (JSON)",
-      "description": "Accounts, categories and transactions in one machine-readable file.",
-      "download": "Download JSON"
+    "download": {
+      "csv": "Download CSV",
+      "json": "Download JSON"
+    },
+    "cards": {
+      "everythingJson": {
+        "title": "Full backup (JSON)",
+        "description": "Everything — transactions, investments and real estate — in one restorable file."
+      },
+      "transactionsCsv": {
+        "title": "Transactions (CSV)",
+        "description": "A spreadsheet-friendly ledger that re-imports cleanly."
+      },
+      "transactionsJson": {
+        "title": "Transactions (JSON)",
+        "description": "Accounts, categories and transactions in one restorable file."
+      },
+      "investmentsCsv": {
+        "title": "Investment transactions (CSV)",
+        "description": "Your buys, sells and other trades as a spreadsheet."
+      },
+      "investmentsJson": {
+        "title": "Investments (JSON)",
+        "description": "Portfolios, accounts and transactions in one restorable file."
+      },
+      "realEstateCsv": {
+        "title": "Properties (CSV)",
+        "description": "Your properties as a spreadsheet; loans and history stay in the JSON."
+      },
+      "realEstateJson": {
+        "title": "Real estate (JSON)",
+        "description": "Properties, loans, valuations, income and expenses in one restorable file."
+      }
     },
     "filters": {
       "legend": "What to export",
@@ -606,7 +651,7 @@
       "category": "Category",
       "allCategories": "All categories",
       "uncategorized": "Uncategorized",
-      "filteredNote": "Filters apply to both downloads. The JSON file still includes all your accounts and categories, but only the matching transactions."
+      "filteredNote": "Filters narrow the transactions in this export; accounts and categories are always included in full."
     }
   },
   "expenses": {

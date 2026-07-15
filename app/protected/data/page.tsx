@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { listAccounts } from '@/app/protected/accounts/data'
 import { ExportPanel } from '@/app/protected/export/ExportPanel'
+import { parseExportView } from '@/app/protected/export/export-view'
 import { ImportClient } from '@/app/protected/import/ImportClient'
 import { requireUser } from '@/lib/auth/require-user'
 import { DataTabs } from './DataTabs'
@@ -13,10 +14,12 @@ import { parseDataTab } from './data-tab'
 export default async function DataPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>
+  searchParams: Promise<{ tab?: string; domain?: string }>
 }) {
   await requireUser()
-  const tab = parseDataTab((await searchParams).tab)
+  const sp = await searchParams
+  const tab = parseDataTab(sp.tab)
+  const view = parseExportView(sp.domain)
 
   const [t, tImport, tExport, accounts] = await Promise.all([
     getTranslations('data'),
@@ -43,7 +46,7 @@ export default async function DataPage({
           <ImportClient accounts={accounts} />
         </div>
       ) : (
-        <ExportPanel />
+        <ExportPanel view={view} />
       )}
     </div>
   )

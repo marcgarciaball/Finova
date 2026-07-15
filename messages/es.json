@@ -526,8 +526,7 @@
     "charts": {
       "incomeVsExpense": "Ingresos vs gastos",
       "balanceTrend": "Evolución del saldo",
-      "spendingByCategory": "Gasto por categoría",
-      "earnings": "Cuánto ganas"
+      "spendingByCategory": "Gasto por categoría"
     },
     "accountsStrip": {
       "title": "Cuentas",
@@ -575,21 +574,67 @@
       "body": "Añade una cuenta o importa un extracto para ver tu panel cobrar vida.",
       "addAccount": "Añadir una cuenta",
       "import": "Importar un extracto"
+    },
+    "earnings": {
+      "title": "¿Cuánto gano?",
+      "units": {
+        "day": "Por día",
+        "month": "Por mes",
+        "year": "Por año"
+      },
+      "per": {
+        "day": "/ día",
+        "month": "/ mes",
+        "year": "/ año"
+      },
+      "empty": "Aún no hay ingresos registrados.",
+      "basedOn": "Basado en tus ingresos de {month}. Por día lo divide entre los días del mes; por año lo multiplica por 12."
     }
   },
   "export": {
     "title": "Exporta tus datos",
     "nav": "Exportar",
-    "description": "Descarga una copia completa de tus datos. El CSV contiene el libro de movimientos; el JSON incluye cuentas, categorías y movimientos.",
-    "csv": {
-      "title": "Movimientos (CSV)",
-      "description": "Un libro de movimientos compatible con hojas de cálculo que se reimporta sin problemas.",
-      "download": "Descargar CSV"
+    "description": "Descarga una copia de tus datos. Elige un dominio, o Todo para una copia de seguridad completa que puedes restaurar. El JSON es el formato restaurable; el CSV es para hojas de cálculo.",
+    "domainsLegend": "Qué exportar",
+    "domains": {
+      "everything": "Todo",
+      "transactions": "Movimientos",
+      "investments": "Inversiones",
+      "realEstate": "Inmuebles"
     },
-    "json": {
-      "title": "Todos los datos (JSON)",
-      "description": "Cuentas, categorías y movimientos en un único archivo legible por máquina.",
-      "download": "Descargar JSON"
+    "download": {
+      "csv": "Descargar CSV",
+      "json": "Descargar JSON"
+    },
+    "cards": {
+      "everythingJson": {
+        "title": "Copia completa (JSON)",
+        "description": "Todo —movimientos, inversiones e inmuebles— en un único archivo restaurable."
+      },
+      "transactionsCsv": {
+        "title": "Movimientos (CSV)",
+        "description": "Un libro de movimientos compatible con hojas de cálculo que se reimporta sin problemas."
+      },
+      "transactionsJson": {
+        "title": "Movimientos (JSON)",
+        "description": "Cuentas, categorías y movimientos en un único archivo restaurable."
+      },
+      "investmentsCsv": {
+        "title": "Movimientos de inversión (CSV)",
+        "description": "Tus compras, ventas y otras operaciones como hoja de cálculo."
+      },
+      "investmentsJson": {
+        "title": "Inversiones (JSON)",
+        "description": "Carteras, cuentas y movimientos en un único archivo restaurable."
+      },
+      "realEstateCsv": {
+        "title": "Inmuebles (CSV)",
+        "description": "Tus inmuebles como hoja de cálculo; los préstamos y el histórico van en el JSON."
+      },
+      "realEstateJson": {
+        "title": "Inmuebles (JSON)",
+        "description": "Inmuebles, préstamos, valoraciones, ingresos y gastos en un único archivo restaurable."
+      }
     },
     "filters": {
       "legend": "Qué exportar",
@@ -606,7 +651,7 @@
       "category": "Categoría",
       "allCategories": "Todas las categorías",
       "uncategorized": "Sin categoría",
-      "filteredNote": "Los filtros se aplican a ambas descargas. El archivo JSON sigue incluyendo todas tus cuentas y categorías, pero solo las transacciones que coinciden."
+      "filteredNote": "Los filtros acotan los movimientos de esta exportación; las cuentas y categorías se incluyen siempre completas."
     }
   },
   "expenses": {

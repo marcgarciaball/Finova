@@ -5,6 +5,7 @@ import type { AccountRow } from '@/lib/validation/account'
 import type { CategoryRow } from '@/lib/validation/category'
 import en from '@/messages/en.json'
 import { ExportFilters } from './ExportFilters'
+import type { ExportView } from './export-view'
 
 const account: AccountRow = {
   id: '11111111-1111-4111-8111-111111111111',
@@ -32,10 +33,10 @@ const category: CategoryRow = {
   updated_at: '2026-01-01T00:00:00Z',
 }
 
-function renderFilters() {
+function renderFilters(view: ExportView = 'transactions') {
   return render(
     <NextIntlClientProvider locale="en" messages={en}>
-      <ExportFilters accounts={[account]} categories={[category]} />
+      <ExportFilters view={view} accounts={[account]} categories={[category]} />
     </NextIntlClientProvider>
   )
 }
@@ -46,11 +47,13 @@ const jsonHref = () =>
   screen.getByRole('link', { name: /download json/i }).getAttribute('href')
 
 describe('ExportFilters', () => {
-  it('defaults to unfiltered downloads', () => {
+  it('defaults the transactions view to unfiltered downloads', () => {
     renderFilters()
     expect(csvHref()).toBe('/protected/export/transactions.csv')
-    expect(jsonHref()).toBe('/protected/export/data.json')
-    expect(screen.queryByText(/filters apply to both/i)).not.toBeInTheDocument()
+    expect(jsonHref()).toBe(
+      '/protected/export/backup.json?domains=transactions'
+    )
+    expect(screen.queryByText(/filters narrow/i)).not.toBeInTheDocument()
   })
 
   it('adds account and category params to both hrefs', () => {
@@ -65,9 +68,9 @@ describe('ExportFilters', () => {
       `/protected/export/transactions.csv?account=${account.id}&category=${category.id}`
     )
     expect(jsonHref()).toBe(
-      `/protected/export/data.json?account=${account.id}&category=${category.id}`
+      `/protected/export/backup.json?domains=transactions&account=${account.id}&category=${category.id}`
     )
-    expect(screen.getByText(/filters apply to both/i)).toBeInTheDocument()
+    expect(screen.getByText(/filters narrow/i)).toBeInTheDocument()
   })
 
   it('fills the date inputs from a preset', () => {
@@ -90,5 +93,12 @@ describe('ExportFilters', () => {
       'aria-pressed',
       'false'
     )
+  })
+
+  it('hides the filter bar and points at unfiltered routes for real estate', () => {
+    renderFilters('realEstate')
+    expect(screen.queryByLabelText('Account')).not.toBeInTheDocument()
+    expect(csvHref()).toBe('/protected/export/real-estate.csv')
+    expect(jsonHref()).toBe('/protected/export/backup.json?domains=realEstate')
   })
 })
