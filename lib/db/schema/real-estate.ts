@@ -11,6 +11,7 @@ import {
   text,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUsers } from 'drizzle-orm/supabase'
@@ -53,6 +54,7 @@ export const properties = pgTable(
     soldPriceCents: bigint('sold_price_cents', { mode: 'number' }),
     soldFeesCents: bigint('sold_fees_cents', { mode: 'number' }).default(0),
     notes: text('notes'),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -61,6 +63,9 @@ export const properties = pgTable(
       .defaultNow(),
   },
   (table) => [
+    uniqueIndex('properties_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     check(
       'properties_type_check',
       sql`${table.type} in ('primary_home', 'investment', 'vacation', 'land', 'commercial', 'other')`
@@ -141,6 +146,7 @@ export const propertyLoans = pgTable(
     lastReviewDate: date('last_review_date'),
     notes: text('notes'),
     isPaidOff: boolean('is_paid_off').notNull().default(false),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -149,6 +155,9 @@ export const propertyLoans = pgTable(
       .defaultNow(),
   },
   (table) => [
+    uniqueIndex('property_loans_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     check(
       'property_loans_loan_type_check',
       sql`${table.loanType} in ('mortgage', 'equity_release', 'personal_loan', 'developer_loan', 'other')`
@@ -219,11 +228,15 @@ export const rentalIncome = pgTable(
     tenantName: text('tenant_name'),
     isPaid: boolean('is_paid').notNull().default(true),
     notes: text('notes'),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
   },
   (table) => [
+    uniqueIndex('rental_income_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     check(
       'rental_income_currency_check',
       sql`${table.currency} ~ '^[A-Z]{3}$'`
@@ -280,11 +293,15 @@ export const propertyExpenses = pgTable(
     isRecurring: boolean('is_recurring').notNull().default(false),
     recurrence: text('recurrence'),
     notes: text('notes'),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
   },
   (table) => [
+    uniqueIndex('property_expenses_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     check(
       'property_expenses_category_check',
       sql`${table.category} in ('mortgage_payment', 'property_tax', 'community_fee', 'insurance', 'maintenance', 'management_fee', 'utilities', 'legal', 'renovation', 'vacancy', 'other')`
@@ -342,6 +359,7 @@ export const propertyValuations = pgTable(
     valueCents: bigint('value_cents', { mode: 'number' }).notNull(),
     source: text('source').default('manual'),
     notes: text('notes'),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -351,6 +369,9 @@ export const propertyValuations = pgTable(
       table.propertyId,
       table.valuationDate
     ),
+    uniqueIndex('property_valuations_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     check(
       'property_valuations_source_check',
       sql`${table.source} is null or ${table.source} in ('manual', 'appraisal', 'agent_estimate', 'zillow', 'idealista', 'other')`

@@ -145,6 +145,44 @@
     "nav": "Import",
     "title": "Import transactions",
     "subtitle": "Upload a bank CSV or Excel file, map its columns, and save a reusable template.",
+    "domainsLegend": "What to import",
+    "domains": {
+      "everything": "Everything",
+      "transactions": "Transactions",
+      "investments": "Investments",
+      "realEstate": "Real estate"
+    },
+    "comingSoon": "Import for this domain is coming soon. For now you can export it, and import Transactions or Real Estate.",
+    "realEstate": {
+      "subtitle": "Upload a Finova real-estate JSON export to restore or merge it. Re-importing the same file is safe — duplicates are skipped.",
+      "dropLabel": "Finova JSON file",
+      "reviewing": "Reading file…",
+      "review": "Review",
+      "table": "Section",
+      "tables": {
+        "properties": "Properties",
+        "loans": "Loans",
+        "valuations": "Valuations",
+        "income": "Rental income",
+        "expenses": "Expenses"
+      },
+      "cols": {
+        "new": "New",
+        "duplicate": "Skipped",
+        "error": "Errors"
+      },
+      "commit": "Import",
+      "committing": "Importing…",
+      "nothingNew": "Nothing new to import",
+      "done": "Imported {committed} new rows, skipped {skipped} duplicates.",
+      "errors": {
+        "malformed": "This file isn't valid JSON.",
+        "notFinova": "This doesn't look like a Finova export.",
+        "unsupportedVersion": "This file was made by an incompatible version of Finova.",
+        "noRealEstate": "This file has no real-estate data to import.",
+        "unexpected": "Something went wrong. Please try again."
+      }
+    },
     "commitBanner": "Review your import below, then commit when the counts look right.",
     "upload": {
       "label": "Bank CSV or Excel file",

@@ -1,9 +1,9 @@
 import { getTranslations } from 'next-intl/server'
+import { DomainTabs } from '@/app/protected/data/DomainTabs'
 import {
   listAccountsForPicker,
   listCategoriesForPicker,
 } from '@/app/protected/transactions/data'
-import { ExportDomainTabs } from './ExportDomainTabs'
 import { ExportFilters } from './ExportFilters'
 import type { ExportView } from './export-view'
 import { EXPORT_VIEWS } from './export-view'
@@ -29,11 +29,7 @@ export async function ExportPanel({ view }: { view: ExportView }) {
   return (
     <div className="flex w-full flex-1 flex-col gap-6">
       <p className="max-w-2xl text-ink-soft text-sm">{t('description')}</p>
-      <ExportDomainTabs
-        value={view}
-        ariaLabel={t('domainsLegend')}
-        labels={labels}
-      />
+      <DomainTabs value={view} ariaLabel={t('domainsLegend')} labels={labels} />
       <ExportFilters view={view} accounts={accounts} categories={categories} />
     </div>
   )

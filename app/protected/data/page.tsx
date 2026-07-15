@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server'
 import { listAccounts } from '@/app/protected/accounts/data'
 import { ExportPanel } from '@/app/protected/export/ExportPanel'
 import { parseExportView } from '@/app/protected/export/export-view'
-import { ImportClient } from '@/app/protected/import/ImportClient'
+import { ImportPanel } from '@/app/protected/import/ImportPanel'
 import { requireUser } from '@/lib/auth/require-user'
 import { DataTabs } from './DataTabs'
 import { parseDataTab } from './data-tab'
@@ -19,7 +19,12 @@ export default async function DataPage({
   await requireUser()
   const sp = await searchParams
   const tab = parseDataTab(sp.tab)
-  const view = parseExportView(sp.domain)
+  // Import defaults to Transactions (the functional path); Export to Everything.
+  const view = sp.domain
+    ? parseExportView(sp.domain)
+    : tab === 'import'
+      ? 'transactions'
+      : 'everything'
 
   const [t, tImport, tExport, accounts] = await Promise.all([
     getTranslations('data'),
@@ -41,10 +46,7 @@ export default async function DataPage({
       </div>
 
       {tab === 'import' ? (
-        <div className="flex flex-col gap-1">
-          <p className="text-ink-soft text-sm">{tImport('subtitle')}</p>
-          <ImportClient accounts={accounts} />
-        </div>
+        <ImportPanel view={view} accounts={accounts} />
       ) : (
         <ExportPanel view={view} />
       )}

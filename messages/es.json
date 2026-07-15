@@ -145,6 +145,44 @@
     "nav": "Importar",
     "title": "Importar transacciones",
     "subtitle": "Sube un CSV o Excel del banco, asigna sus columnas y guarda una plantilla reutilizable.",
+    "domainsLegend": "Qué importar",
+    "domains": {
+      "everything": "Todo",
+      "transactions": "Movimientos",
+      "investments": "Inversiones",
+      "realEstate": "Inmuebles"
+    },
+    "comingSoon": "La importación de este dominio llegará pronto. Por ahora puedes exportarlo e importar Movimientos o Inmuebles.",
+    "realEstate": {
+      "subtitle": "Sube un JSON de inmuebles exportado de Finova para restaurarlo o fusionarlo. Reimportar el mismo archivo es seguro: los duplicados se omiten.",
+      "dropLabel": "Archivo JSON de Finova",
+      "reviewing": "Leyendo archivo…",
+      "review": "Revisión",
+      "table": "Sección",
+      "tables": {
+        "properties": "Inmuebles",
+        "loans": "Préstamos",
+        "valuations": "Valoraciones",
+        "income": "Ingresos por alquiler",
+        "expenses": "Gastos"
+      },
+      "cols": {
+        "new": "Nuevos",
+        "duplicate": "Omitidos",
+        "error": "Errores"
+      },
+      "commit": "Importar",
+      "committing": "Importando…",
+      "nothingNew": "Nada nuevo que importar",
+      "done": "Importadas {committed} filas nuevas; {skipped} duplicadas omitidas.",
+      "errors": {
+        "malformed": "Este archivo no es un JSON válido.",
+        "notFinova": "Esto no parece una exportación de Finova.",
+        "unsupportedVersion": "Este archivo se creó con una versión incompatible de Finova.",
+        "noRealEstate": "Este archivo no contiene datos de inmuebles para importar.",
+        "unexpected": "Algo salió mal. Inténtalo de nuevo."
+      }
+    },
     "commitBanner": "Revisa tu importación abajo y confírmala cuando los totales sean correctos.",
     "upload": {
       "label": "Archivo CSV o Excel del banco",

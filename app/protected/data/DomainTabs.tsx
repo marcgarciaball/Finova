@@ -1,16 +1,19 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import {
+  EXPORT_VIEWS,
+  type ExportView,
+} from '@/app/protected/export/export-view'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
-import type { ExportView } from './export-view'
-import { EXPORT_VIEWS } from './export-view'
 
 /**
- * Domain selector for the Export tab (Spec A). URL-driven (`?domain=`) so each
- * view is a shareable, server-rendered surface — same pattern as `DataTabs`.
- * Preserves the sibling `?tab=export` param.
+ * Domain selector shared by the Import and Export tabs (Spec A/B). URL-driven
+ * (`?domain=`) so each view is a shareable, server-rendered surface — same
+ * pattern as `DataTabs`. The four domains are the same in both directions; the
+ * `?tab=` param is preserved.
  */
-export function ExportDomainTabs({
+export function DomainTabs({
   value,
   ariaLabel,
   labels,
