@@ -869,7 +869,12 @@
     "incomeForm": {
       "periodStart": "Inicio del periodo",
       "periodEnd": "Fin del periodo",
+      "amountKind": "Cómo lo introduces",
+      "amountKindMonthly": "Alquiler mensual",
+      "amountKindTotal": "Total del periodo",
       "amount": "Importe cobrado",
+      "amountMonthly": "Alquiler al mes",
+      "computedTotal": "Total del periodo: {amount}",
       "tenantName": "Inquilino (opcional)",
       "notes": "Notas",
       "submit": "Guardar ingreso"

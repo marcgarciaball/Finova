@@ -178,6 +178,60 @@ export function annualizedRentCents(
   return Math.round((totalCents / spanDays) * DAYS_PER_YEAR)
 }
 
+/** `iso` + `n` calendar months, clamping to the target month's last day. */
+function addMonthsClamped(iso: string, n: number): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  const targetMonthStart = Date.UTC(
+    (y ?? 0) + Math.floor(((m ?? 1) - 1 + n) / 12),
+    ((m ?? 1) - 1 + n) % 12,
+    1
+  )
+  const t = new Date(targetMonthStart)
+  const lastDay = new Date(
+    Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)
+  ).getUTCDate()
+  t.setUTCDate(Math.min(d ?? 1, lastDay))
+  return t.toISOString().slice(0, 10)
+}
+
+/**
+ * Calendar-aware month count for the inclusive period [start, end]:
+ * whole months anchored on the start day count as exactly 1 (Jan 1–31,
+ * or the 15th through the next 14th); a trailing partial month is
+ * prorated by that month's own length.
+ */
+export function monthsInPeriod(startIso: string, endIso: string): number {
+  // `addMonthsClamped(start, k)` is the first day AFTER k whole months, so
+  // the k-th month fits while that day is at most end + 1 day.
+  let whole = 0
+  let cursor = startIso
+  for (;;) {
+    const next = addMonthsClamped(startIso, whole + 1)
+    if (utcDay(next) > utcDay(endIso) + MS_PER_DAY) {
+      break
+    }
+    whole += 1
+    cursor = next
+  }
+  const remainderDays =
+    (utcDay(endIso) + MS_PER_DAY - utcDay(cursor)) / MS_PER_DAY
+  if (remainderDays === 0) {
+    return whole
+  }
+  const monthLengthDays =
+    (utcDay(addMonthsClamped(cursor, 1)) - utcDay(cursor)) / MS_PER_DAY
+  return whole + remainderDays / monthLengthDays
+}
+
+/** Period total from a monthly rent, using calendar-aware month counting. */
+export function totalFromMonthlyRentCents(
+  monthlyCents: number,
+  startIso: string,
+  endIso: string
+): number {
+  return Math.round(monthlyCents * monthsInPeriod(startIso, endIso))
+}
+
 /** Gross rental yield: annual rent over cost basis, in percent. */
 export function grossYieldPct(
   p: PropertySnapshot,

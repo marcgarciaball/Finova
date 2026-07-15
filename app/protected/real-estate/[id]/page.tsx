@@ -262,7 +262,11 @@ export default async function PropertyDetailPage({
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-semibold text-lg">{t('detail.incomeTitle')}</h2>
-          <AddIncomeButton propertyId={property.id} todayIso={todayIso} />
+          <AddIncomeButton
+            propertyId={property.id}
+            currency={ccy}
+            todayIso={todayIso}
+          />
         </div>
         <GlassCard className="overflow-x-auto">
           {incomes.length === 0 ? (

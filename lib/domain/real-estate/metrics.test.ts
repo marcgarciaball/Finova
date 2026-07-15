@@ -9,6 +9,7 @@ import {
   incomeInRangeCents,
   ltvPct,
   MixedCurrencyError,
+  monthsInPeriod,
   netYieldPct,
   outstandingDebtCents,
   type PropertyExpenseEvent,
@@ -16,6 +17,7 @@ import {
   type PropertySnapshot,
   type RentalIncomeEvent,
   roiPct,
+  totalFromMonthlyRentCents,
 } from './metrics'
 
 function property(overrides: Partial<PropertySnapshot> = {}): PropertySnapshot {
@@ -241,6 +243,47 @@ describe('roiPct', () => {
     expect(
       roiPct(property({ purchasePriceCents: 0, purchaseFeesCents: 0 }), 0, 0)
     ).toBeNull()
+  })
+})
+
+describe('monthsInPeriod', () => {
+  it('counts a full calendar month as exactly 1', () => {
+    expect(monthsInPeriod('2026-01-01', '2026-01-31')).toBe(1)
+    expect(monthsInPeriod('2026-02-01', '2026-02-28')).toBe(1)
+  })
+
+  it('counts anchored month spans as whole months', () => {
+    // 15th through the 14th of the next month = 1 month
+    expect(monthsInPeriod('2026-01-15', '2026-02-14')).toBe(1)
+    expect(monthsInPeriod('2026-01-15', '2026-07-14')).toBe(6)
+  })
+
+  it('prorates a partial month by its own length', () => {
+    expect(monthsInPeriod('2026-01-01', '2026-01-15')).toBeCloseTo(15 / 31, 6)
+    // one full month + half of February
+    expect(monthsInPeriod('2026-01-01', '2026-02-14')).toBeCloseTo(
+      1 + 14 / 28,
+      6
+    )
+  })
+
+  it('handles month-end anchors without overflowing', () => {
+    // Jan 31 + 1 month clamps to Feb 28; the whole of February counts as 1
+    expect(monthsInPeriod('2026-01-31', '2026-02-27')).toBeCloseTo(1, 6)
+  })
+})
+
+describe('totalFromMonthlyRentCents', () => {
+  it('multiplies the monthly rent by whole months', () => {
+    expect(totalFromMonthlyRentCents(120_000, '2026-01-01', '2026-06-30')).toBe(
+      720_000
+    )
+  })
+
+  it('prorates partial months', () => {
+    expect(totalFromMonthlyRentCents(120_000, '2026-01-01', '2026-01-15')).toBe(
+      Math.round((120_000 * 15) / 31)
+    )
   })
 })
 

@@ -869,7 +869,12 @@
     "incomeForm": {
       "periodStart": "Period start",
       "periodEnd": "Period end",
+      "amountKind": "How you enter it",
+      "amountKindMonthly": "Monthly rent",
+      "amountKindTotal": "Total for the period",
       "amount": "Amount received",
+      "amountMonthly": "Rent per month",
+      "computedTotal": "Total for the period: {amount}",
       "tenantName": "Tenant (optional)",
       "notes": "Notes",
       "submit": "Save income"

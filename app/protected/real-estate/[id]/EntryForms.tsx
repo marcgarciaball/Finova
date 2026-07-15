@@ -1,7 +1,7 @@
 'use client'
 
 import { Pencil } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { type ReactNode, useActionState, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/Checkbox'
@@ -13,6 +13,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
+import { format, money } from '@/lib/domain/money'
+import { totalFromMonthlyRentCents } from '@/lib/domain/real-estate/metrics'
 import {
   EXPENSE_CATEGORIES,
   LOAN_TYPES,
@@ -350,9 +352,11 @@ function EditLoanForm({
 
 export function AddIncomeButton({
   propertyId,
+  currency,
   todayIso,
 }: {
   propertyId: string
+  currency: string
   todayIso: string
 }) {
   const t = useTranslations('realEstate')
@@ -361,6 +365,7 @@ export function AddIncomeButton({
       {(onDone) => (
         <IncomeForm
           propertyId={propertyId}
+          currency={currency}
           todayIso={todayIso}
           onDone={onDone}
         />
@@ -371,18 +376,48 @@ export function AddIncomeButton({
 
 function IncomeForm({
   propertyId,
+  currency,
   todayIso,
   onDone,
 }: {
   propertyId: string
+  currency: string
   todayIso: string
   onDone: () => void
 }) {
   const t = useTranslations('realEstate')
+  const locale = useLocale()
   const { errorFor, formAction, formError, pending } = useEntryForm(
     createRentalIncome,
     onDone
   )
+  const [amountKind, setAmountKind] = useState<'total' | 'monthly'>('monthly')
+  const [amount, setAmount] = useState('')
+  const [periodStart, setPeriodStart] = useState('')
+  const [periodEnd, setPeriodEnd] = useState('')
+
+  // Live preview of the period total when a monthly rent is entered — the
+  // exact number the server will store (same domain function).
+  let computedTotal: string | null = null
+  if (
+    amountKind === 'monthly' &&
+    /^\d+([.,]\d{1,2})?$/.test(amount.trim()) &&
+    periodStart &&
+    periodEnd &&
+    periodEnd >= periodStart
+  ) {
+    const monthlyCents = Math.round(
+      Number(amount.trim().replace(',', '.')) * 100
+    )
+    computedTotal = format(
+      money(
+        totalFromMonthlyRentCents(monthlyCents, periodStart, periodEnd),
+        currency
+      ),
+      locale
+    )
+  }
+
   return (
     <FormShell
       formAction={formAction}
@@ -402,6 +437,8 @@ function IncomeForm({
             name="periodStart"
             type="date"
             max={todayIso}
+            value={periodStart}
+            onChange={(e) => setPeriodStart(e.target.value)}
             required
           />
         </Field>
@@ -410,26 +447,58 @@ function IncomeForm({
           label={t('incomeForm.periodEnd')}
           error={errorFor('periodEnd')}
         >
-          <Input id="income-end" name="periodEnd" type="date" required />
+          <Input
+            id="income-end"
+            name="periodEnd"
+            type="date"
+            value={periodEnd}
+            onChange={(e) => setPeriodEnd(e.target.value)}
+            required
+          />
         </Field>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field id="income-amount-kind" label={t('incomeForm.amountKind')}>
+          <select
+            id="income-amount-kind"
+            name="amountKind"
+            value={amountKind}
+            onChange={(e) =>
+              setAmountKind(e.target.value === 'total' ? 'total' : 'monthly')
+            }
+            className={SELECT_CLASS}
+          >
+            <option value="monthly">{t('incomeForm.amountKindMonthly')}</option>
+            <option value="total">{t('incomeForm.amountKindTotal')}</option>
+          </select>
+        </Field>
         <Field
           id="income-amount"
-          label={t('incomeForm.amount')}
+          label={
+            amountKind === 'monthly'
+              ? t('incomeForm.amountMonthly')
+              : t('incomeForm.amount')
+          }
           error={errorFor('amount')}
         >
           <Input
             id="income-amount"
             name="amount"
             inputMode="decimal"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             required
           />
         </Field>
-        <Field id="income-tenant" label={t('incomeForm.tenantName')}>
-          <Input id="income-tenant" name="tenantName" maxLength={120} />
-        </Field>
       </div>
+      {computedTotal ? (
+        <p className="text-ink-soft text-sm">
+          {t('incomeForm.computedTotal', { amount: computedTotal })}
+        </p>
+      ) : null}
+      <Field id="income-tenant" label={t('incomeForm.tenantName')}>
+        <Input id="income-tenant" name="tenantName" maxLength={120} />
+      </Field>
       <Field id="income-notes" label={t('incomeForm.notes')}>
         <Input id="income-notes" name="notes" maxLength={500} />
       </Field>

@@ -214,6 +214,8 @@ export const createRentalIncomeSchema = z
     propertyId: z.string().uuid(),
     periodStart: isoDateSchema,
     periodEnd: isoDateSchema,
+    /** How `amount` is meant: the period total, or a monthly rent. */
+    amountKind: z.enum(['total', 'monthly']).default('total'),
     amount: decimalString,
     tenantName: optionalText(120),
     isPaid: z.boolean().default(true),

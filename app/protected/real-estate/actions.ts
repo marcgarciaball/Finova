@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { requireUser } from '@/lib/auth/require-user'
 import { fromDecimal } from '@/lib/domain/money'
+import { totalFromMonthlyRentCents } from '@/lib/domain/real-estate/metrics'
 import { createClient } from '@/lib/supabase/server'
 import {
   createExpenseSchema,
@@ -368,6 +369,7 @@ export async function createRentalIncome(
   const claims = await requireUser()
   const parsed = createRentalIncomeSchema.safeParse({
     amount: formData.get('amount'),
+    amountKind: formData.get('amountKind') || undefined,
     isPaid: formData.get('isPaid') !== 'off',
     notes: formData.get('notes') ?? undefined,
     periodEnd: formData.get('periodEnd'),
@@ -388,9 +390,20 @@ export async function createRentalIncome(
   if (!property) {
     return { ok: false, error: UNEXPECTED }
   }
+  // A monthly amount is expanded to the period total here, calendar-aware;
+  // the row always stores the total received.
+  const enteredCents = toCents(input.amount, property.currency)
+  const amountCents =
+    input.amountKind === 'monthly'
+      ? totalFromMonthlyRentCents(
+          enteredCents,
+          input.periodStart,
+          input.periodEnd
+        )
+      : enteredCents
   const supabase = await createClient()
   const { error } = await supabase.from('rental_income').insert({
-    amount_cents: toCents(input.amount, property.currency),
+    amount_cents: amountCents,
     currency: property.currency,
     is_paid: input.isPaid,
     notes: input.notes ?? null,
