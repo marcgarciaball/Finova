@@ -105,3 +105,74 @@ RLS read tests follow the existing skip-without-`TEST_DATABASE_URL` pattern.
 - Child real-estate tables (loans/valuations/income/expenses) ride in JSON only; CSV covers
   the flat parent rows.
 - No import behavior in Spec A. The envelope is the forward contract; Spec B consumes it.
+
+---
+
+## Spec B — Round-trip import engine + Real Estate import
+
+Consumes the Spec A envelope. Real Estate first because it is fully user-owned (no
+asset resolution, no service-role writes). Transactions-from-JSON and the "Everything"
+restore are Spec D; Investments is Spec C.
+
+### Idempotency: DB fingerprint columns
+
+Add a nullable `import_fingerprint text` column + a partial unique index
+`(user_id, import_fingerprint) WHERE import_fingerprint IS NOT NULL` to each round-trip
+table (migration 0017: `properties`, `property_loans`, `property_valuations`,
+`rental_income`, `property_expenses`). Mirrors the transactions import: `ON CONFLICT
+(user_id, import_fingerprint) DO NOTHING` is the concurrency backstop; app-layer
+fingerprinting still classifies new/duplicate at review time (so a manually-created row
+that matches an incoming one is also recognised, since its stored fingerprint is NULL).
+Manual CRUD never sets the column, so existing flows are untouched.
+
+### Content fingerprints (id-independent)
+
+`fnv1a` over a canonical key (reusing `lib/domain/import/fingerprint.ts`). The child key
+embeds the **parent** fingerprint, not its id, so it survives the id remap:
+
+- property: `name | type | purchase_date | purchase_price_cents | currency`
+- loan: `propertyFp | lender_name | start_date | original_amount_cents`
+- valuation: `propertyFp | valuation_date | value_cents`
+- income: `propertyFp | period_start | period_end | amount_cents`
+- expense: `propertyFp | expense_date | category | amount_cents | description`
+
+### Engine (`lib/domain/import/backup/`, pure)
+
+- `parseBackup(json)` → validates envelope (`meta.app === 'finova'`,
+  `meta.schemaVersion === BACKUP_SCHEMA_VERSION`, else a typed error), then zod-parses each
+  present domain through the existing row schemas. Rows carry export ids only as transient
+  keys; they are never trusted as DB ids.
+- `planRealEstateImport(parsed, existing)` → pure. `existing` is the set of the user's
+  current fingerprints (parents + children). Computes each incoming row's fingerprint,
+  classifies `new | duplicate`, resolves every child to its parent by the parent's
+  fingerprint, and returns `{ counts: perTable {new,duplicate}, inserts: ordered plan }`.
+  A child whose parent is a duplicate still inserts if the child itself is new (partial
+  merge); a child orphaned by a bad file is dropped to an `error` count, never guessed.
+
+### Read + commit (`app/protected/import/real-estate/`)
+
+- `data.ts#getRealEstateFingerprints()` — RLS read of the five tables projected to the
+  columns each fingerprint needs; returns the existing-fingerprint set + a parentFp→id map.
+- `actions.ts#commitRealEstateBackup(parsed)` — `requireUser()`, RLS server client (all
+  rows user-owned, no service role). Insert properties first (new `gen_random_uuid`,
+  `user_id` from JWT, `import_fingerprint` set, `onConflict(user_id,import_fingerprint)
+  ignore`), read back the resolved ids, then insert children with remapped `property_id`.
+  Returns `{ committed, skipped, errors }` per table. `current_value_cents` is taken from
+  the imported property as-is (valuations are data, not recomputed).
+
+### UI (Import tab)
+
+Add the same domain selector as Export (`?domain=`). Transactions keeps its external-bank
+wizard. Real Estate renders a round-trip flow: drop/upload a Finova JSON → `parseBackup`
+→ a review card showing per-table new/duplicate/error counts → Commit. Investments and
+Everything show a "coming soon" note (Specs C/D).
+
+### Tests
+
+Pure: `parseBackup` (version/app/shape rejection), `planRealEstateImport`
+(new/duplicate/partial-merge/parent-remap/orphan-drop), fingerprint stability. RLS commit
+idempotency test in the skip-without-`TEST_DATABASE_URL` pattern.
+
+### Pending human step
+
+`npm run db:migrate` for 0017 before the Real Estate import can run.
