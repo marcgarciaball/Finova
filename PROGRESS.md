@@ -184,3 +184,39 @@ Work one ticket at a time, one PR each. Do not start a phase until the prior pha
 | P5-06 | Performance/polish: loading states, errors, mobile responsive; **paginate/virtualize the transactions list + import for multi-year statements (thousands of rows)** | Frontend | TODO |
 | P5-07 | Privacy/terms + "not financial advice" notices | Frontend | TODO |
 | **Gate** | e2e smoke: sign up → import → categorize → dashboard → export → delete | Coordinator | TODO |
+
+---
+
+> **Out-of-sequence modules (built 2026-07-06 → 2026-07-15).** The two modules below were user-prompted and built ahead of the numbered-phase plan above. On the product roadmap they map to **Phase 4 "Net worth tracking: accounts + cash + manual assets/liabilities"** (Real Estate) and **Phase 7 "crypto/asset tracking"** (Investments) — but both shipped early because they feed the net-worth picture the dashboard is built around. They are **not** a substitute for the Phase 1 remainder or Phase 5 hardening, and neither has had its manual browser gate. **Pending human step for both: `npm run db:migrate`** (migrations 0013–0016, listed per module).
+
+## Module — Investments (Inversiones) — REVIEW
+*Manual portfolio tracker. Branch `feat/component-foundation`. Design spec: `docs/superpowers/plans/2026-07-06-investments-foundation.md` (+ `2026-07-07-investments-providers.md`). Detailed slice ledger: `.superpowers/sdd/progress.md` (2026-07-06 session).*
+
+| ID | Ticket | Status |
+|----|--------|--------|
+| INV-A1 | Schema + RLS: 10 tables (`portfolios`, `investment_accounts`, `investment_transactions`, derived `holdings`/`portfolio_snapshots`, shared `assets`/`cached_quotes`/`historical_prices`/`dividend_events`/`fx_rates`); migration **0013** | REVIEW — **db:migrate pending** |
+| INV-A2 | Pure domain core (`lib/domain/investments/`): average-cost holdings, valuation, portfolio rollup, dividends, value history — oversell + mixed-currency guarded, TDD | REVIEW |
+| INV-A3 | Provider layer (`lib/investments/providers/`): Finnhub (quotes), CoinGecko (crypto), Frankfurter/ECB + FMP `/stable` (FX, history, dividends); derived/shared writes via service-role `lib/supabase/admin.ts` | REVIEW |
+| INV-A4 | Add-transaction UI: asset search-as-you-type (debounced), buy/sell form, inline synchronous quote+FX fetch at add time | REVIEW |
+| INV-A5 | Price-refresh job + cron route (`app/api/investments/refresh`); `sync_state` table (migration **0014**) throttles slow syncs by last-ATTEMPT time (20h TTL) after a quota-burn incident | REVIEW — **db:migrate pending** |
+| INV-B | Portfolio overview: KPIs, allocation donuts, holdings table; net-worth integration on the dashboard | REVIEW |
+| INV-C | Tabbed screen (overview / income / transactions), edit+delete transactions, dividend income tab, real daily-value chart with buy/sell trade markers + period P/L | REVIEW |
+| **Gate** | add asset → see quote → history backfills → dividends/income → folds into dashboard net worth | TODO — browser + live-provider verification |
+
+**Notes:** Locked decisions — average-cost holdings; derived/shared tables are SELECT-only for users (all provider writes go through the service-role client); `sync_state` throttles by attempt-time not data-freshness (an EOD-lag freshness check burned FMP quota — commits `1fb5df4`/`16ab76f`); new transactions get an inline quote+FX fetch (`c99faf0`) so a freshly-added asset shows a price immediately. Money stays integer cents + ISO currency; the only non-integer numerics are `quantity`/`fx rate` (≤8dp) and `amount_per_share` (≤6dp); never sums across currencies without a real rate. **Verify in browser + against live providers** (needs `FINNHUB_API_KEY`/FMP key + a migrated DB — none available in-sandbox).
+
+## Module — Real Estate — REVIEW
+*Manual property portfolio + net-worth contributor. Branch `feat/component-foundation`. No standalone plan doc (built inline; outline-only per the lean-plans convention).*
+
+| ID | Ticket | Status |
+|----|--------|--------|
+| RE-01 | Schema + RLS: `properties`, `property_loans`, `property_valuations`, `rental_income`, `property_expenses`; owner-scoped default-deny; migration **0016** | REVIEW — **db:migrate pending** |
+| RE-02 | Pure portfolio math (`lib/domain/real-estate/metrics.ts`, TDD): `costBasis`, `outstandingDebt`, `equity`, `ltvPct`, income-in-range, `annualizedRent`, gross/net yield, `cashFlow`, `roiPct`, `aggregatePortfolio` — per-currency rollup | REVIEW |
+| RE-03 | Validation schemas + RLS read layer + CRUD server actions (properties/loans/income/expenses/valuations) | REVIEW |
+| RE-04 | Real Estate tab: portfolio overview, property cards, add-property flow | REVIEW |
+| RE-05 | Property detail: valuation-history chart, loans, income, expenses; entry forms + row actions | REVIEW |
+| RE-06 | Rental income entered as monthly rent with a computed period total (`totalFromMonthlyRent`); property types (primary_home/investment/vacation/land/commercial/other), loan/rate types, expense categories, recurrences | REVIEW |
+| RE-07 | Property **equity folds into dashboard net worth** + wealth allocation (`WealthAllocation.tsx`) | REVIEW |
+| **Gate** | add property → valuations/loans/income/expenses → equity + yields correct → folds into net worth | TODO — browser verification |
+
+**Notes:** Same money invariants as the rest of the app (integer cents, per-currency, no invented FX — equity folds into net worth only when the property currency matches the display currency). All amounts bigint-cents with DB check constraints (`>= 0`). **Verify in browser** with a migrated DB.

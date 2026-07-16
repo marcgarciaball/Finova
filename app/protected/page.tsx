@@ -42,6 +42,7 @@ import { CurrencyBreakdown } from './CurrencyBreakdown'
 import { DashboardEmptyState } from './DashboardEmptyState'
 import { DataHealthBanner } from './DataHealthBanner'
 import { getDashboardData } from './data'
+import { EarningsCard } from './EarningsCard'
 import { GranularitySelector } from './GranularitySelector'
 import { InsightsPlaceholder } from './InsightsPlaceholder'
 import { getInvestmentsIncome } from './investments/income-data'
@@ -199,27 +200,6 @@ export default async function DashboardPage({
 
   const months = incomeExpenseSeries(periodTxns, granularity)[currency] ?? []
   const bars = monthlySeriesToBars(months)
-
-  // Earnings over time: income per bucket (same granularity), dividends
-  // folded into their pay-date bucket so the chart matches the KPI total.
-  const bucketLen = granularity === 'day' ? 10 : granularity === 'month' ? 7 : 4
-  const earningsByBucket = new Map<string, number>(
-    months.map((b) => [b.period, b.income])
-  )
-  if (invIncome.baseCurrency === currency) {
-    for (const e of invIncome.receivedEventsBase) {
-      if (
-        (periodStart === null || e.date >= periodStart) &&
-        e.date <= todayIso
-      ) {
-        const key = e.date.slice(0, bucketLen)
-        earningsByBucket.set(key, (earningsByBucket.get(key) ?? 0) + e.cents)
-      }
-    }
-  }
-  const earningsBars = [...earningsByBucket.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([period, cents]) => ({ period, income: cents / 100 }))
   const area = balanceTrendToArea(trend)
   const balanceSparkline = trend.map((p) => p.balance / 100)
 
@@ -261,43 +241,53 @@ export default async function DashboardPage({
     }
   })
 
-  const income = incomeByCategory(periodTxns)[currency] ?? []
-  const prevIncome = incomeByCategory(prevTxns)[currency] ?? []
-  const prevIncomeByCategory = new Map(
-    prevIncome.map(
-      (s) => [s.categoryId ?? '__uncategorized__', s.total] as const
-    )
+  // Earnings card: one concrete reference month (e.g. "salary in June"),
+  // independent of the period selector. Prefer the current month; if it has
+  // no income yet (salary not arrived), fall back to the latest earning month.
+  const currentMonth = todayIso.slice(0, 7)
+  const dividendMonthCents = (month: string): number =>
+    invIncome.baseCurrency === currency
+      ? invIncome.receivedEventsBase
+          .filter((e) => e.date.slice(0, 7) === month && e.date <= todayIso)
+          .reduce((sum, e) => sum + e.cents, 0)
+      : 0
+  const earningMonths = new Set<string>([
+    ...(incomeExpenseSeries(txns, 'month')[currency] ?? [])
+      .filter((b) => b.income > 0)
+      .map((b) => b.period),
+    ...(invIncome.baseCurrency === currency
+      ? invIncome.receivedEventsBase
+          .filter((e) => e.date <= todayIso)
+          .map((e) => e.date.slice(0, 7))
+      : []),
+  ])
+  const earningsMonth = earningMonths.has(currentMonth)
+    ? currentMonth
+    : ([...earningMonths].sort().at(-1) ?? currentMonth)
+  const monthTxns = txns.filter(
+    (x) => x.occurred_at.slice(0, 7) === earningsMonth
   )
-  const incomeRows = [
-    ...income.map((s) => {
-      const key = s.categoryId ?? '__uncategorized__'
-      return {
-        key,
-        label: labelFor(s.categoryId),
-        icon: iconFor(s.categoryId),
-        total: s.total,
-        trend: trendOf(s.total, prevIncomeByCategory.get(key) ?? 0),
-      }
-    }),
-    // dividendCents computed with the KPI totals above (same source of truth).
-    ...(dividendCents > 0
+  const monthDividends = dividendMonthCents(earningsMonth)
+  const earningsRows = [
+    ...(incomeByCategory(monthTxns)[currency] ?? []).map((s) => ({
+      key: s.categoryId ?? '__uncategorized__',
+      label: labelFor(s.categoryId),
+      icon: iconFor(s.categoryId),
+      cents: s.total,
+    })),
+    ...(monthDividends > 0
       ? [
           {
             key: '__dividends__',
             label: t('ranking.dividends'),
             icon: <CategoryIcon iconName="HandCoins" />,
-            total: dividendCents,
-            trend: trendOf(dividendCents, prevDividendCents),
+            cents: monthDividends,
           },
         ]
       : []),
-  ].sort((a, b) => b.total - a.total)
-  const incomeTotal = incomeRows.reduce((sum, r) => sum + r.total, 0)
-  const incomeRanking: RankRow[] = incomeRows.map((r) => ({
-    ...r,
-    share: incomeTotal === 0 ? 0 : r.total / incomeTotal,
-    currency,
-  }))
+  ].sort((a, b) => b.cents - a.cents)
+  const [ey, em] = earningsMonth.split('-').map(Number) as [number, number]
+  const earningsDaysInMonth = new Date(Date.UTC(ey, em, 0)).getUTCDate()
 
   const accountById = new Map(accounts.map((a) => [a.id, a] as const))
   const accountRanking: RankRow[] = (
@@ -437,26 +427,13 @@ export default async function DashboardPage({
             data={bars.data}
           />
         </GlassCard>
-        <SpendingRanking
-          className="col-span-12 lg:col-span-5"
-          title={t('ranking.incomeSources')}
-          rows={incomeRanking}
-          locale={locale}
-          emptyLabel={t('ranking.empty')}
+        <EarningsCard
+          className="col-span-12"
+          rows={earningsRows}
+          monthIso={earningsMonth}
+          daysInMonth={earningsDaysInMonth}
+          currency={currency}
         />
-        <GlassCard className="col-span-12 flex flex-col gap-4 lg:col-span-7">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
-              {t('charts.earnings')}
-            </h3>
-            <GranularitySelector value={granularity} />
-          </div>
-          <BarChart
-            index="period"
-            categories={['income']}
-            data={earningsBars}
-          />
-        </GlassCard>
       </BandSection>
 
       {/* Band 3 — Where does my money go? */}

@@ -31,7 +31,7 @@ export function HeroCard({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-900 to-brand-700 p-6 text-white shadow-glass',
+        '@container relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-900 to-brand-700 p-6 text-white shadow-glass',
         className
       )}
     >
@@ -52,7 +52,7 @@ export function HeroCard({
           suffix={suffix}
           currency={currency}
           locale={locale}
-          className="text-white"
+          className="text-[clamp(1.5rem,11cqi,2.25rem)] text-white"
         />
         {delta !== undefined && (
           <span className="inline-flex w-fit items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 font-medium text-sm tabular-nums">

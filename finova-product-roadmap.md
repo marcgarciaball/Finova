@@ -67,6 +67,9 @@ This is the **product** plan: what we're building, in what order, and why. The g
 | **5** | Hardening & Release | Settings, GDPR, i18n/a11y/security/perf passes, legal — takes the built MVP to shippable | ⬜ Not started | No |
 | **6** | Bank Connections | Automatic transaction import via PSD2 aggregator | ⬜ Not started | **Yes** |
 | **7** | Beyond | Crypto/e-wallets, receipts/OCR, advanced AI coaching, native apps | ⬜ Not started | Yes |
+| **★** | **Net-worth modules** (built ahead of sequence) | **Investments** (manual portfolio) + **Real Estate** (property portfolio) — feed the net-worth picture | 🔨 **built (verify)** | No |
+
+> **Sequencing note (2026-07):** Two modules were built ahead of the numbered plan — **Investments** (2026-07-06→08) and **Real Estate** (2026-07-08→15). They map to Phase 4's "net worth tracking" and Phase 7's "crypto/asset tracking," but shipped early because they populate the net-worth picture the dashboard is built around. See **"★ Net-worth modules"** below. They do **not** replace the Phase 1 remainder or Phase 5 hardening.
 
 ---
 
@@ -287,7 +290,7 @@ _New data model work: `budgets`, `goals`, and the recurring/scheduled-transactio
 - ⬜ **Per-member visibility / permissions** in shared spaces.
 - ⬜ **Photo attachment** per transaction.
 - ⬜ **Location** per transaction → powers the dashboard "places map".
-- ⬜ **Net worth tracking**: accounts + cash + manual assets/liabilities over time.
+- 🔨 **Net worth tracking**: accounts + cash + manual assets/liabilities over time. _Delivered early by the ★ Net-worth modules: investments' portfolio value and real-estate equity both fold into dashboard net worth (per currency). Manual generic assets/liabilities and an over-time net-worth series are still open._
 
 ---
 
@@ -304,6 +307,29 @@ _New data model work: `budgets`, `goals`, and the recurring/scheduled-transactio
 - ⬜ **P5-07 Legal**: privacy/terms + "not financial advice" notices.
 
 **Release gate:** e2e smoke — sign up → import → categorize → dashboard → export → delete; observability (logging + error tracking) and a verified backup/restore are live.
+
+---
+
+# ★ Net-worth modules (built ahead of sequence) — 🔨 built (verify)
+
+> Built 2026-07-06 → 2026-07-15 on `feat/component-foundation`, ahead of the numbered phases, because they populate the net-worth picture the dashboard is built around. Same core stance as the rest of the app: **money is integer cents + ISO currency, no FX rate is ever invented** (per-currency totals; a value folds into net worth only when its currency matches the display currency). Engineering tickets live in [`PROGRESS.md`](PROGRESS.md) under "Module — Investments" and "Module — Real Estate." **Both need `npm run db:migrate` (migrations 0013–0016) and a manual browser/QA pass before flipping to ✅.**
+
+### Investments (Inversiones) — a manual portfolio tracker
+- 🔨 **Holdings & transactions**: buy/sell entry with asset search-as-you-type; average-cost holdings (oversell + mixed-currency guarded).
+- 🔨 **Live quotes & FX**: Finnhub (equities), CoinGecko (crypto), Frankfurter/ECB + FMP (FX & history); inline quote+FX fetch on add, throttled background sync.
+- 🔨 **Value history chart**: real daily-value backfill with buy/sell trade markers and period P/L.
+- 🔨 **Dividend income**: dividend events surfaced as an income stream (feeds the dashboard income view).
+- 🔨 **Portfolio overview**: KPIs, allocation donuts, holdings table.
+- 🔨 **Dashboard integration**: total portfolio value folds into net worth; a "Where is my money?" card splits cash vs. stock/ETF/fund/crypto.
+
+### Real Estate — a manual property portfolio
+- 🔨 **Properties**: primary home / investment / vacation / land / commercial / other, with purchase price, fees, current value, rented/sold state.
+- 🔨 **Loans, valuations, income, expenses**: mortgages (fixed/variable/mixed), valuation history, rental income (entered as monthly rent → computed period total), categorized expenses (monthly/quarterly/yearly recurrences).
+- 🔨 **Portfolio math**: cost basis, outstanding debt, equity, LTV, gross/net yield, cash flow, ROI — per-currency rollup.
+- 🔨 **Property detail**: valuation-history chart plus loans/income/expenses management.
+- 🔨 **Dashboard integration**: property equity folds into net worth and wealth allocation.
+
+**Still open across both:** manual generic assets/liabilities (beyond investments + property), an over-time net-worth series, on-chain wallet *connection* (vs. manual crypto entry), and the browser/QA + live-provider verification gate.
 
 ---
 
@@ -327,7 +353,7 @@ _New data model work: `budgets`, `goals`, and the recurring/scheduled-transactio
 
 **Goal:** Round out the full Spendee+ vision and push further.
 
-- ⬜ **Crypto wallet tracking**.
+- 🔨 **Crypto wallet tracking**. _Covered by the ★ Investments module: crypto assets tracked via CoinGecko alongside stocks/ETFs/funds. On-chain wallet *connection* (vs. manual entry) is still out of scope._
 - ⬜ **E-wallet connections** (PayPal, etc.).
 - ⬜ **Receipt capture + OCR** (snap photo, auto-fill amount/merchant, attach).
 - ⬜ **Advanced AI coaching** (personalized plans, scenario planning).

@@ -33,14 +33,14 @@ export function KpiCard({
   return (
     <GlassCard
       hoverable
-      className={cn('flex min-w-0 flex-col gap-2', className)}
+      className={cn('@container flex min-w-0 flex-col gap-2', className)}
     >
       <span className="font-medium text-ink-soft text-xs uppercase tracking-wide">
         {label}
       </span>
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
         <Stat
-          className="text-2xl sm:text-3xl"
+          className="text-[clamp(1rem,9cqi,1.875rem)]"
           value={value}
           suffix={suffix}
           empty={empty}
