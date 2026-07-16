@@ -183,6 +183,34 @@
         "unexpected": "Algo salió mal. Inténtalo de nuevo."
       }
     },
+    "investments": {
+      "subtitle": "Sube un JSON de inversiones exportado de Finova para restaurarlo o fusionarlo. Reimportar el mismo archivo es seguro: los duplicados se omiten y los precios se actualizan automáticamente después.",
+      "dropLabel": "Archivo JSON de Finova",
+      "reviewing": "Leyendo archivo…",
+      "review": "Revisión",
+      "table": "Sección",
+      "tables": {
+        "portfolios": "Carteras",
+        "accounts": "Cuentas",
+        "transactions": "Movimientos"
+      },
+      "cols": {
+        "new": "Nuevos",
+        "duplicate": "Omitidos",
+        "error": "Errores"
+      },
+      "commit": "Importar",
+      "committing": "Importando…",
+      "nothingNew": "Nada nuevo que importar",
+      "done": "Importadas {committed} filas nuevas; {skipped} duplicadas omitidas. Las posiciones se actualizarán en breve.",
+      "errors": {
+        "malformed": "Este archivo no es un JSON válido.",
+        "notFinova": "Esto no parece una exportación de Finova.",
+        "unsupportedVersion": "Este archivo se creó con una versión incompatible de Finova.",
+        "noInvestments": "Este archivo no contiene datos de inversiones para importar.",
+        "unexpected": "Algo salió mal. Inténtalo de nuevo."
+      }
+    },
     "commitBanner": "Revisa tu importación abajo y confírmala cuando los totales sean correctos.",
     "upload": {
       "label": "Archivo CSV o Excel del banco",

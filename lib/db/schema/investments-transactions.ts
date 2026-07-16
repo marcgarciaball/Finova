@@ -9,6 +9,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUsers } from 'drizzle-orm/supabase'
@@ -46,6 +47,7 @@ export const investmentTransactions = pgTable(
     feesCents: bigint('fees_cents', { mode: 'number' }).notNull().default(0),
     tradedAt: date('traded_at').notNull(),
     notes: text('notes'),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -60,6 +62,9 @@ export const investmentTransactions = pgTable(
       'investment_transactions_type_check',
       sql`${table.type} in ('buy', 'sell')`
     ),
+    uniqueIndex('investment_transactions_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     check('investment_transactions_quantity_check', sql`${table.quantity} > 0`),
     check('investment_transactions_price_check', sql`${table.priceCents} >= 0`),
     check('investment_transactions_fees_check', sql`${table.feesCents} >= 0`),

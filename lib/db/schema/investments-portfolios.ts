@@ -6,6 +6,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUsers } from 'drizzle-orm/supabase'
@@ -27,6 +28,7 @@ export const portfolios = pgTable(
       .references(() => authUsers.id, { onDelete: 'cascade' }),
     name: text('name').notNull().default('My Portfolio'),
     baseCurrency: text('base_currency').notNull().default('EUR'),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -39,6 +41,9 @@ export const portfolios = pgTable(
       'portfolios_base_currency_check',
       sql`${table.baseCurrency} ~ '^[A-Z]{3}$'`
     ),
+    uniqueIndex('portfolios_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     index('portfolios_user_id_idx').on(table.userId),
     pgPolicy('portfolios_select_own', {
       for: 'select',
@@ -77,6 +82,7 @@ export const investmentAccounts = pgTable(
       .references(() => authUsers.id, { onDelete: 'cascade' }),
     name: text('name').notNull(),
     currency: text('currency').notNull().default('EUR'),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -86,6 +92,9 @@ export const investmentAccounts = pgTable(
       'investment_accounts_currency_check',
       sql`${table.currency} ~ '^[A-Z]{3}$'`
     ),
+    uniqueIndex('investment_accounts_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     index('investment_accounts_user_id_idx').on(table.userId),
     index('investment_accounts_portfolio_id_idx').on(table.portfolioId),
     pgPolicy('investment_accounts_select_own', {

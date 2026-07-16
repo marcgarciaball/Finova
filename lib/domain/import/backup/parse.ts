@@ -10,8 +10,16 @@
  * Investments hook in at Specs C/D.
  */
 import { z } from 'zod'
-import type { RealEstateExportInput } from '@/lib/domain/export/bundle'
+import type {
+  InvestmentsExportInput,
+  RealEstateExportInput,
+} from '@/lib/domain/export/bundle'
 import { BACKUP_SCHEMA_VERSION } from '@/lib/domain/export/bundle'
+import {
+  investmentAccountRowSchema,
+  investmentTransactionRowSchema,
+  portfolioRowSchema,
+} from '@/lib/validation/investments'
 import {
   propertyExpenseRowSchema,
   propertyLoanRowSchema,
@@ -21,6 +29,7 @@ import {
 } from '@/lib/validation/real-estate'
 
 export interface ParsedBackup {
+  investments?: InvestmentsExportInput
   meta: { schemaVersion: number; exportedAt?: string; domains: string[] }
   realEstate?: RealEstateExportInput
 }
@@ -47,6 +56,26 @@ const realEstateSchema = z.object({
   valuations: propertyValuationRowSchema.array(),
   income: rentalIncomeRowSchema.array(),
   expenses: propertyExpenseRowSchema.array(),
+})
+
+// Assets ride as a minimal reference (the export drops provider cache columns),
+// so they get their own lightweight schema rather than the full `assetRowSchema`.
+const assetRefSchema = z.object({
+  id: z.string().min(1),
+  type: z.string(),
+  ticker: z.string().nullable(),
+  isin: z.string().nullable(),
+  coingecko_id: z.string().nullable(),
+  exchange: z.string().nullable(),
+  name: z.string(),
+  currency: z.string(),
+})
+
+const investmentsSchema = z.object({
+  portfolios: portfolioRowSchema.array(),
+  accounts: investmentAccountRowSchema.array(),
+  assets: assetRefSchema.array(),
+  transactions: investmentTransactionRowSchema.array(),
 })
 
 /** Parse + validate a Finova backup file (already `JSON.parse`d to `unknown`). */
@@ -94,6 +123,17 @@ export function parseBackup(raw: unknown): BackupParseResult {
       }
     }
     parsed.realEstate = re.data
+  }
+
+  if (root.investments !== undefined) {
+    const inv = investmentsSchema.safeParse(root.investments)
+    if (!inv.success) {
+      return {
+        ok: false,
+        error: { code: 'malformed', message: 'investments' },
+      }
+    }
+    parsed.investments = inv.data
   }
 
   return { ok: true, data: parsed }

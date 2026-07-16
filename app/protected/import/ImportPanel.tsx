@@ -4,8 +4,31 @@ import type { ExportView } from '@/app/protected/export/export-view'
 import { EXPORT_VIEWS } from '@/app/protected/export/export-view'
 import { GlassCard } from '@/components/ui/GlassCard'
 import type { AccountRow } from '@/lib/validation/account'
+import { BackupImport } from './BackupImport'
 import { ImportClient } from './ImportClient'
-import { RealEstateImport } from './real-estate/RealEstateImport'
+import {
+  commitInvestmentsBackup,
+  reviewInvestmentsBackup,
+} from './investments/actions'
+import {
+  commitRealEstateBackup,
+  reviewRealEstateBackup,
+} from './real-estate/actions'
+
+const REAL_ESTATE_TABLES = [
+  'properties',
+  'loans',
+  'valuations',
+  'income',
+  'expenses',
+]
+const INVESTMENTS_TABLES = ['portfolios', 'accounts', 'transactions']
+const COMMON_ERRORS = [
+  'malformed',
+  'notFinova',
+  'unsupportedVersion',
+  'unexpected',
+]
 
 /**
  * Import surface, embedded as a tab of the merged Datos screen. A domain
@@ -37,9 +60,27 @@ export async function ImportPanel({
         </div>
       ) : null}
 
-      {view === 'realEstate' ? <RealEstateImport /> : null}
+      {view === 'realEstate' ? (
+        <BackupImport
+          namespace="import.realEstate"
+          tables={REAL_ESTATE_TABLES}
+          knownErrors={[...COMMON_ERRORS, 'noRealEstate']}
+          review={reviewRealEstateBackup}
+          commit={commitRealEstateBackup}
+        />
+      ) : null}
 
-      {view === 'investments' || view === 'everything' ? (
+      {view === 'investments' ? (
+        <BackupImport
+          namespace="import.investments"
+          tables={INVESTMENTS_TABLES}
+          knownErrors={[...COMMON_ERRORS, 'noInvestments']}
+          review={reviewInvestmentsBackup}
+          commit={commitInvestmentsBackup}
+        />
+      ) : null}
+
+      {view === 'everything' ? (
         <GlassCard>
           <p className="text-ink-soft text-sm">{t('comingSoon')}</p>
         </GlassCard>

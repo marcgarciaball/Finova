@@ -183,6 +183,34 @@
         "unexpected": "Something went wrong. Please try again."
       }
     },
+    "investments": {
+      "subtitle": "Upload a Finova investments JSON export to restore or merge it. Re-importing the same file is safe — duplicates are skipped, and prices refresh automatically afterwards.",
+      "dropLabel": "Finova JSON file",
+      "reviewing": "Reading file…",
+      "review": "Review",
+      "table": "Section",
+      "tables": {
+        "portfolios": "Portfolios",
+        "accounts": "Accounts",
+        "transactions": "Transactions"
+      },
+      "cols": {
+        "new": "New",
+        "duplicate": "Skipped",
+        "error": "Errors"
+      },
+      "commit": "Import",
+      "committing": "Importing…",
+      "nothingNew": "Nothing new to import",
+      "done": "Imported {committed} new rows, skipped {skipped} duplicates. Holdings will update shortly.",
+      "errors": {
+        "malformed": "This file isn't valid JSON.",
+        "notFinova": "This doesn't look like a Finova export.",
+        "unsupportedVersion": "This file was made by an incompatible version of Finova.",
+        "noInvestments": "This file has no investments data to import.",
+        "unexpected": "Something went wrong. Please try again."
+      }
+    },
     "commitBanner": "Review your import below, then commit when the counts look right.",
     "upload": {
       "label": "Bank CSV or Excel file",

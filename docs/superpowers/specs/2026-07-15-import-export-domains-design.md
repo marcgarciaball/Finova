@@ -176,3 +176,59 @@ idempotency test in the skip-without-`TEST_DATABASE_URL` pattern.
 ### Pending human step
 
 `npm run db:migrate` for 0017 before the Real Estate import can run.
+
+---
+
+## Spec C — Investments round-trip import
+
+Extends the engine to the Investments domain. Same round-trip contract and
+idempotent-skip model; the wrinkle is a **shared `assets` table** the
+transactions reference.
+
+### Idempotency (migration 0018)
+
+`import_fingerprint` + partial unique index on `portfolios`,
+`investment_accounts`, `investment_transactions` (user-owned). `assets` is shared
+and deduped by its own symbol constraints; `holdings`/`portfolio_snapshots`/
+quotes/history are derived and never imported.
+
+### Fingerprints (`investments-fingerprint.ts`)
+
+- portfolio: `name | base_currency`
+- account: `portfolioFp | name | currency`
+- transaction: `portfolioFp | assetKey | type | traded_at | quantity |
+  price_cents | currency`, numerics normalized with `Number` (Postgres returns
+  numeric/bigint as strings; incoming rows are numbers).
+- `assetKey` = `cg:<coingecko_id>` → `tk:<ticker>:<exchange>` → `is:<isin>` →
+  `nm:<name>`. The id-independent asset identity, since the same security has
+  different DB ids across environments.
+
+### Asset resolution (no provider calls)
+
+The exported asset ref carries currency/exchange/isin/coingecko_id, so commit
+resolves each asset with a single admin upsert — `onConflict('coingecko_id')`
+for crypto, `onConflict('ticker,exchange')` otherwise — matching or creating the
+shared row and returning its id. No Finnhub/CoinGecko round-trips at import time.
+
+### Engine + commit
+
+- `planInvestmentsImport(parsed, existing)` (pure): classifies portfolios,
+  accounts (parented by portfolio), transactions; resolves each txn's portfolio +
+  account by fingerprint and asset by symbol; unknown account → no-account, missing
+  portfolio/asset → error. Returns per-table counts + `assetsByExportId` for commit.
+- `commitInvestmentsBackup` (`'use server'`): insert portfolios → accounts (remapped
+  portfolio id) → resolve assets → transactions (remapped portfolio/account/asset,
+  `import_fingerprint`), all RLS with `user_id` from JWT (assets via admin client).
+  Then `after(refreshPrices)` rebuilds holdings + snapshots + history from the
+  transaction log (transactions are truth).
+
+### UI
+
+The Real Estate `RealEstateImport` component is generalized to a reusable
+`BackupImport` (namespace + table list + review/commit actions), now used for both
+Real Estate and Investments. Investments replaces its "coming soon" note; only
+Everything remains a placeholder (Spec D).
+
+### Pending human step
+
+`npm run db:migrate` for 0018 before the Investments import can run.
