@@ -47,6 +47,7 @@ export const categories = pgTable(
     // with these set — see `lib/domain/categories/icons.ts`.
     iconName: text('icon_name'),
     color: text('color'),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -55,6 +56,9 @@ export const categories = pgTable(
       .defaultNow(),
   },
   (table) => [
+    uniqueIndex('categories_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     check(
       'categories_name_check',
       sql`char_length(trim(${table.name})) between 1 and 100`

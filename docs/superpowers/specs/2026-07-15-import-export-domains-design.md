@@ -232,3 +232,56 @@ Everything remains a placeholder (Spec D).
 ### Pending human step
 
 `npm run db:migrate` for 0018 before the Investments import can run.
+
+---
+
+## Spec D — "Everything" restore + discoverability
+
+Completes the decomposition: the Transactions domain gains a round-trip path, and
+a single "Everything" flow restores a whole backup across all domains.
+
+### Transactions round-trip (migration 0019)
+
+`import_fingerprint` + partial unique index on `accounts` and `categories`
+(`transactions` already had one from the CSV importer). Fingerprints:
+
+- account: `name | type | currency`
+- category: `kind | name | parentFp` (two-level; `parentFp` empty for top-level)
+- transaction: **reuses the CSV importer's `transactionFingerprint`** (resolved
+  account DB id + amount + description + date). Because it's computed on the
+  resolved account id, a JSON restore dedupes against CSV-imported *and* manual
+  rows through the same `(user_id, import_fingerprint)` index — one dedup across
+  both channels. The planner only fingerprints transactions under an
+  already-existing account (real id known); those under a brand-new account are
+  necessarily new, and the commit stamps the final fingerprint once the account
+  id exists.
+
+Commit order: accounts → categories (parents before children) → transactions.
+Transfer group ids are remapped to fresh UUIDs so a transfer's two legs stay
+linked. The existing external-bank CSV wizard is unchanged; transactions
+round-trip JSON is reached only via "Everything".
+
+### "Everything" orchestrator
+
+`everything/actions.ts` fans out to the three domain importers over the same file
+and aggregates per-domain totals. A domain **absent** from the file (`no<Domain>`)
+maps to zeros, not an error; a genuine parse failure (malformed / notFinova /
+unsupportedVersion) from any domain aborts the whole restore; an empty file →
+`empty`. Domains are independent, so commit order is irrelevant and idempotency
+makes a partial retry safe.
+
+### UI + discoverability
+
+The Everything view uses the shared `BackupImport` with a per-domain review table
+(Transactions / Investments / Real estate). The Data section is now a top-nav link
+(`data.nav`), not just an avatar-menu destination.
+
+### Pending human step
+
+`npm run db:migrate` for 0019 before Transactions/Everything restore can run.
+
+### Status
+
+Decomposition complete: A (export) · B (engine + real estate) · C (investments) ·
+D (transactions + everything + nav). Browser/QA verification of every import path,
+and the four migrations (0016–0019) applied, remain the gate to ✅.

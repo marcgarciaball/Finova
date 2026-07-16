@@ -30,6 +30,7 @@
     "comingSoon": "Próximamente más preferencias."
   },
   "data": {
+    "nav": "Datos",
     "title": "Datos"
   },
   "accounts": {
@@ -208,6 +209,34 @@
         "notFinova": "Esto no parece una exportación de Finova.",
         "unsupportedVersion": "Este archivo se creó con una versión incompatible de Finova.",
         "noInvestments": "Este archivo no contiene datos de inversiones para importar.",
+        "unexpected": "Algo salió mal. Inténtalo de nuevo."
+      }
+    },
+    "everything": {
+      "subtitle": "Sube una copia de seguridad JSON completa de Finova para restaurar o fusionar todos los dominios a la vez. Reimportar el mismo archivo es seguro: los duplicados se omiten.",
+      "dropLabel": "Copia de seguridad JSON de Finova",
+      "reviewing": "Leyendo archivo…",
+      "review": "Revisión",
+      "table": "Dominio",
+      "tables": {
+        "transactions": "Movimientos",
+        "investments": "Inversiones",
+        "realEstate": "Inmuebles"
+      },
+      "cols": {
+        "new": "Nuevos",
+        "duplicate": "Omitidos",
+        "error": "Errores"
+      },
+      "commit": "Restaurar todo",
+      "committing": "Restaurando…",
+      "nothingNew": "Nada nuevo que importar",
+      "done": "Importadas {committed} filas nuevas; {skipped} duplicadas omitidas.",
+      "errors": {
+        "malformed": "Este archivo no es un JSON válido.",
+        "notFinova": "Esto no parece una exportación de Finova.",
+        "unsupportedVersion": "Este archivo se creó con una versión incompatible de Finova.",
+        "empty": "Este archivo no contiene datos para importar.",
         "unexpected": "Algo salió mal. Inténtalo de nuevo."
       }
     },

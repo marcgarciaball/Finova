@@ -11,10 +11,13 @@
  */
 import { z } from 'zod'
 import type {
+  ExportInput,
   InvestmentsExportInput,
   RealEstateExportInput,
 } from '@/lib/domain/export/bundle'
 import { BACKUP_SCHEMA_VERSION } from '@/lib/domain/export/bundle'
+import { accountRowSchema } from '@/lib/validation/account'
+import { categoryRowSchema } from '@/lib/validation/category'
 import {
   investmentAccountRowSchema,
   investmentTransactionRowSchema,
@@ -27,11 +30,13 @@ import {
   propertyValuationRowSchema,
   rentalIncomeRowSchema,
 } from '@/lib/validation/real-estate'
+import { transactionRowSchema } from '@/lib/validation/transaction'
 
 export interface ParsedBackup {
   investments?: InvestmentsExportInput
   meta: { schemaVersion: number; exportedAt?: string; domains: string[] }
   realEstate?: RealEstateExportInput
+  transactions?: ExportInput
 }
 
 export type BackupParseError =
@@ -76,6 +81,12 @@ const investmentsSchema = z.object({
   accounts: investmentAccountRowSchema.array(),
   assets: assetRefSchema.array(),
   transactions: investmentTransactionRowSchema.array(),
+})
+
+const transactionsSchema = z.object({
+  accounts: accountRowSchema.array(),
+  categories: categoryRowSchema.array(),
+  transactions: transactionRowSchema.array(),
 })
 
 /** Parse + validate a Finova backup file (already `JSON.parse`d to `unknown`). */
@@ -134,6 +145,17 @@ export function parseBackup(raw: unknown): BackupParseResult {
       }
     }
     parsed.investments = inv.data
+  }
+
+  if (root.transactions !== undefined) {
+    const tx = transactionsSchema.safeParse(root.transactions)
+    if (!tx.success) {
+      return {
+        ok: false,
+        error: { code: 'malformed', message: 'transactions' },
+      }
+    }
+    parsed.transactions = tx.data
   }
 
   return { ok: true, data: parsed }

@@ -9,6 +9,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUsers } from 'drizzle-orm/supabase'
@@ -43,6 +44,7 @@ export const accounts = pgTable(
     // posted as a real transaction.
     interestRateBps: integer('interest_rate_bps'),
     archived: boolean('archived').notNull().default(false),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -51,6 +53,9 @@ export const accounts = pgTable(
       .defaultNow(),
   },
   (table) => [
+    uniqueIndex('accounts_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     check(
       'accounts_name_check',
       sql`char_length(trim(${table.name})) between 1 and 100`
