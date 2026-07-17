@@ -1215,5 +1215,62 @@
     "title": "Your account has been deleted",
     "body": "All your data has been permanently removed. Thank you for using Finova.",
     "home": "Back to home"
+  },
+  "auth": {
+    "greeting": "Hey, {email}!",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "genericError": "An error occurred",
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "repeatPassword": "Repeat password",
+      "newPassword": "New password"
+    },
+    "login": {
+      "title": "Login",
+      "description": "Enter your email below to login to your account",
+      "forgot": "Forgot your password?",
+      "submit": "Login",
+      "submitting": "Logging in…",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up"
+    },
+    "signup": {
+      "title": "Sign up",
+      "description": "Create a new account",
+      "submit": "Sign up",
+      "submitting": "Creating an account…",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Login",
+      "passwordMismatch": "Passwords do not match"
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "description": "Type in your email and we'll send you a link to reset your password",
+      "submit": "Send reset email",
+      "submitting": "Sending…",
+      "successTitle": "Check your email",
+      "successDescription": "Password reset instructions sent",
+      "successBody": "If you registered using your email and password, you will receive a password reset email.",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Login"
+    },
+    "update": {
+      "title": "Reset your password",
+      "description": "Please enter your new password below.",
+      "submit": "Save new password",
+      "submitting": "Saving…"
+    },
+    "success": {
+      "title": "Thank you for signing up!",
+      "description": "Check your email to confirm",
+      "body": "You've successfully signed up. Please check your email to confirm your account before signing in."
+    },
+    "error": {
+      "title": "Sorry, something went wrong.",
+      "withCode": "Code error: {code}",
+      "generic": "An unspecified error occurred."
+    }
   }
 }

@@ -1215,5 +1215,62 @@
     "title": "Tu cuenta ha sido eliminada",
     "body": "Todos tus datos se han eliminado permanentemente. Gracias por usar Finova.",
     "home": "Volver al inicio"
+  },
+  "auth": {
+    "greeting": "¡Hola, {email}!",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "genericError": "Se produjo un error",
+    "fields": {
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "repeatPassword": "Repetir contraseña",
+      "newPassword": "Nueva contraseña"
+    },
+    "login": {
+      "title": "Iniciar sesión",
+      "description": "Introduce tu correo para acceder a tu cuenta",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "submit": "Iniciar sesión",
+      "submitting": "Iniciando sesión…",
+      "noAccount": "¿No tienes cuenta?",
+      "signUpLink": "Registrarse"
+    },
+    "signup": {
+      "title": "Registrarse",
+      "description": "Crea una cuenta nueva",
+      "submit": "Registrarse",
+      "submitting": "Creando la cuenta…",
+      "haveAccount": "¿Ya tienes cuenta?",
+      "loginLink": "Iniciar sesión",
+      "passwordMismatch": "Las contraseñas no coinciden"
+    },
+    "forgot": {
+      "title": "Restablecer tu contraseña",
+      "description": "Escribe tu correo y te enviaremos un enlace para restablecer la contraseña",
+      "submit": "Enviar correo de restablecimiento",
+      "submitting": "Enviando…",
+      "successTitle": "Revisa tu correo",
+      "successDescription": "Instrucciones de restablecimiento enviadas",
+      "successBody": "Si te registraste con tu correo y contraseña, recibirás un correo para restablecerla.",
+      "haveAccount": "¿Ya tienes cuenta?",
+      "loginLink": "Iniciar sesión"
+    },
+    "update": {
+      "title": "Restablecer tu contraseña",
+      "description": "Introduce tu nueva contraseña.",
+      "submit": "Guardar nueva contraseña",
+      "submitting": "Guardando…"
+    },
+    "success": {
+      "title": "¡Gracias por registrarte!",
+      "description": "Revisa tu correo para confirmar",
+      "body": "Te has registrado correctamente. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión."
+    },
+    "error": {
+      "title": "Lo sentimos, algo salió mal.",
+      "withCode": "Código de error: {code}",
+      "generic": "Se produjo un error no especificado."
+    }
   }
 }
