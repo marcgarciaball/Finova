@@ -141,7 +141,13 @@
       "invalidAmount": "Introduce un importe válido, p. ej. 1234.56.",
       "amountNonZero": "El importe no puede ser cero."
     },
-    "makeRule": "Crear regla"
+    "makeRule": "Crear regla",
+    "pagination": {
+      "label": "Paginación",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "pageOf": "Página {page} de {total}"
+    }
   },
   "import": {
     "nav": "Importar",

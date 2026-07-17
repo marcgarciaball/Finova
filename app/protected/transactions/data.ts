@@ -2,6 +2,7 @@ import 'server-only'
 import { requireUser } from '@/lib/auth/require-user'
 import { applyFilters } from '@/lib/domain/transactions/apply-filters'
 import type { TransactionFilters } from '@/lib/domain/transactions/filters'
+import { pageRange } from '@/lib/domain/transactions/pagination'
 import { createClient } from '@/lib/supabase/server'
 import { type AccountRow, accountRowSchema } from '@/lib/validation/account'
 import { type CategoryRow, categoryRowSchema } from '@/lib/validation/category'
@@ -17,24 +18,42 @@ import {
  * (matching the `(user_id, occurred_at desc)` index).
  */
 
-const PAGE_SIZE = 200
+/** One page of transactions plus the total matching count (for the UI). */
+export interface TransactionPage {
+  rows: TransactionRow[]
+  total: number
+}
 
-/** The current user's transactions, filtered, newest first (capped). */
+/**
+ * One page of the current user's transactions, filtered, newest first. Uses a
+ * PostgREST `.range()` + `count: 'exact'` so only `PAGE_SIZE` rows are fetched
+ * and rendered even for a multi-year ledger, while the UI still knows the total
+ * page count. `page` is 1-based; an out-of-range page yields an empty `rows`.
+ */
 export async function listTransactions(
-  filters: TransactionFilters
-): Promise<TransactionRow[]> {
+  filters: TransactionFilters,
+  page = 1
+): Promise<TransactionPage> {
   await requireUser()
   const supabase = await createClient()
 
-  const query = applyFilters(supabase.from('transactions').select('*'), filters)
+  const { from, to } = pageRange(page)
+  const query = applyFilters(
+    supabase.from('transactions').select('*', { count: 'exact' }),
+    filters
+  )
     .order('occurred_at', { ascending: false })
-    .limit(PAGE_SIZE)
+    .order('id', { ascending: false })
+    .range(from, to)
 
-  const { data, error } = await query
+  const { data, error, count } = await query
   if (error) {
     throw new Error(error.message)
   }
-  return transactionRowSchema.array().parse(data)
+  return {
+    rows: transactionRowSchema.array().parse(data),
+    total: count ?? 0,
+  }
 }
 
 /** Minimal row shape for totals — only what {@link summarizeByCurrency} needs. */

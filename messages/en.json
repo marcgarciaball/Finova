@@ -141,7 +141,13 @@
       "invalidAmount": "Enter a valid amount, e.g. 1234.56.",
       "amountNonZero": "Amount can't be zero."
     },
-    "makeRule": "Make a rule"
+    "makeRule": "Make a rule",
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}"
+    }
   },
   "import": {
     "nav": "Import",
