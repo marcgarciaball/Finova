@@ -1279,5 +1279,36 @@
       "withCode": "Código de error: {code}",
       "generic": "Se produjo un error no especificado."
     }
+  },
+  "legal": {
+    "footerPrivacy": "Privacidad",
+    "footerTerms": "Términos",
+    "disclaimer": "Finova es una herramienta de finanzas personales y no ofrece asesoramiento financiero, de inversión ni fiscal.",
+    "draftNotice": "Esto es una plantilla, no asesoramiento legal. Sustitúyela por tu política revisada —con los datos reales de tu empresa, jurisdicción y contacto— antes del lanzamiento.",
+    "lastUpdatedLabel": "Última actualización",
+    "privacy": {
+      "title": "Política de privacidad",
+      "intro": "Esta política explica qué datos almacena Finova y el control que tienes sobre ellos.",
+      "dataHeading": "Qué almacenamos",
+      "dataBody": "Los datos financieros que introduces o importas —cuentas, transacciones, categorías, reglas, inversiones e inmuebles— además del correo de tu cuenta y tus preferencias. Los datos se guardan en una base de datos Postgres (Supabase) protegida con seguridad a nivel de fila, de modo que solo tú puedes acceder a tus filas.",
+      "rightsHeading": "Exportación y eliminación",
+      "rightsBody": "Puedes exportar todos tus datos en CSV o JSON en cualquier momento y eliminar permanentemente tu cuenta y todos los datos asociados desde Ajustes. La eliminación es inmediata e irreversible.",
+      "securityHeading": "Seguridad",
+      "securityBody": "El acceso requiere autenticación; las sesiones se basan en cookies. No vendemos tus datos ni nos conectamos a tu banco. Los archivos de extractos que subes se almacenan de forma privada y limitados a tu cuenta.",
+      "contactHeading": "Contacto",
+      "contactBody": "Para consultas de privacidad, escribe a la dirección publicada en este sitio. (Sustituye por tu contacto real antes del lanzamiento.)"
+    },
+    "terms": {
+      "title": "Términos del servicio",
+      "intro": "Al usar Finova aceptas estos términos.",
+      "useHeading": "Uso del servicio",
+      "useBody": "Finova se ofrece para ayudarte a controlar y entender tus finanzas personales. Eres responsable de la exactitud de los datos que introduces y de mantener seguras tus credenciales.",
+      "noAdviceHeading": "No es asesoramiento financiero",
+      "noAdviceBody": "Finova no ofrece asesoramiento financiero, de inversión ni fiscal. Las cifras, gráficos e ideas son solo informativos; las decisiones que tomes a partir de ellos son tu responsabilidad.",
+      "liabilityHeading": "Disponibilidad y responsabilidad",
+      "liabilityBody": "El servicio se presta «tal cual», sin garantías. En la medida permitida por la ley, no somos responsables de pérdidas derivadas del uso del servicio ni de inexactitudes en tus datos.",
+      "changesHeading": "Cambios",
+      "changesBody": "Podemos actualizar estos términos; el uso continuado tras una actualización implica la aceptación de los términos revisados."
+    }
   }
 }

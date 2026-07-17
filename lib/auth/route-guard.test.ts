@@ -63,8 +63,10 @@ describe('resolveAuthRedirect', () => {
     })
   })
 
-  it('allows /goodbye regardless of auth state', () => {
-    expect(resolveAuthRedirect('/goodbye', true)).toEqual({ type: 'allow' })
-    expect(resolveAuthRedirect('/goodbye', false)).toEqual({ type: 'allow' })
+  it('allows public pages (goodbye, legal) regardless of auth state', () => {
+    for (const path of ['/goodbye', '/privacy', '/terms']) {
+      expect(resolveAuthRedirect(path, true)).toEqual({ type: 'allow' })
+      expect(resolveAuthRedirect(path, false)).toEqual({ type: 'allow' })
+    }
   })
 })

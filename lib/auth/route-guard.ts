@@ -13,13 +13,18 @@ export type AuthRouteDecision =
 
 const LOGIN_PATH = '/auth/login'
 
+/**
+ * Always-public pages, reachable regardless of auth state: the post-deletion
+ * confirmation (P5-02) and the legal pages (P5-07). A signed-out user must be
+ * able to read these without being bounced to login.
+ */
+const PUBLIC_PATHS = new Set(['/goodbye', '/privacy', '/terms'])
+
 export function resolveAuthRedirect(
   pathname: string,
   hasUser: boolean
 ): AuthRouteDecision {
-  // Public confirmation page after account deletion (P5-02): the user is now
-  // signed out, so it must be reachable without bouncing to login.
-  if (pathname === '/goodbye') {
+  if (PUBLIC_PATHS.has(pathname)) {
     return { type: 'allow' }
   }
 

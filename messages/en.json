@@ -1279,5 +1279,36 @@
       "withCode": "Code error: {code}",
       "generic": "An unspecified error occurred."
     }
+  },
+  "legal": {
+    "footerPrivacy": "Privacy",
+    "footerTerms": "Terms",
+    "disclaimer": "Finova is a personal finance tool and does not provide financial, investment, or tax advice.",
+    "draftNotice": "This is a template, not legal advice. Replace it with your reviewed policy — including your real company details, jurisdiction, and contact — before launch.",
+    "lastUpdatedLabel": "Last updated",
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "This policy explains what data Finova stores and the control you have over it.",
+      "dataHeading": "What we store",
+      "dataBody": "The financial data you enter or import — accounts, transactions, categories, rules, investments, and properties — plus your account email and preferences. Data is stored in a Postgres database (Supabase) protected by row-level security, so only you can access your rows.",
+      "rightsHeading": "Export and deletion",
+      "rightsBody": "You can export all of your data as CSV or JSON at any time, and permanently delete your account and all associated data from Settings. Deletion is immediate and irreversible.",
+      "securityHeading": "Security",
+      "securityBody": "Access requires authentication; sessions are cookie-based. We do not sell your data and do not connect to your bank. Uploaded statement files are stored privately and scoped to your account.",
+      "contactHeading": "Contact",
+      "contactBody": "For privacy questions, contact the address published on this site. (Replace with your real contact before launch.)"
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "intro": "By using Finova you agree to these terms.",
+      "useHeading": "Using the service",
+      "useBody": "Finova is provided to help you track and understand your personal finances. You are responsible for the accuracy of the data you enter and for keeping your account credentials secure.",
+      "noAdviceHeading": "Not financial advice",
+      "noAdviceBody": "Finova does not provide financial, investment, or tax advice. Figures, charts, and insights are informational only; decisions you make based on them are your own responsibility.",
+      "liabilityHeading": "Availability and liability",
+      "liabilityBody": "The service is provided “as is”, without warranties. To the extent permitted by law, we are not liable for losses arising from use of the service or from inaccuracies in your data.",
+      "changesHeading": "Changes",
+      "changesBody": "We may update these terms; continued use after an update constitutes acceptance of the revised terms."
+    }
   }
 }

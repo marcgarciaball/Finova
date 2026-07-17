@@ -7,6 +7,7 @@ import {
   listCategoriesForPicker,
 } from '@/app/protected/transactions/data'
 import { AvatarMenu } from '@/components/nav/AvatarMenu'
+import { SiteFooter } from '@/components/SiteFooter'
 import { QuickAddTransaction } from '@/components/transactions/QuickAddTransaction'
 import { Button } from '@/components/ui/Button'
 import { requireUser } from '@/lib/auth/require-user'
@@ -105,6 +106,7 @@ export default async function ProtectedLayout({
           }
         />
       </div>
+      <SiteFooter />
     </div>
   )
 }
