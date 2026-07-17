@@ -35,3 +35,17 @@ export const profileRowSchema = z.object({
 })
 
 export type ProfileRow = z.infer<typeof profileRowSchema>
+
+/**
+ * Account-deletion confirmation check (P5-02). The user must type their own
+ * email to confirm the irreversible delete; the match is trim + case-insensitive
+ * so trailing spaces or a capitalized address still confirm. Pure and testable;
+ * the server action re-runs this against the JWT email (never the client).
+ */
+export function emailConfirmationMatches(
+  input: string,
+  email: string
+): boolean {
+  const normalize = (s: string): string => s.trim().toLowerCase()
+  return email.length > 0 && normalize(input) === normalize(email)
+}

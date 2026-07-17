@@ -3,6 +3,7 @@ import { LocaleSwitcher } from '@/components/LocaleSwitcher'
 import { ThemeSwitcher } from '@/components/ThemeSwitcher'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { requireUser } from '@/lib/auth/require-user'
+import { DangerZone } from './DangerZone'
 import { getProfile } from './data'
 import { ProfileForm } from './ProfileForm'
 
@@ -47,6 +48,8 @@ export default async function ProfilePage() {
           </div>
         </div>
       </GlassCard>
+
+      {email ? <DangerZone email={email} /> : null}
     </div>
   )
 }

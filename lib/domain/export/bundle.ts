@@ -13,7 +13,9 @@
  */
 import { toCsv } from '@/lib/domain/export/serialize'
 import type { AccountRow } from '@/lib/validation/account'
+import type { CategorizationRuleRow } from '@/lib/validation/categorization-rule'
 import type { CategoryRow } from '@/lib/validation/category'
+import type { ImportTemplateRow } from '@/lib/validation/import-template'
 import type {
   InvestmentAccountRow,
   InvestmentTransactionRow,
@@ -31,6 +33,13 @@ import type { TransactionRow } from '@/lib/validation/transaction'
 export interface ExportInput {
   accounts: AccountRow[]
   categories: CategoryRow[]
+  /**
+   * Categorization rules + saved import templates (P5-02, GDPR completeness).
+   * Optional so the older `buildJsonBundle` consumer and the round-trip importer
+   * (which only reads accounts/categories/transactions) are unaffected.
+   */
+  importTemplates?: ImportTemplateRow[]
+  rules?: CategorizationRuleRow[]
   transactions: TransactionRow[]
 }
 
@@ -165,6 +174,10 @@ export function buildBackupBundle(
       accounts: t.accounts.length,
       categories: t.categories.length,
       transactions: t.transactions.length,
+      ...(t.rules ? { rules: t.rules.length } : {}),
+      ...(t.importTemplates
+        ? { importTemplates: t.importTemplates.length }
+        : {}),
     }
     body.transactions = t
   }

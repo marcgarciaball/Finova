@@ -57,5 +57,14 @@ describe('resolveAuthRedirect', () => {
         path: '/auth/login',
       })
     })
+
+    it('allows the public /goodbye page (post-deletion)', () => {
+      expect(resolveAuthRedirect('/goodbye', false)).toEqual({ type: 'allow' })
+    })
+  })
+
+  it('allows /goodbye regardless of auth state', () => {
+    expect(resolveAuthRedirect('/goodbye', true)).toEqual({ type: 'allow' })
+    expect(resolveAuthRedirect('/goodbye', false)).toEqual({ type: 'allow' })
   })
 })

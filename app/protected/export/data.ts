@@ -12,7 +12,9 @@ import {
 } from '@/lib/domain/transactions/filters'
 import { createClient } from '@/lib/supabase/server'
 import { accountRowSchema } from '@/lib/validation/account'
+import { categorizationRuleRowSchema } from '@/lib/validation/categorization-rule'
 import { categoryRowSchema } from '@/lib/validation/category'
+import { importTemplateRowSchema } from '@/lib/validation/import-template'
 import {
   assetRowSchema,
   investmentAccountRowSchema,
@@ -42,26 +44,42 @@ export async function getExportData(
   await requireUser()
   const supabase = await createClient()
 
-  const [accountsRes, categoriesRes, txnsRes] = await Promise.all([
-    supabase
-      .from('accounts')
-      .select('*')
-      .order('created_at', { ascending: true }),
-    supabase.from('categories').select('*').order('name', { ascending: true }),
-    applyFilters(supabase.from('transactions').select('*'), filters).order(
-      'occurred_at',
-      { ascending: true }
-    ),
-  ])
+  const [accountsRes, categoriesRes, txnsRes, rulesRes, templatesRes] =
+    await Promise.all([
+      supabase
+        .from('accounts')
+        .select('*')
+        .order('created_at', { ascending: true }),
+      supabase
+        .from('categories')
+        .select('*')
+        .order('name', { ascending: true }),
+      applyFilters(supabase.from('transactions').select('*'), filters).order(
+        'occurred_at',
+        { ascending: true }
+      ),
+      supabase
+        .from('categorization_rules')
+        .select('*')
+        .order('priority', { ascending: true }),
+      supabase
+        .from('import_templates')
+        .select('*')
+        .order('created_at', { ascending: true }),
+    ])
 
   if (accountsRes.error) throw new Error(accountsRes.error.message)
   if (categoriesRes.error) throw new Error(categoriesRes.error.message)
   if (txnsRes.error) throw new Error(txnsRes.error.message)
+  if (rulesRes.error) throw new Error(rulesRes.error.message)
+  if (templatesRes.error) throw new Error(templatesRes.error.message)
 
   return {
     accounts: accountRowSchema.array().parse(accountsRes.data),
     categories: categoryRowSchema.array().parse(categoriesRes.data),
     transactions: transactionRowSchema.array().parse(txnsRes.data),
+    rules: categorizationRuleRowSchema.array().parse(rulesRes.data),
+    importTemplates: importTemplateRowSchema.array().parse(templatesRes.data),
   }
 }
 

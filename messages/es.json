@@ -1201,6 +1201,19 @@
         "matches": "Coincide con {matched} de {total} transacciones.",
         "none": "No hay vista previa disponible."
       }
+    },
+    "danger": {
+      "title": "Zona de peligro",
+      "warning": "Elimina permanentemente tu cuenta y todos tus datos: cuentas, transacciones, categorías, reglas, inversiones e inmuebles. Esta acción no se puede deshacer.",
+      "downloadFirst": "Descarga tus datos primero",
+      "confirmLabel": "Escribe {email} para confirmar",
+      "deleteButton": "Eliminar mi cuenta",
+      "error": "No se pudo eliminar. Inténtalo de nuevo."
     }
+  },
+  "goodbye": {
+    "title": "Tu cuenta ha sido eliminada",
+    "body": "Todos tus datos se han eliminado permanentemente. Gracias por usar Finova.",
+    "home": "Volver al inicio"
   }
 }

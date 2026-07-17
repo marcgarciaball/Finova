@@ -165,6 +165,40 @@ describe('buildBackupBundle', () => {
     expect(bundle.meta.counts.investments.transactions).toBe(1)
   })
 
+  it('counts rules + import templates when present (GDPR completeness)', () => {
+    const bundle = buildBackupBundle(
+      {
+        transactions: {
+          accounts: [],
+          categories: [],
+          transactions: [],
+          // biome-ignore lint/suspicious/noExplicitAny: count-only test fixture
+          rules: [{} as any, {} as any],
+          // biome-ignore lint/suspicious/noExplicitAny: count-only test fixture
+          importTemplates: [{} as any],
+        },
+      },
+      META
+    ) as {
+      meta: {
+        counts: { transactions: { rules?: number; importTemplates?: number } }
+      }
+    }
+    expect(bundle.meta.counts.transactions.rules).toBe(2)
+    expect(bundle.meta.counts.transactions.importTemplates).toBe(1)
+  })
+
+  it('omits rules/importTemplates counts when absent', () => {
+    const bundle = buildBackupBundle(
+      { transactions: { accounts: [], categories: [], transactions: [] } },
+      META
+    ) as {
+      meta: { counts: { transactions: Record<string, number> } }
+    }
+    expect('rules' in bundle.meta.counts.transactions).toBe(false)
+    expect('importTemplates' in bundle.meta.counts.transactions).toBe(false)
+  })
+
   it('includes filters only when non-empty', () => {
     const bare = buildBackupBundle(
       { transactions: { accounts: [], categories: [], transactions: [] } },

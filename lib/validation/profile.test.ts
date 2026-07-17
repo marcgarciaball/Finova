@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { updateProfileSchema } from '@/lib/validation/profile'
+import {
+  emailConfirmationMatches,
+  updateProfileSchema,
+} from '@/lib/validation/profile'
 
 describe('updateProfileSchema', () => {
   it('accepts valid ISO-4217 codes and upper-cases them', () => {
@@ -26,5 +29,24 @@ describe('updateProfileSchema', () => {
         displayCurrency: 'USD',
       }).success
     ).toBe(false)
+  })
+})
+
+describe('emailConfirmationMatches', () => {
+  it('matches the exact email', () => {
+    expect(emailConfirmationMatches('marc@x.com', 'marc@x.com')).toBe(true)
+  })
+
+  it('is trim + case-insensitive', () => {
+    expect(emailConfirmationMatches('  MARC@X.com ', 'marc@x.com')).toBe(true)
+  })
+
+  it('rejects a different address', () => {
+    expect(emailConfirmationMatches('other@x.com', 'marc@x.com')).toBe(false)
+  })
+
+  it('rejects when either side is empty', () => {
+    expect(emailConfirmationMatches('', 'marc@x.com')).toBe(false)
+    expect(emailConfirmationMatches('marc@x.com', '')).toBe(false)
   })
 })

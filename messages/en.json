@@ -1201,6 +1201,19 @@
         "matches": "Matches {matched} of {total} transactions.",
         "none": "No preview available."
       }
+    },
+    "danger": {
+      "title": "Danger zone",
+      "warning": "Permanently delete your account and all data — accounts, transactions, categories, rules, investments and properties. This cannot be undone.",
+      "downloadFirst": "Download your data first",
+      "confirmLabel": "Type {email} to confirm",
+      "deleteButton": "Delete my account",
+      "error": "Deletion failed. Please try again."
     }
+  },
+  "goodbye": {
+    "title": "Your account has been deleted",
+    "body": "All your data has been permanently removed. Thank you for using Finova.",
+    "home": "Back to home"
   }
 }
