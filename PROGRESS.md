@@ -176,7 +176,7 @@ Work one ticket at a time, one PR each. Do not start a phase until the prior pha
 ## Phase 5 — Hardening & release
 | ID | Ticket | Owner | Status |
 |----|--------|-------|--------|
-| P5-01 | Settings: profile, base currency, manage categories & rules | Frontend | TODO |
+| P5-01 | Settings: profile, base currency, manage categories & rules | Frontend | REVIEW — Profile/Categories/Rules tabs built & tested (commit 6773277); browser verify + migrations pending |
 | P5-02 | Account deletion + data export (GDPR), end-to-end | Security | TODO |
 | P5-03 | Full i18n pass: no missing keys, dates/numbers localized | Frontend | TODO |
 | P5-04 | Accessibility pass (keyboard, focus, contrast, reduced motion) | QA/Test | TODO |
@@ -184,6 +184,8 @@ Work one ticket at a time, one PR each. Do not start a phase until the prior pha
 | P5-06 | Performance/polish: loading states, errors, mobile responsive; **paginate/virtualize the transactions list + import for multi-year statements (thousands of rows)** | Frontend | TODO |
 | P5-07 | Privacy/terms + "not financial advice" notices | Frontend | TODO |
 | **Gate** | e2e smoke: sign up → import → categorize → dashboard → export → delete | Coordinator | TODO |
+
+**P5-01 notes (in review):** Implemented per `docs/superpowers/specs/2026-07-17-settings-p5-01-design.md`. Settings surface under `app/protected/settings/` as a top-tabs shell over route segments (`layout.tsx` + `SettingsTabs`). **Profile** (`page.tsx`, `ProfileForm`, `data.ts#getProfile`, `actions.ts#updateProfile`): base/display currency selects (curated ISO-4217 `lib/domain/money/currencies.ts`) upserted to `profiles`; language/theme reuse the existing `LocaleSwitcher`/`ThemeSwitcher`. **Categories** (`categories/`): two-level tree CRUD (`CategoryManager`/`CategoryForm`/`IconColorPicker`) with allowlisted icon/color (`lib/domain/categories/icons.ts` `ICON_NAMES`/`CATEGORY_COLORS`), subcategories, and the default→custom rename conversion (renaming a default clears `name_key`; icon/color-only edits keep the i18n label — `name` optional on `updateCategorySchema` signals intent); delete leans on existing FK behavior (txns SET NULL, rules CASCADE, children cascade). **Rules** (`rules/`): full multi-clause CRUD (`ClauseBuilder`/`RuleForm`/`RuleManager`, description/amount/account AND-combined), enable/disable, priority, and a live "test against your data" preview (`previewRule` action → the P3-06 `previewRuleMatches` core). **Make-a-rule**: a control on categorized transaction rows deep-links a prefilled rules form via `suggestRuleFromCorrection` (P3-05). New pure/tested cores: `lib/domain/categories/tree.ts` (`buildCategoryTree`), `lib/domain/rules/clause-form.ts` (drafts ↔ conditions round-trip, money-safe amount conversion); shared `lib/validation/form.ts` (`ActionResult`); new `lib/validation/profile.ts`; extended `lib/validation/category.ts` (icon/color, optional-name update). New `settings` i18n namespace (EN/ES, parity green). **No new migration** — `categories.icon_name/color` + `categorization_rules` columns already exist. **Verified:** typecheck, lint, `npm test` (914 pass / 57 skip) green; build/dev not runnable in-sandbox. **Verify in browser:** set currencies → dashboard reflects; create custom category w/ icon/color → appears in the tx category picker; rename a default → i18n label drops; delete a category → rows un-categorize; build a multi-clause rule → preview matches → import categorizes; "make a rule" prefills the form.
 
 ---
 
