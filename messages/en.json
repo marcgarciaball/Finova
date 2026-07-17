@@ -8,7 +8,8 @@
     "signUp": "Get started",
     "language": "Language",
     "theme": "Theme",
-    "logout": "Log out"
+    "logout": "Log out",
+    "skipToContent": "Skip to content"
   },
   "locale": {
     "es": "Español",

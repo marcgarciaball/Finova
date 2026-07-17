@@ -37,7 +37,13 @@ export default async function ProtectedLayout({
   ]
 
   return (
-    <main className="flex min-h-screen flex-col items-center">
+    <div className="flex min-h-screen flex-col items-center">
+      <a
+        href="#main-content"
+        className="sr-only z-50 rounded-md bg-brand-500 px-4 py-2 text-white focus:not-sr-only focus:absolute focus:top-2 focus:left-2"
+      >
+        {t('common.skipToContent')}
+      </a>
       <div className="flex w-full flex-1 flex-col items-center gap-20">
         <nav className="flex h-16 w-full justify-center border-b border-b-foreground/10">
           <div className="flex w-full max-w-5xl items-center justify-between p-3 px-5 text-sm">
@@ -76,9 +82,12 @@ export default async function ProtectedLayout({
             </div>
           </div>
         </nav>
-        <div className="flex w-full max-w-5xl flex-1 flex-col gap-20 p-5">
+        <main
+          id="main-content"
+          className="flex w-full max-w-5xl flex-1 flex-col gap-20 p-5"
+        >
           {children}
-        </div>
+        </main>
         <QuickAddTransaction
           accounts={accounts}
           categories={categories}
@@ -96,6 +105,6 @@ export default async function ProtectedLayout({
           }
         />
       </div>
-    </main>
+    </div>
   )
 }
