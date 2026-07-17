@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState, useTransition } from 'react'
 import { Badge } from '@/components/ui/Badge'
@@ -33,6 +34,7 @@ export function TransactionRow({
   const t = useTranslations('transactions')
   const tCat = useTranslations('categories.defaults')
   const locale = useLocale()
+  const router = useRouter()
   const [editing, setEditing] = useState(false)
   const [pending, startTransition] = useTransition()
 
@@ -129,6 +131,26 @@ export function TransactionRow({
               </option>
             ))}
           </select>
+
+          {/* Turn a categorized row into a rule (P3-05): deep-link the rules
+              editor prefilled from this row's description + category. */}
+          {transaction.category_id ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={pending}
+              onClick={() =>
+                router.push(
+                  `/protected/settings/rules?description=${encodeURIComponent(
+                    transaction.description
+                  )}&categoryId=${transaction.category_id}`
+                )
+              }
+            >
+              {t('makeRule')}
+            </Button>
+          ) : null}
 
           <Button
             type="button"

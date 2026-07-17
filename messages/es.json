@@ -140,7 +140,8 @@
       "invalidCurrency": "Usa un código de moneda de 3 letras, p. ej. EUR.",
       "invalidAmount": "Introduce un importe válido, p. ej. 1234.56.",
       "amountNonZero": "El importe no puede ser cero."
-    }
+    },
+    "makeRule": "Crear regla"
   },
   "import": {
     "nav": "Importar",
@@ -1096,6 +1097,110 @@
       "endBeforeStart": "La fecha de fin es anterior al inicio",
       "invalid": "Valor no válido",
       "unexpected": "Algo ha ido mal. Inténtalo de nuevo."
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "tabs": {
+      "label": "Secciones de ajustes",
+      "profile": "Perfil",
+      "categories": "Categorías",
+      "rules": "Reglas"
+    },
+    "profile": {
+      "account": "Cuenta",
+      "signedInAs": "Sesión iniciada como {email}",
+      "currencies": "Monedas",
+      "baseCurrency": "Moneda base",
+      "baseCurrencyNote": "La moneda en la que se calculan tus totales.",
+      "displayCurrency": "Moneda de visualización",
+      "displayCurrencyNote": "Moneda preferida que se muestra en el panel.",
+      "preferences": "Preferencias",
+      "language": "Idioma",
+      "theme": "Tema",
+      "save": "Guardar",
+      "saved": "Guardado",
+      "error": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "categories": {
+      "intro": "Organiza tus categorías de ingresos y gastos.",
+      "newCategory": "Nueva categoría",
+      "topLevel": "Nivel superior (sin superior)",
+      "editName": "Editar nombre",
+      "renameConvertsNote": "Renombrar una categoría predeterminada hace que deje de usar la traducción integrada.",
+      "fields": {
+        "name": "Nombre",
+        "kind": "Tipo",
+        "parent": "Categoría superior",
+        "icon": "Icono",
+        "color": "Color"
+      },
+      "kinds": {
+        "income": "Ingreso",
+        "expense": "Gasto"
+      },
+      "addSub": "Añadir subcategoría",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar? Las transacciones quedarán sin categoría.",
+      "deleteYes": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "create": "Crear",
+      "error": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "rules": {
+      "intro": "Las reglas categorizan automáticamente al importar. Gana la de mayor prioridad (número más bajo).",
+      "newRule": "Nueva regla",
+      "empty": "Aún no hay reglas.",
+      "editName": "Editar nombre",
+      "renameConvertsNote": "Renombrar una regla predeterminada hace que deje de usar la traducción integrada.",
+      "conditions": "Condiciones",
+      "fields": {
+        "name": "Nombre",
+        "category": "Categoría",
+        "priority": "Prioridad",
+        "description": "Descripción",
+        "amount_cents": "Importe",
+        "account_id": "Cuenta"
+      },
+      "ops": {
+        "contains": "contiene",
+        "equals": "es igual a",
+        "starts_with": "empieza por",
+        "regex": "coincide con regex",
+        "lt": "<",
+        "lte": "≤",
+        "gt": ">",
+        "gte": "≥",
+        "eq": "="
+      },
+      "and": "y",
+      "choose": "Elegir…",
+      "valuePlaceholder": "valor",
+      "absolute": "ignorar signo",
+      "addClause": "Añadir condición",
+      "removeClause": "Quitar condición",
+      "clauseField": "Campo",
+      "clauseOp": "Operador",
+      "clauseValue": "Valor",
+      "priorityNote": "Los números más bajos se aplican primero. Las reglas del usuario (0) ganan a las predeterminadas.",
+      "summary": "→ {target} · prioridad {priority}",
+      "enabled": "Activada",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar esta regla?",
+      "deleteYes": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "create": "Crear",
+      "error": "Algo salió mal. Inténtalo de nuevo.",
+      "preview": {
+        "title": "Probar con tus datos",
+        "loading": "Probando…",
+        "matches": "Coincide con {matched} de {total} transacciones.",
+        "none": "No hay vista previa disponible."
+      }
     }
   }
 }

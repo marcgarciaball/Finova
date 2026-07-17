@@ -140,7 +140,8 @@
       "invalidCurrency": "Use a 3-letter currency code, e.g. EUR.",
       "invalidAmount": "Enter a valid amount, e.g. 1234.56.",
       "amountNonZero": "Amount can't be zero."
-    }
+    },
+    "makeRule": "Make a rule"
   },
   "import": {
     "nav": "Import",
@@ -1096,6 +1097,110 @@
       "endBeforeStart": "End date is before the start",
       "invalid": "Invalid value",
       "unexpected": "Something went wrong. Try again."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "label": "Settings sections",
+      "profile": "Profile",
+      "categories": "Categories",
+      "rules": "Rules"
+    },
+    "profile": {
+      "account": "Account",
+      "signedInAs": "Signed in as {email}",
+      "currencies": "Currencies",
+      "baseCurrency": "Base currency",
+      "baseCurrencyNote": "The currency your totals are reported in.",
+      "displayCurrency": "Display currency",
+      "displayCurrencyNote": "Preferred currency shown across the dashboard.",
+      "preferences": "Preferences",
+      "language": "Language",
+      "theme": "Theme",
+      "save": "Save",
+      "saved": "Saved",
+      "error": "Something went wrong. Please try again."
+    },
+    "categories": {
+      "intro": "Organize your income and expense categories.",
+      "newCategory": "New category",
+      "topLevel": "Top level (no parent)",
+      "editName": "Edit name",
+      "renameConvertsNote": "Renaming a default category stops it from using the built-in translation.",
+      "fields": {
+        "name": "Name",
+        "kind": "Type",
+        "parent": "Parent category",
+        "icon": "Icon",
+        "color": "Color"
+      },
+      "kinds": {
+        "income": "Income",
+        "expense": "Expense"
+      },
+      "addSub": "Add subcategory",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Delete? Transactions become uncategorized.",
+      "deleteYes": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "create": "Create",
+      "error": "Something went wrong. Please try again."
+    },
+    "rules": {
+      "intro": "Rules auto-categorize transactions on import. Higher priority (lower number) wins.",
+      "newRule": "New rule",
+      "empty": "No rules yet.",
+      "editName": "Edit name",
+      "renameConvertsNote": "Renaming a default rule stops it from using the built-in translation.",
+      "conditions": "Conditions",
+      "fields": {
+        "name": "Name",
+        "category": "Category",
+        "priority": "Priority",
+        "description": "Description",
+        "amount_cents": "Amount",
+        "account_id": "Account"
+      },
+      "ops": {
+        "contains": "contains",
+        "equals": "equals",
+        "starts_with": "starts with",
+        "regex": "matches regex",
+        "lt": "<",
+        "lte": "≤",
+        "gt": ">",
+        "gte": "≥",
+        "eq": "="
+      },
+      "and": "and",
+      "choose": "Choose…",
+      "valuePlaceholder": "value",
+      "absolute": "ignore sign",
+      "addClause": "Add condition",
+      "removeClause": "Remove condition",
+      "clauseField": "Field",
+      "clauseOp": "Operator",
+      "clauseValue": "Value",
+      "priorityNote": "Lower numbers apply first. User rules (0) beat defaults.",
+      "summary": "→ {target} · priority {priority}",
+      "enabled": "Enabled",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this rule?",
+      "deleteYes": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "create": "Create",
+      "error": "Something went wrong. Please try again.",
+      "preview": {
+        "title": "Test against your data",
+        "loading": "Testing…",
+        "matches": "Matches {matched} of {total} transactions.",
+        "none": "No preview available."
+      }
     }
   }
 }

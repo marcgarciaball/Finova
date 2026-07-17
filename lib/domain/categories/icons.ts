@@ -20,7 +20,39 @@ export interface CategoryIconEntry {
 /** Icon shown for a category with no `icon_name` (custom, or unresolved). */
 export const FALLBACK_ICON_NAME = 'CircleDashed'
 
-const CAT_COLORS = [
+/**
+ * The icon names a user may pick in the category picker (P5-01). Must stay in
+ * sync with the `ICONS` map in `components/dashboard/CategoryIcon.tsx` — every
+ * name here has to resolve to a real Lucide component there. Framework-free
+ * (plain strings) so it can back both the validator and the picker UI.
+ */
+export const ICON_NAMES = [
+  'Home',
+  'Utensils',
+  'ShoppingCart',
+  'UtensilsCrossed',
+  'Car',
+  'Zap',
+  'HeartPulse',
+  'ShoppingBag',
+  'Gamepad2',
+  'GraduationCap',
+  'Plane',
+  'Wallet',
+  'Gift',
+  'HandCoins',
+  'CircleDashed',
+] as const
+
+export type IconName = (typeof ICON_NAMES)[number]
+
+/**
+ * The colors a user may pick (P5-01) — `--cat-*` CSS-var references so they
+ * track the light/dark palette automatically (mirrors `CAT_COLORS` below). An
+ * allowlist, not free-form hex, keeps the visual system coherent and closes an
+ * injection surface (the value is interpolated into inline `style`).
+ */
+export const CATEGORY_COLORS = [
   'var(--cat-blue)',
   'var(--cat-teal)',
   'var(--cat-violet)',
@@ -28,6 +60,11 @@ const CAT_COLORS = [
   'var(--cat-rose)',
   'var(--cat-lime)',
 ] as const
+
+export type CategoryColor = (typeof CATEGORY_COLORS)[number]
+
+/** The seed cycles through the same palette a user can pick from. */
+const CAT_COLORS = CATEGORY_COLORS
 
 /** Icon per top-level default category; subcategories inherit the parent's. */
 const TOP_LEVEL_ICONS: Record<string, string> = {
