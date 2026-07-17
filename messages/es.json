@@ -73,6 +73,13 @@
       "invalidRate": "Introduce un tipo válido, p. ej. 2 o 2.5.",
       "unexpected": "Algo salió mal. Inténtalo de nuevo.",
       "hasTransactions": "Esta cuenta todavía tiene transacciones. Elimínalas o muévelas primero."
+    },
+    "reconcile": {
+      "button": "Conciliar",
+      "label": "Saldo real",
+      "help": "Introduce el saldo real de la cuenta; registraremos un ajuste puntual por la diferencia (tu historial se mantiene intacto).",
+      "submit": "Ajustar",
+      "description": "Ajuste de saldo"
     }
   },
   "transactions": {

@@ -73,6 +73,13 @@
       "invalidRate": "Enter a valid rate, e.g. 2 or 2.5.",
       "unexpected": "Something went wrong. Please try again.",
       "hasTransactions": "This account still has transactions. Delete or move them first."
+    },
+    "reconcile": {
+      "button": "Reconcile",
+      "label": "Actual balance",
+      "help": "Enter the account's real balance; we'll record a one-off adjustment for the difference (your history stays intact).",
+      "submit": "Adjust",
+      "description": "Balance adjustment"
     }
   },
   "transactions": {

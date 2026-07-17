@@ -97,7 +97,7 @@ Technical groundwork everything else depends on.
 - ✅ Create manual accounts/wallets (cash, checking, savings, card) with name, type, currency, starting balance.
 - ✅ Multiple wallets per user.
 - ✅ Per-wallet and total balance. _Live balance = opening + Σ transactions (transfers included); never sums across currencies._
-- ⬜ **Manual balance reconciliation**: adjust an account when the real balance doesn't match the derived "opening + Σ transactions" (e.g. a forgotten expense) — records a balancing adjustment rather than silently editing history. _Small effort, high trust._
+- 🔨 **Manual balance reconciliation**: adjust an account when the real balance doesn't match the derived "opening + Σ transactions" (e.g. a forgotten expense) — records a balancing adjustment rather than silently editing history. _Built: a "Reconcile" control on each account records a one-off adjustment transaction for the delta; browser-verify pending._
 
 ### 1.2 Transactions — 🟡
 

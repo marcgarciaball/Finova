@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { requireUser } from '@/lib/auth/require-user'
+import { reconciliationDelta } from '@/lib/domain/accounts/reconcile'
 import { createClient } from '@/lib/supabase/server'
 import {
   createAccountSchema,
@@ -10,6 +11,7 @@ import {
   parseOpeningBalanceToCents,
   updateAccountSchema,
 } from '@/lib/validation/account'
+import { parseAmountToCents } from '@/lib/validation/transaction'
 
 /**
  * CRUD Server Actions for accounts (P1-02).
@@ -157,6 +159,94 @@ export async function setArchived(
   }
 
   revalidatePath(ACCOUNTS_PATH)
+  return { ok: true }
+}
+
+const reconcileSchema = z.object({
+  accountId: z.string().uuid(),
+  targetAmount: z.string().trim().min(1),
+  description: z.string().trim().min(1).max(200),
+})
+
+/**
+ * Manual balance reconciliation (roadmap 1.1). Records a single balancing
+ * **adjustment transaction** for the gap between the account's derived balance
+ * and the real balance the user enters — history is preserved, never edited.
+ * Owner from the JWT; the account + its transactions are read RLS-scoped, so
+ * the current balance can't be computed from another user's data.
+ */
+export async function reconcileAccount(
+  accountId: string,
+  targetAmount: string,
+  description: string
+): Promise<ActionResult> {
+  const claims = await requireUser()
+
+  const parsed = reconcileSchema.safeParse({
+    accountId,
+    targetAmount,
+    description,
+  })
+  if (!parsed.success) {
+    return { ok: false, error: VALIDATION_FAILED }
+  }
+
+  try {
+    const supabase = await createClient()
+    const { data: account } = await supabase
+      .from('accounts')
+      .select('id, currency, opening_balance')
+      .eq('id', parsed.data.accountId)
+      .maybeSingle()
+    if (!account) {
+      return { ok: false, error: UNEXPECTED }
+    }
+    const currency = String(account.currency)
+
+    // Current balance = opening + Σ same-currency transactions (mirrors the
+    // P4-01 `accountBalances` core, which never sums across currencies).
+    const { data: txns, error: txnsError } = await supabase
+      .from('transactions')
+      .select('amount_cents, currency')
+      .eq('account_id', parsed.data.accountId)
+    if (txnsError) {
+      return { ok: false, error: UNEXPECTED }
+    }
+    const current = (txns ?? []).reduce(
+      (sum, r) =>
+        String(r.currency) === currency ? sum + Number(r.amount_cents) : sum,
+      Number(account.opening_balance)
+    )
+
+    const target = parseAmountToCents(parsed.data.targetAmount, currency)
+    const delta = reconciliationDelta(current, target)
+    // Already balanced — nothing to record (and a zero row would violate the
+    // amount-nonzero check).
+    if (delta === 0) {
+      return { ok: true }
+    }
+
+    const { error } = await supabase.from('transactions').insert({
+      user_id: claims.sub,
+      account_id: parsed.data.accountId,
+      category_id: null,
+      amount_cents: delta,
+      currency,
+      occurred_at: new Date().toISOString(),
+      description: parsed.data.description,
+      note: null,
+      tags: [],
+      is_recurring: false,
+    })
+    if (error) {
+      return { ok: false, error: UNEXPECTED }
+    }
+  } catch {
+    return { ok: false, error: UNEXPECTED }
+  }
+
+  revalidatePath(ACCOUNTS_PATH)
+  revalidatePath('/protected')
   return { ok: true }
 }
 
