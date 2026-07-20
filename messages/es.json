@@ -1312,7 +1312,21 @@
       "securityHeading": "Seguridad",
       "securityBody": "El acceso requiere autenticación; las sesiones se basan en cookies. No vendemos tus datos ni nos conectamos a tu banco. Los archivos de extractos que subes se almacenan de forma privada y limitados a tu cuenta.",
       "contactHeading": "Contacto",
-      "contactBody": "Para consultas de privacidad, escribe a la dirección publicada en este sitio. (Sustituye por tu contacto real antes del lanzamiento.)"
+      "contactBody": "Para consultas de privacidad, escribe a la dirección publicada en este sitio. (Sustituye por tu contacto real antes del lanzamiento.)",
+      "controllerHeading": "Responsable del tratamiento",
+      "controllerBody": "El responsable del tratamiento a efectos de la normativa de protección de datos aplicable es {company}. Los datos de contacto figuran más abajo.",
+      "legalBasisHeading": "Base legal del tratamiento",
+      "legalBasisBody": "Tratamos tus datos de cuenta y financieros para ejecutar el contrato contigo (prestar el servicio contratado) y, cuando proceda, para cumplir obligaciones legales. No tratamos tus datos para ningún fin incompatible con estos.",
+      "subprocessorsHeading": "Subencargados y terceros",
+      "subprocessorsBody": "Usamos Supabase (base de datos, autenticación y almacenamiento de archivos) como principal subencargado de infraestructura. Si usas el módulo opcional de Inversiones, los datos de referencia de tickers/divisas/cripto se obtienen de proveedores de datos de mercado (p. ej. Finnhub, Financial Modeling Prep, CoinGecko, Frankfurter/BCE) usando únicamente el símbolo que añades — no se envía ningún otro dato personal. No vendemos tus datos a nadie ni los compartimos con anunciantes.",
+      "retentionHeading": "Conservación de datos",
+      "retentionBody": "Tus datos se conservan mientras tu cuenta esté activa. Si eliminas tu cuenta (Ajustes → Zona de peligro), todos los datos asociados se borran de forma permanente e inmediata — no hay periodo de gracia ni conservación en copias de seguridad más allá de las copias operativas descritas en nuestra política interna, rotadas en un ciclo de [30 días].",
+      "cookiesHeading": "Cookies y almacenamiento local",
+      "cookiesBody": "Usamos cookies estrictamente necesarias para la autenticación (sesión) y tu preferencia de idioma/tema. No usamos cookies de publicidad ni de seguimiento de terceros.",
+      "childrenHeading": "Privacidad de menores",
+      "childrenBody": "Finova no está dirigida a menores y no está pensada para su uso por personas menores de [16/18 años, según tu jurisdicción].",
+      "transfersHeading": "Transferencias internacionales de datos",
+      "transfersBody": "Tus datos pueden tratarse en una región del centro de datos operado por nuestro proveedor de infraestructura fuera de tu país. Cuando sea necesario, dichas transferencias se apoyan en garantías adecuadas (p. ej. Cláusulas Contractuales Tipo). [Confirma la(s) región(es) concreta(s) y el mecanismo de garantía con el DPA de tu proveedor antes del lanzamiento.]"
     },
     "terms": {
       "title": "Términos del servicio",
@@ -1324,7 +1338,21 @@
       "liabilityHeading": "Disponibilidad y responsabilidad",
       "liabilityBody": "El servicio se presta «tal cual», sin garantías. En la medida permitida por la ley, no somos responsables de pérdidas derivadas del uso del servicio ni de inexactitudes en tus datos.",
       "changesHeading": "Cambios",
-      "changesBody": "Podemos actualizar estos términos; el uso continuado tras una actualización implica la aceptación de los términos revisados."
-    }
+      "changesBody": "Podemos actualizar estos términos; el uso continuado tras una actualización implica la aceptación de los términos revisados.",
+      "eligibilityHeading": "Elegibilidad",
+      "eligibilityBody": "Debes tener al menos [16/18] años y capacidad legal para celebrar un contrato vinculante para usar Finova.",
+      "ipHeading": "Propiedad intelectual",
+      "ipBody": "El software, diseño y marca de Finova son propiedad de {company} y no se te licencian más allá de lo necesario para usar el servicio. Tus propios datos financieros siguen siendo tuyos.",
+      "terminationHeading": "Terminación",
+      "terminationBody": "Puedes dejar de usar el servicio y eliminar tu cuenta en cualquier momento. Podemos suspender o cancelar cuentas que incumplan estos términos o la ley aplicable, notificándolo cuando sea razonablemente posible.",
+      "governingLawHeading": "Ley aplicable",
+      "governingLawBody": "Estos términos se rigen por las leyes de [JURISDICCIÓN], sin tener en cuenta sus normas de conflicto de leyes. [Confirma con un abogado si quieres una cláusula de fuero/arbitraje.]"
+    },
+    "companyPlaceholder": "[RAZÓN SOCIAL], [DIRECCIÓN], [JURISDICCIÓN] — sustituir antes del lanzamiento"
+  },
+  "errorBoundary": {
+    "title": "Algo salió mal",
+    "body": "Se produjo un error inesperado. Ha quedado registrado; inténtalo de nuevo.",
+    "retry": "Reintentar"
   }
 }

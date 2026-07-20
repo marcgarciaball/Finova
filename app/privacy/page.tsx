@@ -2,17 +2,25 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { GlassCard } from '@/components/ui/GlassCard'
 
-const LAST_UPDATED = '2026-07-17'
+const LAST_UPDATED = '2026-07-20'
 
 /** Public privacy policy (P5-07). Draft template — needs legal review. */
 export default async function PrivacyPage() {
   const t = await getTranslations('legal')
   const p = await getTranslations('legal.privacy')
+  const company = t('companyPlaceholder')
 
   const sections = [
     { heading: p('dataHeading'), body: p('dataBody') },
+    { heading: p('controllerHeading'), body: p('controllerBody', { company }) },
+    { heading: p('legalBasisHeading'), body: p('legalBasisBody') },
+    { heading: p('subprocessorsHeading'), body: p('subprocessorsBody') },
     { heading: p('rightsHeading'), body: p('rightsBody') },
+    { heading: p('retentionHeading'), body: p('retentionBody') },
+    { heading: p('cookiesHeading'), body: p('cookiesBody') },
     { heading: p('securityHeading'), body: p('securityBody') },
+    { heading: p('transfersHeading'), body: p('transfersBody') },
+    { heading: p('childrenHeading'), body: p('childrenBody') },
     { heading: p('contactHeading'), body: p('contactBody') },
   ]
 

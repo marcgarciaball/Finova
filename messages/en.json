@@ -1312,7 +1312,21 @@
       "securityHeading": "Security",
       "securityBody": "Access requires authentication; sessions are cookie-based. We do not sell your data and do not connect to your bank. Uploaded statement files are stored privately and scoped to your account.",
       "contactHeading": "Contact",
-      "contactBody": "For privacy questions, contact the address published on this site. (Replace with your real contact before launch.)"
+      "contactBody": "For privacy questions, contact the address published on this site. (Replace with your real contact before launch.)",
+      "controllerHeading": "Data controller",
+      "controllerBody": "The data controller for the purposes of applicable data-protection law is {company}. Contact details are below.",
+      "legalBasisHeading": "Legal basis for processing",
+      "legalBasisBody": "We process your account and financial data to perform our contract with you (providing the service you signed up for) and, where applicable, to comply with legal obligations. We do not process your data for any purpose incompatible with these.",
+      "subprocessorsHeading": "Sub-processors and third parties",
+      "subprocessorsBody": "We use Supabase (database, authentication, and file storage) as our primary infrastructure sub-processor. If you use the optional Investments module, ticker/FX/crypto reference data is fetched from market-data providers (e.g. Finnhub, Financial Modeling Prep, CoinGecko, Frankfurter/ECB) using only the ticker/symbol you add — no other personal data is sent to them. We do not sell your data to anyone, and we do not share it with advertisers.",
+      "retentionHeading": "Data retention",
+      "retentionBody": "Your data is retained for as long as your account is active. If you delete your account (Settings → Danger Zone), all associated data is permanently and immediately erased — there is no grace period or backup retention beyond the operational database backups described in our internal backup policy, which are themselves rotated on a [30-day] cycle.",
+      "cookiesHeading": "Cookies and local storage",
+      "cookiesBody": "We use strictly necessary cookies for authentication (session) and your language/theme preference. We do not use advertising or third-party tracking cookies.",
+      "childrenHeading": "Children's privacy",
+      "childrenBody": "Finova is not directed at children and is not intended for use by anyone under the age of [16/18, per your jurisdiction].",
+      "transfersHeading": "International data transfers",
+      "transfersBody": "Your data may be processed in a data-center region operated by our infrastructure provider outside your own country. Where required, such transfers rely on appropriate safeguards (e.g. Standard Contractual Clauses). [Confirm the specific region(s) and safeguard mechanism with your provider's DPA before launch.]"
     },
     "terms": {
       "title": "Terms of Service",
@@ -1324,7 +1338,21 @@
       "liabilityHeading": "Availability and liability",
       "liabilityBody": "The service is provided “as is”, without warranties. To the extent permitted by law, we are not liable for losses arising from use of the service or from inaccuracies in your data.",
       "changesHeading": "Changes",
-      "changesBody": "We may update these terms; continued use after an update constitutes acceptance of the revised terms."
-    }
+      "changesBody": "We may update these terms; continued use after an update constitutes acceptance of the revised terms.",
+      "eligibilityHeading": "Eligibility",
+      "eligibilityBody": "You must be at least [16/18] years old and legally able to enter into a binding contract to use Finova.",
+      "ipHeading": "Intellectual property",
+      "ipBody": "Finova's software, design, and branding are owned by {company} and are not licensed to you beyond what's needed to use the service. Your own financial data remains yours.",
+      "terminationHeading": "Termination",
+      "terminationBody": "You may stop using the service and delete your account at any time. We may suspend or terminate accounts that violate these terms or applicable law, with notice where reasonably possible.",
+      "governingLawHeading": "Governing law",
+      "governingLawBody": "These terms are governed by the laws of [JURISDICTION], without regard to conflict-of-law principles. [Confirm venue/arbitration clause with counsel if you want one.]"
+    },
+    "companyPlaceholder": "[LEGAL ENTITY NAME], [ADDRESS], [JURISDICTION] — replace before launch"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "body": "An unexpected error occurred. It's been logged — please try again.",
+    "retry": "Try again"
   }
 }

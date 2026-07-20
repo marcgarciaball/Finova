@@ -5,6 +5,7 @@
 export * from '@/lib/db/schema/accounts'
 export * from '@/lib/db/schema/categories'
 export * from '@/lib/db/schema/categorization-rules'
+export * from '@/lib/db/schema/error-logs'
 export * from '@/lib/db/schema/import-batches'
 export * from '@/lib/db/schema/import-templates'
 export * from '@/lib/db/schema/investments-derived'

@@ -141,6 +141,13 @@
       "when": 1784204965296,
       "tag": "0019_elite_jean_grey",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1784554127391,
+      "tag": "0020_loud_scorpion",
+      "breakpoints": true
     }
   ]
 }
