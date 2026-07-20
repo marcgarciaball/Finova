@@ -1,7 +1,7 @@
+import type { AssetType } from '@finova/domain/investments/types'
+import { format, money } from '@finova/domain/money'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { GlassCard } from '@/components/ui/GlassCard'
-import type { AssetType } from '@/lib/domain/investments/types'
-import { format, money } from '@/lib/domain/money'
 import type { InvestmentTransactionWithAsset } from './data'
 import { TransactionRowActions } from './TransactionRowActions'
 

@@ -1,12 +1,12 @@
 import 'server-only'
-import { requireUser } from '@/lib/auth/require-user'
 import {
   accountFingerprint,
   assetKey,
   investmentTxnFingerprint,
   portfolioFingerprint,
-} from '@/lib/domain/import/backup/investments-fingerprint'
-import type { ExistingInvestments } from '@/lib/domain/import/backup/investments-plan'
+} from '@finova/domain/import/backup/investments-fingerprint'
+import type { ExistingInvestments } from '@finova/domain/import/backup/investments-plan'
+import { requireUser } from '@/lib/auth/require-user'
 import { createClient } from '@/lib/supabase/server'
 
 /**

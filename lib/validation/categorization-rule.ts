@@ -1,5 +1,5 @@
+import type { Rule, RuleConditions } from '@finova/domain/rules/types'
 import { z } from 'zod'
-import type { Rule, RuleConditions } from '@/lib/domain/rules/types'
 
 /**
  * Categorization-rule validation (P3-01).

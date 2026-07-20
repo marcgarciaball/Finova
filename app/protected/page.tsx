@@ -1,15 +1,4 @@
-import { Plus } from 'lucide-react'
-import { getLocale, getTranslations } from 'next-intl/server'
-import { AreaChart } from '@/components/charts/AreaChart'
-import { BarChart } from '@/components/charts/BarChart'
-import { DonutChart } from '@/components/charts/DonutChart'
-import { CategoryIcon } from '@/components/dashboard/CategoryIcon'
-import { HeroCard } from '@/components/dashboard/HeroCard'
-import { KpiCard } from '@/components/dashboard/KpiCard'
-import { QuickAddTransaction } from '@/components/transactions/QuickAddTransaction'
-import { Button } from '@/components/ui/Button'
-import { GlassCard } from '@/components/ui/GlassCard'
-import { categoryLabel } from '@/lib/domain/categories/label'
+import { categoryLabel } from '@finova/domain/categories/label'
 import {
   accountBalances,
   balanceTrend,
@@ -32,8 +21,19 @@ import {
   spendingToDonut,
   totalBalanceByCurrency,
   trendOf,
-} from '@/lib/domain/dashboard'
-import { summarizeByCurrency } from '@/lib/domain/transactions/totals'
+} from '@finova/domain/dashboard'
+import { summarizeByCurrency } from '@finova/domain/transactions/totals'
+import { Plus } from 'lucide-react'
+import { getLocale, getTranslations } from 'next-intl/server'
+import { AreaChart } from '@/components/charts/AreaChart'
+import { BarChart } from '@/components/charts/BarChart'
+import { DonutChart } from '@/components/charts/DonutChart'
+import { CategoryIcon } from '@/components/dashboard/CategoryIcon'
+import { HeroCard } from '@/components/dashboard/HeroCard'
+import { KpiCard } from '@/components/dashboard/KpiCard'
+import { QuickAddTransaction } from '@/components/transactions/QuickAddTransaction'
+import { Button } from '@/components/ui/Button'
+import { GlassCard } from '@/components/ui/GlassCard'
 import type { CategoryRow } from '@/lib/validation/category'
 import { AccountsStrip } from './AccountsStrip'
 import { BandSection } from './BandSection'

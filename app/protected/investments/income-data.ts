@@ -1,5 +1,4 @@
 import 'server-only'
-import { requireUser } from '@/lib/auth/require-user'
 import {
   type DividendEvent,
   type DividendTxn,
@@ -8,13 +7,14 @@ import {
   dividendsReceivedEvents,
   quantityHeldOn,
   trailing12mPerShareCents,
-} from '@/lib/domain/investments/dividends'
-import { computeHolding } from '@/lib/domain/investments/holdings'
+} from '@finova/domain/investments/dividends'
+import { computeHolding } from '@finova/domain/investments/holdings'
 import {
   convertCents,
   type FxRateTable,
   fxKey,
-} from '@/lib/domain/investments/portfolio'
+} from '@finova/domain/investments/portfolio'
+import { requireUser } from '@/lib/auth/require-user'
 import { createClient } from '@/lib/supabase/server'
 import { getOrCreatePortfolio } from './data'
 

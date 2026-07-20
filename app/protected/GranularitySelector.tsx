@@ -1,9 +1,9 @@
 'use client'
+import { GRANULARITIES } from '@finova/domain/dashboard'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useTransition } from 'react'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
-import { GRANULARITIES } from '@/lib/domain/dashboard'
 
 /**
  * URL-driven day/month/year toggle for the income-vs-expense chart. Same

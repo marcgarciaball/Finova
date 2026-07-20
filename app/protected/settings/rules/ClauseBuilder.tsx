@@ -1,17 +1,17 @@
 'use client'
 
-import { Plus, X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { Button } from '@/components/ui/Button'
-import { Checkbox } from '@/components/ui/Checkbox'
-import { Input } from '@/components/ui/Input'
 import {
   AMOUNT_OPS,
   type ClauseDraft,
   type ClauseField,
   DESCRIPTION_OPS,
   emptyDraft,
-} from '@/lib/domain/rules/clause-form'
+} from '@finova/domain/rules/clause-form'
+import { Plus, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { Button } from '@/components/ui/Button'
+import { Checkbox } from '@/components/ui/Checkbox'
+import { Input } from '@/components/ui/Input'
 import type { AccountRow } from '@/lib/validation/account'
 
 const SELECT_CLASS =

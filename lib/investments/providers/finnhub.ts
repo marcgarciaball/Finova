@@ -1,5 +1,5 @@
+import type { AssetType } from '@finova/domain/investments/types'
 import { z } from 'zod'
-import type { AssetType } from '@/lib/domain/investments/types'
 import {
   type AssetProfile,
   ProviderError,

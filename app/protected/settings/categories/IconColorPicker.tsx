@@ -1,8 +1,8 @@
 'use client'
 
+import { CATEGORY_COLORS, ICON_NAMES } from '@finova/domain/categories/icons'
 import { useState } from 'react'
 import { CategoryIcon } from '@/components/dashboard/CategoryIcon'
-import { CATEGORY_COLORS, ICON_NAMES } from '@/lib/domain/categories/icons'
 import { cn } from '@/lib/utils'
 
 /**

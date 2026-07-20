@@ -1,11 +1,11 @@
 'use client'
 
+import { categoryLabel } from '@finova/domain/categories/label'
 import { useTranslations } from 'next-intl'
 import { useActionState, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
-import { categoryLabel } from '@/lib/domain/categories/label'
 import type { AccountRow } from '@/lib/validation/account'
 import type { CategoryRow } from '@/lib/validation/category'
 import type { TransactionRow } from '@/lib/validation/transaction'

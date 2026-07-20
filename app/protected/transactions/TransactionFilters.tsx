@@ -1,16 +1,16 @@
 'use client'
 
+import { categoryLabel } from '@finova/domain/categories/label'
+import {
+  TRANSACTION_TYPES,
+  UNCATEGORIZED,
+} from '@finova/domain/transactions/filters'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
-import { categoryLabel } from '@/lib/domain/categories/label'
-import {
-  TRANSACTION_TYPES,
-  UNCATEGORIZED,
-} from '@/lib/domain/transactions/filters'
 import type { AccountRow } from '@/lib/validation/account'
 import type { CategoryRow } from '@/lib/validation/category'
 

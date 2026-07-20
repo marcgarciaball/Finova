@@ -1,6 +1,5 @@
 import 'server-only'
-import { requireUser } from '@/lib/auth/require-user'
-import { dailyValueSeries } from '@/lib/domain/investments/history'
+import { dailyValueSeries } from '@finova/domain/investments/history'
 import {
   computePortfolioTotals,
   convertCents,
@@ -8,12 +7,13 @@ import {
   fxKey,
   type PortfolioTotals,
   type ValuedHolding,
-} from '@/lib/domain/investments/portfolio'
+} from '@finova/domain/investments/portfolio'
 import {
   buildHoldingRows,
   type RebuildTxn,
-} from '@/lib/domain/investments/rebuild'
-import type { AssetType } from '@/lib/domain/investments/types'
+} from '@finova/domain/investments/rebuild'
+import type { AssetType } from '@finova/domain/investments/types'
+import { requireUser } from '@/lib/auth/require-user'
 import { createClient } from '@/lib/supabase/server'
 import { getOrCreatePortfolio } from './data'
 

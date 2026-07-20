@@ -1,18 +1,18 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { useActionState, useEffect, useState } from 'react'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Label } from '@/components/ui/Label'
-import { categoryLabel } from '@/lib/domain/categories/label'
+import { categoryLabel } from '@finova/domain/categories/label'
 import {
   buildConditions,
   type ClauseDraft,
   draftsFromConditions,
   emptyDraft,
-} from '@/lib/domain/rules/clause-form'
-import type { RuleConditions } from '@/lib/domain/rules/types'
+} from '@finova/domain/rules/clause-form'
+import type { RuleConditions } from '@finova/domain/rules/types'
+import { useTranslations } from 'next-intl'
+import { useActionState, useEffect, useState } from 'react'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Label } from '@/components/ui/Label'
 import type { AccountRow } from '@/lib/validation/account'
 import type { CategorizationRuleRow } from '@/lib/validation/categorization-rule'
 import type { CategoryRow } from '@/lib/validation/category'

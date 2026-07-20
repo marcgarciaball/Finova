@@ -1,8 +1,8 @@
-import { transactionsCsv } from '@/lib/domain/export/bundle'
+import { transactionsCsv } from '@finova/domain/export/bundle'
 import {
   hasActiveFilters,
   parseFilters,
-} from '@/lib/domain/transactions/filters'
+} from '@finova/domain/transactions/filters'
 import { getExportData } from '../data'
 
 /**

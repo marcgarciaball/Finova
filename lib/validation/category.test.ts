@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest'
 import {
   DEFAULT_CATEGORIES,
   DEFAULT_CATEGORY_KEYS,
-} from '@/lib/domain/categories/defaults'
+} from '@finova/domain/categories/defaults'
+import { describe, expect, it } from 'vitest'
 import {
   categoryKindSchema,
   categoryRowSchema,

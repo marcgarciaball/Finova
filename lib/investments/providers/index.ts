@@ -1,4 +1,4 @@
-import type { AssetType } from '@/lib/domain/investments/types'
+import type { AssetType } from '@finova/domain/investments/types'
 import { getCoinGeckoQuote, searchCoinGeckoSymbols } from './coingecko'
 
 export { getCoinGeckoDailyPrices } from './coingecko'

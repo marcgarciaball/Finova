@@ -1,10 +1,10 @@
 'use client'
 
+import { format, money } from '@finova/domain/money'
 import { useLocale, useTranslations } from 'next-intl'
 import { type ReactNode, useState } from 'react'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
-import { format, money } from '@/lib/domain/money'
 import { cn } from '@/lib/utils'
 
 export interface EarningsRow {

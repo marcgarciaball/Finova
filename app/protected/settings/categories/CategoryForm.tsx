@@ -1,14 +1,14 @@
 'use client'
 
+import {
+  CATEGORY_KINDS,
+  type CategoryKind,
+} from '@finova/domain/categories/types'
 import { useTranslations } from 'next-intl'
 import { useActionState, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
-import {
-  CATEGORY_KINDS,
-  type CategoryKind,
-} from '@/lib/domain/categories/types'
 import type { CategoryRow } from '@/lib/validation/category'
 import { type ActionResult, createCategory, updateCategory } from './actions'
 import { IconColorPicker } from './IconColorPicker'

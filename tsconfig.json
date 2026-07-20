@@ -21,7 +21,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@finova/domain": ["./packages/domain/src/index.ts"],
+      "@finova/domain/*": ["./packages/domain/src/*"]
     }
   },
   "include": [

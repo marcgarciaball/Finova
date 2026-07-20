@@ -1,11 +1,11 @@
-import { getTranslations } from 'next-intl/server'
-import { requireUser } from '@/lib/auth/require-user'
 import {
   hasActiveFilters,
   parseFilters,
   type RawParams,
-} from '@/lib/domain/transactions/filters'
-import { parsePage, totalPages } from '@/lib/domain/transactions/pagination'
+} from '@finova/domain/transactions/filters'
+import { parsePage, totalPages } from '@finova/domain/transactions/pagination'
+import { getTranslations } from 'next-intl/server'
+import { requireUser } from '@/lib/auth/require-user'
 import { CreateTransactionPanel } from './CreateTransactionPanel'
 import {
   getBaseCurrency,

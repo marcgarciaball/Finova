@@ -1,9 +1,9 @@
+import type { AssetType } from '@finova/domain/investments/types'
+import { format, money } from '@finova/domain/money'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { seriesColor } from '@/components/charts/chartTheme'
 import { DonutChart } from '@/components/charts/DonutChart'
 import { GlassCard } from '@/components/ui/GlassCard'
-import type { AssetType } from '@/lib/domain/investments/types'
-import { format, money } from '@/lib/domain/money'
 import { cn } from '@/lib/utils'
 
 const ASSET_TYPE_ORDER: AssetType[] = ['stock', 'etf', 'fund', 'crypto']

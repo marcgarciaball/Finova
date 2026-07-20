@@ -1,11 +1,11 @@
 import 'server-only'
-import { requireUser } from '@/lib/auth/require-user'
 import {
   accountFingerprint,
   categoryFingerprint,
   transactionFingerprint,
-} from '@/lib/domain/import/backup/transactions-fingerprint'
-import type { ExistingTransactions } from '@/lib/domain/import/backup/transactions-plan'
+} from '@finova/domain/import/backup/transactions-fingerprint'
+import type { ExistingTransactions } from '@finova/domain/import/backup/transactions-plan'
+import { requireUser } from '@/lib/auth/require-user'
 import { createClient } from '@/lib/supabase/server'
 
 /**

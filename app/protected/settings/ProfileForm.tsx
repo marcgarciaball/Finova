@@ -1,10 +1,10 @@
 'use client'
 
+import { CURRENCIES } from '@finova/domain/money/currencies'
 import { useTranslations } from 'next-intl'
 import { useActionState, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Label } from '@/components/ui/Label'
-import { CURRENCIES } from '@/lib/domain/money/currencies'
 import { type ActionResult, updateProfile } from './actions'
 
 const SELECT_CLASS =

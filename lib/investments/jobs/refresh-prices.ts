@@ -1,10 +1,10 @@
 import 'server-only'
-import { fxKey } from '@/lib/domain/investments/portfolio'
+import { fxKey } from '@finova/domain/investments/portfolio'
 import {
   buildHoldingRows,
   type QuoteForRebuild,
   type RebuildTxn,
-} from '@/lib/domain/investments/rebuild'
+} from '@finova/domain/investments/rebuild'
 import {
   fetchDailyRates,
   fetchRateHistory,

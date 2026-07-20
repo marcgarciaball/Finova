@@ -1,8 +1,8 @@
+import type { Trend } from '@finova/domain/dashboard'
+import { format, money } from '@finova/domain/money'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { GlassCard } from '@/components/ui/GlassCard'
-import type { Trend } from '@/lib/domain/dashboard'
-import { format, money } from '@/lib/domain/money'
 import { cn } from '@/lib/utils'
 
 export interface RankRow {

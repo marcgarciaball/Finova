@@ -1,5 +1,5 @@
+import { ASSET_TYPES, type AssetType } from '@finova/domain/investments/types'
 import { z } from 'zod'
-import { ASSET_TYPES, type AssetType } from '@/lib/domain/investments/types'
 
 /**
  * Shapes shared between the asset-search server actions and the client panel

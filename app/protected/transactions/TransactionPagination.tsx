@@ -1,13 +1,13 @@
 'use client'
 
+import {
+  filtersToSearchParams,
+  type TransactionFilters,
+} from '@finova/domain/transactions/filters'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/Button'
-import {
-  filtersToSearchParams,
-  type TransactionFilters,
-} from '@/lib/domain/transactions/filters'
 
 /**
  * Prev / Next pager for the transactions list (P5-06). Server-rendered links

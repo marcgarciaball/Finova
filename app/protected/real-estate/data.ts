@@ -1,5 +1,4 @@
 import 'server-only'
-import { requireUser } from '@/lib/auth/require-user'
 import {
   aggregatePortfolio,
   annualizedRentCents,
@@ -12,7 +11,8 @@ import {
   netYieldPct,
   outstandingDebtCents,
   roiPct,
-} from '@/lib/domain/real-estate/metrics'
+} from '@finova/domain/real-estate/metrics'
+import { requireUser } from '@/lib/auth/require-user'
 import { createClient } from '@/lib/supabase/server'
 import {
   type PropertyExpenseRow,

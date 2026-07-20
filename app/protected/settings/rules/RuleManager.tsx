@@ -1,12 +1,12 @@
 'use client'
 
+import { categoryLabel } from '@finova/domain/categories/label'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { categoryLabel } from '@/lib/domain/categories/label'
 import type { AccountRow } from '@/lib/validation/account'
 import type { CategorizationRuleRow } from '@/lib/validation/categorization-rule'
 import type { CategoryRow } from '@/lib/validation/category'

@@ -1,11 +1,11 @@
 'use client'
 
+import type { ColumnMapping } from '@finova/domain/import/mapping'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Label } from '@/components/ui/Label'
-import type { ColumnMapping } from '@/lib/domain/import/mapping'
 import type { AccountRow } from '@/lib/validation/account'
 import {
   type CommitActionResult,

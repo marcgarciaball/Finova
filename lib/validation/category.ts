@@ -1,6 +1,6 @@
+import { CATEGORY_COLORS, ICON_NAMES } from '@finova/domain/categories/icons'
+import { CATEGORY_KINDS } from '@finova/domain/categories/types'
 import { z } from 'zod'
-import { CATEGORY_COLORS, ICON_NAMES } from '@/lib/domain/categories/icons'
-import { CATEGORY_KINDS } from '@/lib/domain/categories/types'
 
 /**
  * Category validation (P1-03).

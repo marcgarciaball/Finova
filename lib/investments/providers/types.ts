@@ -1,4 +1,4 @@
-import type { AssetType, QuoteType } from '@/lib/domain/investments/types'
+import type { AssetType, QuoteType } from '@finova/domain/investments/types'
 
 /**
  * Provider-agnostic market-data shapes (Inversiones A3). Everything crossing

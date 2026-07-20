@@ -1,3 +1,4 @@
+import { FALLBACK_ICON_NAME } from '@finova/domain/categories/icons'
 import {
   Car,
   CircleDashed,
@@ -16,7 +17,6 @@ import {
   Wallet,
   Zap,
 } from 'lucide-react'
-import { FALLBACK_ICON_NAME } from '@/lib/domain/categories/icons'
 import { cn } from '@/lib/utils'
 
 /**

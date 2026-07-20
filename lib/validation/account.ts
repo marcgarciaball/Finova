@@ -1,6 +1,6 @@
+import { ACCOUNT_TYPES } from '@finova/domain/accounts/types'
+import { fromDecimal } from '@finova/domain/money'
 import { z } from 'zod'
-import { ACCOUNT_TYPES } from '@/lib/domain/accounts/types'
-import { fromDecimal } from '@/lib/domain/money'
 
 /**
  * Account validation (P1-02).

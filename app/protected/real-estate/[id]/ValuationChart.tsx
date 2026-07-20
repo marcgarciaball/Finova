@@ -1,5 +1,6 @@
 'use client'
 
+import { format, money } from '@finova/domain/money'
 import { useLocale } from 'next-intl'
 import {
   Area,
@@ -11,7 +12,6 @@ import {
   YAxis,
 } from 'recharts'
 import { BRAND_LINE } from '@/components/charts/chartTheme'
-import { format, money } from '@/lib/domain/money'
 
 export interface ValuationPoint {
   date: string

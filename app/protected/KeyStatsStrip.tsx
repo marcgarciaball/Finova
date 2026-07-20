@@ -1,7 +1,7 @@
+import type { KeyStats } from '@finova/domain/dashboard'
+import { format, money } from '@finova/domain/money'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { GlassCard } from '@/components/ui/GlassCard'
-import type { KeyStats } from '@/lib/domain/dashboard'
-import { format, money } from '@/lib/domain/money'
 
 /**
  * Key-stats strip (UD-08): the headline activity stats — average spend, biggest

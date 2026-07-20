@@ -1,10 +1,4 @@
-import { getLocale, getTranslations } from 'next-intl/server'
-import { BarChart } from '@/components/charts/BarChart'
-import { DonutChart } from '@/components/charts/DonutChart'
-import { CategoryIcon } from '@/components/dashboard/CategoryIcon'
-import { KpiCard } from '@/components/dashboard/KpiCard'
-import { GlassCard } from '@/components/ui/GlassCard'
-import { categoryLabel } from '@/lib/domain/categories/label'
+import { categoryLabel } from '@finova/domain/categories/label'
 import {
   filterByPeriod,
   incomeExpenseSeries,
@@ -17,8 +11,14 @@ import {
   spendingByMerchant,
   spendingToDonut,
   topExpenses,
-} from '@/lib/domain/dashboard'
-import { format, money } from '@/lib/domain/money'
+} from '@finova/domain/dashboard'
+import { format, money } from '@finova/domain/money'
+import { getLocale, getTranslations } from 'next-intl/server'
+import { BarChart } from '@/components/charts/BarChart'
+import { DonutChart } from '@/components/charts/DonutChart'
+import { CategoryIcon } from '@/components/dashboard/CategoryIcon'
+import { KpiCard } from '@/components/dashboard/KpiCard'
+import { GlassCard } from '@/components/ui/GlassCard'
 import type { CategoryRow } from '@/lib/validation/category'
 import { getDashboardData } from '../data'
 import { GranularitySelector } from '../GranularitySelector'

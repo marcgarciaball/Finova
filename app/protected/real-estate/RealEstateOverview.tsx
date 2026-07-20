@@ -1,3 +1,5 @@
+import { format, money } from '@finova/domain/money'
+import type { PropertyType } from '@finova/domain/real-estate/types'
 import {
   Building,
   Building2,
@@ -12,8 +14,6 @@ import { HeroCard } from '@/components/dashboard/HeroCard'
 import { KpiCard } from '@/components/dashboard/KpiCard'
 import { Badge } from '@/components/ui/Badge'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { format, money } from '@/lib/domain/money'
-import type { PropertyType } from '@/lib/domain/real-estate/types'
 import type { PropertyOverview, RealEstateOverview } from './data'
 import { rentBreakdown } from './data'
 

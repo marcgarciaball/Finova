@@ -1,11 +1,11 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
 import {
   buildConditions,
   type ClauseDraft,
-} from '@/lib/domain/rules/clause-form'
+} from '@finova/domain/rules/clause-form'
+import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
 import { type PreviewResult, previewRule } from './actions'
 
 /**

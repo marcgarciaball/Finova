@@ -1,10 +1,10 @@
-import { getLocale, getTranslations } from 'next-intl/server'
-import { Card, CardContent } from '@/components/ui/Card'
-import { format, money } from '@/lib/domain/money'
+import { format, money } from '@finova/domain/money'
 import {
   summarizeByCurrency,
   type TxLike,
-} from '@/lib/domain/transactions/totals'
+} from '@finova/domain/transactions/totals'
+import { getLocale, getTranslations } from 'next-intl/server'
+import { Card, CardContent } from '@/components/ui/Card'
 
 /**
  * Income / expense / net for the current (filtered) list, grouped per currency.

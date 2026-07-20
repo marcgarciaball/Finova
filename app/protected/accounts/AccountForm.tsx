@@ -1,11 +1,11 @@
 'use client'
 
+import { ACCOUNT_TYPES } from '@finova/domain/accounts/types'
 import { useTranslations } from 'next-intl'
 import { useActionState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
-import { ACCOUNT_TYPES } from '@/lib/domain/accounts/types'
 import type { AccountRow } from '@/lib/validation/account'
 import { type ActionResult, createAccount, updateAccount } from './actions'
 

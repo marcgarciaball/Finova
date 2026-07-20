@@ -1,9 +1,9 @@
 'use server'
 
+import { previewRuleMatches } from '@finova/domain/rules/preview'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { requireUser } from '@/lib/auth/require-user'
-import { previewRuleMatches } from '@/lib/domain/rules/preview'
 import { createClient } from '@/lib/supabase/server'
 import {
   conditionsSchema,

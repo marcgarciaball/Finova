@@ -1,4 +1,3 @@
-import { z } from 'zod'
 import {
   EXPENSE_CATEGORIES,
   LOAN_TYPES,
@@ -6,7 +5,8 @@ import {
   RATE_TYPES,
   RECURRENCES,
   VALUATION_SOURCES,
-} from '@/lib/domain/real-estate/types'
+} from '@finova/domain/real-estate/types'
+import { z } from 'zod'
 import { currencySchema } from '@/lib/validation/account'
 
 /**

@@ -1,9 +1,9 @@
 'use client'
 
+import { applyMapping, type ColumnMapping } from '@finova/domain/import/mapping'
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 import { Badge } from '@/components/ui/Badge'
-import { applyMapping, type ColumnMapping } from '@/lib/domain/import/mapping'
 
 /** Format signed integer cents as a plain 2-decimal string for the preview. */
 function fmtCents(cents: number): string {
