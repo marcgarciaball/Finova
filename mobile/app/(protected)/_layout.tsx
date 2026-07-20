@@ -1,6 +1,7 @@
 import { Redirect, Stack } from 'expo-router'
 import { Text, View } from 'react-native'
 import { useSession } from '../../src/auth/useSession'
+import { ErrorBoundary } from './_error-boundary'
 
 export default function ProtectedLayout() {
   const { session, loading } = useSession()
@@ -15,5 +16,9 @@ export default function ProtectedLayout() {
   if (!session) {
     return <Redirect href="/(auth)/login" />
   }
-  return <Stack screenOptions={{ headerShown: false }} />
+  return (
+    <ErrorBoundary>
+      <Stack screenOptions={{ headerShown: false }} />
+    </ErrorBoundary>
+  )
 }
