@@ -1,6 +1,18 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "strict": true,
+    // NOT a mobile-code alias: mobile/ files must keep using relative imports
+    // (see Task 4's convention). This solely lets tsc resolve the pre-existing
+    // `@/lib/validation/...` imports inside packages/domain/src (its barrel
+    // `@finova/domain` re-exports every module, including ones the web app's
+    // root tsconfig resolves via its own `@/* -> ./*` alias). Without this,
+    // `npx tsc --noEmit` here fails on packages/domain internals that mobile/
+    // never touches, the moment mobile imports anything from `@finova/domain`.
+    "paths": {
+      "@/*": ["../*"],
+      "@finova/domain": ["../packages/domain/src/index.ts"],
+      "@finova/domain/*": ["../packages/domain/src/*"]
+    }
   }
 }
