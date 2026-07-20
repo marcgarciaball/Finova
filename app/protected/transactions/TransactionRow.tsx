@@ -12,7 +12,11 @@ import { transactionType } from '@/lib/domain/transactions/filters'
 import type { AccountRow } from '@/lib/validation/account'
 import type { CategoryRow } from '@/lib/validation/category'
 import type { TransactionRow as Transaction } from '@/lib/validation/transaction'
-import { deleteTransaction, recategorizeTransaction } from './actions'
+import {
+  deleteTransaction,
+  duplicateTransaction,
+  recategorizeTransaction,
+} from './actions'
 import { TransactionForm } from './TransactionForm'
 
 const SELECT_CLASS =
@@ -161,6 +165,23 @@ export function TransactionRow({
           >
             {t('edit')}
           </Button>
+          {/* Duplicate (roadmap 1.2) — same purchase again, dated today. Not
+              offered on transfer legs (a copy would be an unpaired transfer). */}
+          {type !== 'transfer' ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={pending}
+              onClick={() =>
+                startTransition(() => {
+                  void duplicateTransaction(transaction.id)
+                })
+              }
+            >
+              {t('duplicate')}
+            </Button>
+          ) : null}
           <Button
             type="button"
             variant="destructive"

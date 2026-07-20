@@ -155,6 +155,15 @@
       "previous": "Previous",
       "next": "Next",
       "pageOf": "Page {page} of {total}"
+    },
+    "duplicate": "Duplicate",
+    "transfer": {
+      "new": "Transfer",
+      "from": "From account",
+      "to": "To account",
+      "submit": "Transfer",
+      "sameAccount": "Source and destination must be different accounts.",
+      "defaultDescription": "Transfer"
     }
   },
   "import": {

@@ -9,9 +9,11 @@ import {
   composeSignedAmount,
   parseTagsInput,
 } from '@/lib/domain/transactions/form'
+import { buildTransferLegs } from '@/lib/domain/transactions/transfer'
 import { createClient } from '@/lib/supabase/server'
 import {
   createTransactionSchema,
+  createTransferSchema,
   parseAmountToCents,
   updateTransactionSchema,
 } from '@/lib/validation/transaction'
@@ -146,6 +148,81 @@ export async function createTransaction(
   return { ok: true }
 }
 
+const SAME_ACCOUNT = 'sameAccount'
+
+/**
+ * Two-leg transfer wizard (roadmap 1.2): "move money A→B" as one action. Writes
+ * both legs in a single insert sharing one `transfer_group_id` (the DB check
+ * ties `is_transfer` to the group token, so a half-written pair can't exist as
+ * anything but a transfer); the app layer rejects `from === to` since a
+ * same-account "transfer" nets to zero and isn't meaningful. Ownership of both
+ * accounts is verified before writing (FK checks bypass RLS).
+ */
+export async function createTransfer(
+  _prev: ActionResult | undefined,
+  formData: FormData
+): Promise<ActionResult> {
+  const claims = await requireUser()
+
+  const parsed = createTransferSchema.safeParse({
+    fromAccountId: formData.get('fromAccountId'),
+    toAccountId: formData.get('toAccountId'),
+    amount: formData.get('amount'),
+    currency: formData.get('currency'),
+    occurredAt: formData.get('occurredAt'),
+    description: formData.get('description'),
+  })
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: VALIDATION_FAILED,
+      fieldErrors: toFieldErrors(parsed.error),
+    }
+  }
+  if (parsed.data.fromAccountId === parsed.data.toAccountId) {
+    return { ok: false, error: SAME_ACCOUNT }
+  }
+
+  try {
+    const supabase = await createClient()
+    const owned = await refsAreOwned(supabase, parsed.data.fromAccountId, null)
+    const destOwned = await refsAreOwned(
+      supabase,
+      parsed.data.toAccountId,
+      null
+    )
+    if (!(owned && destOwned)) {
+      return { ok: false, error: FORBIDDEN_REF }
+    }
+
+    const amountCents = parseAmountToCents(
+      parsed.data.amount,
+      parsed.data.currency
+    )
+    const legs = buildTransferLegs({
+      amountCents,
+      currency: parsed.data.currency,
+      description: parsed.data.description,
+      fromAccountId: parsed.data.fromAccountId,
+      groupId: crypto.randomUUID(),
+      occurredAtIso: parsed.data.occurredAt.toISOString(),
+      toAccountId: parsed.data.toAccountId,
+    })
+
+    const { error } = await supabase
+      .from('transactions')
+      .insert(legs.map((leg) => ({ ...leg, user_id: claims.sub })))
+    if (error) {
+      return { ok: false, error: UNEXPECTED }
+    }
+  } catch {
+    return { ok: false, error: UNEXPECTED }
+  }
+
+  revalidatePath(TX_PATH)
+  return { ok: true }
+}
+
 export async function updateTransaction(
   _prev: ActionResult | undefined,
   formData: FormData
@@ -261,6 +338,56 @@ export async function deleteTransaction(id: string): Promise<ActionResult> {
 
   const supabase = await createClient()
   const { error } = await supabase.from('transactions').delete().eq('id', id)
+  if (error) {
+    return { ok: false, error: UNEXPECTED }
+  }
+
+  revalidatePath(TX_PATH)
+  return { ok: true }
+}
+
+/**
+ * Duplicate a transaction (roadmap 1.2): copy every descriptive field of the
+ * caller's row into a fresh one dated **now** — the common "same purchase
+ * again" flow. The copy is always a plain row: no `import_fingerprint` (it
+ * must not collide with the import idempotency key) and never a transfer
+ * (duplicating one leg would create an unpaired transfer; the UI hides the
+ * control on transfer rows and the action refuses them).
+ */
+export async function duplicateTransaction(id: string): Promise<ActionResult> {
+  const claims = await requireUser()
+  if (!z.string().uuid().safeParse(id).success) {
+    return { ok: false, error: UNEXPECTED }
+  }
+
+  const supabase = await createClient()
+  // RLS scopes the read to the caller's rows — a foreign id yields nothing.
+  const { data: source } = await supabase
+    .from('transactions')
+    .select(
+      'account_id, category_id, amount_cents, currency, description, note, tags, is_transfer, is_recurring'
+    )
+    .eq('id', id)
+    .maybeSingle()
+  if (!source) {
+    return { ok: false, error: UNEXPECTED }
+  }
+  if (source.is_transfer) {
+    return { ok: false, error: 'isTransfer' }
+  }
+
+  const { error } = await supabase.from('transactions').insert({
+    user_id: claims.sub,
+    account_id: source.account_id,
+    category_id: source.category_id,
+    amount_cents: source.amount_cents,
+    currency: source.currency,
+    occurred_at: new Date().toISOString(),
+    description: source.description,
+    note: source.note,
+    tags: source.tags,
+    is_recurring: source.is_recurring,
+  })
   if (error) {
     return { ok: false, error: UNEXPECTED }
   }

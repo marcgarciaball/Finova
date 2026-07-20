@@ -37,7 +37,7 @@ This is the **product** plan: what we're building, in what order, and why. The g
 - see a real **dashboard**: net cash flow, savings rate, balances, spending-by-category donut, income-vs-expense and balance-trend charts, and recent transactions with quick filters;
 - **export** everything to CSV and JSON.
 
-**What's missing for a finished MVP:** the settings/management UI (edit categories & rules, profile, base currency), JSON import + Google Sheets export, transaction duplicate/quick-add and the full transfer wizard, a richer "key stats" strip on the dashboard (average spend, biggest expense, busiest day), account deletion (GDPR), and the final i18n / a11y / security / polish passes.
+**What's missing for a finished MVP:** JSON import + Google Sheets export, a streamlined 1-tap quick-add, and a full browser QA + migration pass over everything built this session (settings/management UI, transaction duplicate/transfer wizard, key-stats strip, account deletion, i18n/a11y/security/legal passes — all code-complete, awaiting verification).
 
 **Then come the differentiators:** budgets & goals (Phase 2), smart insights (Phase 3), sharing & multi-currency & location (Phase 4), the Hardening & Release pass (Phase 5), and finally bank sync (Phase 6).
 
@@ -103,8 +103,8 @@ Technical groundwork everything else depends on.
 
 - ✅ Add expense / income manually (amount, category, wallet, date, note). _Sign of the amount is the source of truth for income vs. expense._
 - 🟡 Fast "quick add" flow (few taps/clicks). _A full create form exists; a streamlined 1-tap quick-add is a polish item._
-- 🟡 Edit, delete, **duplicate** a transaction. _Edit + delete done; "duplicate" not yet built._
-- 🟡 Transfers between wallets. _Transfer rows are stored, rendered, filtered, and correctly excluded from income/expense totals; the two-leg "move money A→B" wizard is still pending._
+- 🔨 Edit, delete, **duplicate** a transaction. _All three built: duplicate copies a row dated today (not offered on transfer legs); browser-verify pending._
+- 🔨 Transfers between wallets. _Transfer rows are stored, rendered, filtered, and correctly excluded from income/expense totals; the two-leg "move money A→B" wizard is now built (one action writes both legs atomically, sharing a `transfer_group_id`); browser-verify pending._
 - ✅ Search and filter (by date, category, wallet, amount, text). _URL-driven, shareable filters._
 - ✅ Optional note and tags per transaction.
 
@@ -161,7 +161,7 @@ _Honors the "value within 5 minutes" principle: a brand-new user with zero data 
 
 > **Done ≠ shippable. MVP DoD = all Phase 1 items + Phase 5 hardening.** "~80% built" measures code, not ship-readiness: the Phase 5 Hardening & Release pass (settings, GDPR, i18n/a11y/security/perf/legal) is part of the bar, not an afterthought.
 
-**Remaining for MVP done:** Settings surface (manage categories & rules, profile, base currency — P5-01), JSON import + Google Sheets export, transaction duplicate + quick-add + transfer wizard, the extra dashboard key-stats, account deletion (P5-02), and the Phase-5 hardening passes (i18n / a11y / security / polish / legal).
+**Remaining for MVP done:** JSON import + Google Sheets export and a streamlined quick-add flow are the only unbuilt product gaps. Everything else — Settings (P5-01), account deletion (P5-02), the Phase-5 hardening passes (i18n/a11y/security/polish/legal), transaction duplicate + transfer wizard, and the dashboard key-stats strip — is code-complete and unit-tested; **what's actually left is the browser QA + migration pass** (Postgres migrations 0006–0016 applied + a manual walkthrough) to flip it all from REVIEW to done.
 
 ---
 
