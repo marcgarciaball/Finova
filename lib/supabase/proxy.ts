@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { type NextRequest, NextResponse } from 'next/server'
+import { resolveAuthRedirect } from '@/lib/auth/route-guard'
 import { hasEnvVars } from '@/lib/utils'
 import { getClientEnv } from '@/lib/validation/env'
 
@@ -49,15 +50,10 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims()
   const user = data?.claims
 
-  if (
-    request.nextUrl.pathname !== '/' &&
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  const decision = resolveAuthRedirect(request.nextUrl.pathname, Boolean(user))
+  if (decision.type === 'redirect') {
     const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
+    url.pathname = decision.path
     return NextResponse.redirect(url)
   }
 

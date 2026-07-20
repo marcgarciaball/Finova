@@ -65,8 +65,29 @@ export const updateTransactionSchema = createTransactionSchema.extend({
   id: z.string().uuid(),
 })
 
+/**
+ * Two-leg transfer wizard input (roadmap 1.2). The amount is an unsigned
+ * decimal string here (a transfer has a magnitude, not a direction) — the sign
+ * is applied per-leg by `buildTransferLegs`. `fromAccountId`/`toAccountId` must
+ * differ (the app-layer check; a schema-level `refine` can't reference sibling
+ * fields as cleanly as a plain comparison in the action).
+ */
+export const createTransferSchema = z.object({
+  fromAccountId: z.string().uuid(),
+  toAccountId: z.string().uuid(),
+  amount: z
+    .string()
+    .trim()
+    .regex(/^\d+(\.\d+)?$/, 'invalidAmount')
+    .refine((s) => Number(s) !== 0, 'amountNonZero'),
+  currency: currencySchema,
+  occurredAt: z.coerce.date(),
+  description: descriptionSchema,
+})
+
 export type CreateTransactionInput = z.infer<typeof createTransactionSchema>
 export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>
+export type CreateTransferInput = z.infer<typeof createTransferSchema>
 
 /** Parse a raw Supabase `transactions` row into a typed, validated domain shape. */
 export const transactionRowSchema = z.object({

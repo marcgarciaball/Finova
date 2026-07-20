@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { CATEGORY_COLORS, ICON_NAMES } from '@/lib/domain/categories/icons'
 import { CATEGORY_KINDS } from '@/lib/domain/categories/types'
 
 /**
@@ -28,14 +29,37 @@ const parentIdSchema = z
   .nullish()
   .or(z.literal('').transform(() => null))
 
+/** Optional icon/color, each locked to its allowlist (P5-01). */
+const iconNameSchema = z
+  .enum(ICON_NAMES)
+  .nullish()
+  .or(z.literal('').transform(() => null))
+const colorSchema = z
+  .enum(CATEGORY_COLORS)
+  .nullish()
+  .or(z.literal('').transform(() => null))
+
 export const createCategorySchema = z.object({
   name: nameSchema,
   kind: categoryKindSchema,
   parentId: parentIdSchema,
+  iconName: iconNameSchema,
+  color: colorSchema,
 })
 
-export const updateCategorySchema = createCategorySchema.extend({
+/**
+ * On update `name` is optional: a default category (`name_key != null`) only
+ * sends `name` when the user opts into renaming — that presence is what the
+ * action uses to convert it to custom (clears `name_key`). Icon/color-only edits
+ * omit `name` and leave the i18n label intact. `kind` is immutable after create
+ * (moving between income/expense would strand transactions), so it is not here.
+ */
+export const updateCategorySchema = z.object({
   id: z.string().uuid(),
+  name: nameSchema.optional(),
+  parentId: parentIdSchema,
+  iconName: iconNameSchema,
+  color: colorSchema,
 })
 
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>
@@ -50,6 +74,8 @@ export const categoryRowSchema = z.object({
   name_key: z.string().nullable(),
   kind: categoryKindSchema,
   is_default: z.boolean(),
+  icon_name: z.string().nullable(),
+  color: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 })

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { AreaChart } from '@/components/charts/AreaChart'
 import { BarChart } from '@/components/charts/BarChart'
 import { DonutChart } from '@/components/charts/DonutChart'
+import { CategoryIcon } from '@/components/dashboard/CategoryIcon'
 import { HeroCard } from '@/components/dashboard/HeroCard'
 import { KpiCard } from '@/components/dashboard/KpiCard'
 import { ListRow } from '@/components/dashboard/ListRow'
@@ -73,7 +74,8 @@ export default function DesignShowcase() {
           <HeroCard
             label="Net worth"
             value={2420.1}
-            format={usd}
+            currency="USD"
+            locale="en-US"
             delta={2.6}
             deltaSuffix="%"
             trend={trendData.map((d) => d.net)}
@@ -82,7 +84,8 @@ export default function DesignShowcase() {
             <KpiCard
               label="Balance"
               value={32390}
-              format={usd}
+              currency="USD"
+              locale="en-US"
               delta={7.4}
               deltaSuffix="%"
               footnote="vs last month"
@@ -90,7 +93,8 @@ export default function DesignShowcase() {
             <KpiCard
               label="Spending"
               value={1232}
-              format={usd}
+              currency="USD"
+              locale="en-US"
               delta={-3.4}
               deltaSuffix="%"
               footnote="vs last month"
@@ -98,7 +102,8 @@ export default function DesignShowcase() {
             <KpiCard
               label="Investments"
               value={9876.8}
-              format={usd}
+              currency="USD"
+              locale="en-US"
               delta={1.1}
               deltaSuffix="%"
               footnote="vs last month"
@@ -147,21 +152,23 @@ export default function DesignShowcase() {
             amount={2500}
             income
             format={usd}
-            categoryColor="var(--cat-lime)"
+            icon={<CategoryIcon iconName="Wallet" color="var(--cat-lime)" />}
           />
           <ListRow
             title="Rent"
             subtitle="Monthly"
             amount={1200}
             format={usd}
-            categoryColor="var(--cat-rose)"
+            icon={<CategoryIcon iconName="Home" color="var(--cat-rose)" />}
           />
           <ListRow
             title="Groceries"
             subtitle="Whole Foods"
             amount={84.2}
             format={usd}
-            categoryColor="var(--cat-teal)"
+            icon={
+              <CategoryIcon iconName="ShoppingCart" color="var(--cat-teal)" />
+            }
           />
         </GlassCard>
       </section>

@@ -94,6 +94,8 @@ describe('categoryRowSchema', () => {
       name_key: 'housing',
       kind: 'expense',
       is_default: true,
+      icon_name: 'Home',
+      color: 'var(--cat-blue)',
       created_at: '2026-06-22T00:00:00Z',
       updated_at: '2026-06-22T00:00:00Z',
     })
@@ -109,6 +111,8 @@ describe('categoryRowSchema', () => {
       name_key: null,
       kind: 'expense',
       is_default: false,
+      icon_name: null,
+      color: null,
       created_at: '2026-06-22T00:00:00Z',
       updated_at: '2026-06-22T00:00:00Z',
     })
@@ -125,6 +129,58 @@ describe('DEFAULT_CATEGORIES', () => {
   it('only uses known kinds', () => {
     for (const c of DEFAULT_CATEGORIES) {
       expect(categoryKindSchema.safeParse(c.kind).success).toBe(true)
+    }
+  })
+})
+
+describe('icon/color (P5-01)', () => {
+  it('accepts an allowlisted icon + color', () => {
+    const r = createCategorySchema.safeParse({
+      name: 'Pets',
+      kind: 'expense',
+      iconName: 'Home',
+      color: 'var(--cat-blue)',
+    })
+    expect(r.success).toBe(true)
+  })
+
+  it('rejects an icon outside the allowlist', () => {
+    const r = createCategorySchema.safeParse({
+      name: 'Pets',
+      kind: 'expense',
+      iconName: 'NotARealIcon',
+    })
+    expect(r.success).toBe(false)
+  })
+
+  it('rejects an arbitrary color (no free-form hex)', () => {
+    const r = createCategorySchema.safeParse({
+      name: 'Pets',
+      kind: 'expense',
+      color: '#ff0000',
+    })
+    expect(r.success).toBe(false)
+  })
+
+  it('treats empty icon/color as null', () => {
+    const r = createCategorySchema.parse({
+      name: 'Pets',
+      kind: 'expense',
+      iconName: '',
+      color: '',
+    })
+    expect(r.iconName).toBeNull()
+    expect(r.color).toBeNull()
+  })
+
+  it('makes name optional on update (icon/color-only edit)', () => {
+    const r = updateCategorySchema.safeParse({
+      id: '11111111-1111-4111-8111-111111111111',
+      iconName: 'Car',
+    })
+    expect(r.success).toBe(true)
+    if (r.success) {
+      expect(r.data.name).toBeUndefined()
     }
   })
 })

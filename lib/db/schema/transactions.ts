@@ -97,11 +97,16 @@ export const transactions = pgTable(
     index('transactions_transfer_group_idx')
       .on(table.transferGroupId)
       .where(sql`${table.transferGroupId} is not null`),
-    // P2-08 idempotent commit: unique per user per fingerprint, but only when
-    // fingerprint is set (manual rows with null are excluded from the index).
-    uniqueIndex('transactions_user_import_fingerprint_uniq')
-      .on(table.userId, table.importFingerprint)
-      .where(sql`${table.importFingerprint} is not null`),
+    // P2-08 idempotent commit: unique per user per fingerprint. Deliberately
+    // NOT partial — a partial unique index can't be used as a PostgREST
+    // `on_conflict` target (Postgres can't infer it without its WHERE
+    // predicate, which PostgREST never sends), so the commit upsert would fail.
+    // A full index is fine here: import_fingerprint is null for manual rows, and
+    // NULLs are distinct by default, so manual rows are never constrained.
+    uniqueIndex('transactions_user_import_fingerprint_uniq').on(
+      table.userId,
+      table.importFingerprint
+    ),
     pgPolicy('transactions_select_own', {
       for: 'select',
       to: authenticatedRole,

@@ -6,15 +6,33 @@
   "common": {
     "signIn": "Sign in",
     "signUp": "Get started",
-    "language": "Language"
+    "language": "Language",
+    "theme": "Theme",
+    "logout": "Log out",
+    "skipToContent": "Skip to content"
   },
   "locale": {
     "es": "Español",
     "en": "English"
   },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "nav": {
+    "menu": "Account menu",
+    "data": "Data",
+    "settings": "Settings"
+  },
   "protected": {
     "title": "Your account",
-    "signedInAs": "Signed in as {email}"
+    "signedInAs": "Signed in as {email}",
+    "comingSoon": "More preferences are coming soon."
+  },
+  "data": {
+    "nav": "Data",
+    "title": "Data"
   },
   "accounts": {
     "title": "Accounts",
@@ -35,7 +53,9 @@
       "name": "Name",
       "type": "Type",
       "currency": "Currency",
-      "openingBalance": "Opening balance"
+      "openingBalance": "Opening balance",
+      "interestRate": "Interest rate (APY %)",
+      "interestRateNote": "Optional. Used to project this account's yearly interest income — not a real transaction."
     },
     "types": {
       "checking": "Checking",
@@ -50,8 +70,16 @@
       "nameTooLong": "Name must be 100 characters or fewer.",
       "invalidCurrency": "Use a 3-letter currency code, e.g. EUR.",
       "invalidAmount": "Enter a valid amount, e.g. 1234.56.",
+      "invalidRate": "Enter a valid rate, e.g. 2 or 2.5.",
       "unexpected": "Something went wrong. Please try again.",
       "hasTransactions": "This account still has transactions. Delete or move them first."
+    },
+    "reconcile": {
+      "button": "Reconcile",
+      "label": "Actual balance",
+      "help": "Enter the account's real balance; we'll record a one-off adjustment for the difference (your history stays intact).",
+      "submit": "Adjust",
+      "description": "Balance adjustment"
     }
   },
   "transactions": {
@@ -76,6 +104,13 @@
     "emptyFiltered": "No transactions match these filters.",
     "needAccount": "Create an account first, then you can add transactions.",
     "tagsPlaceholder": "groceries, work (comma-separated)",
+    "recategorize": {
+      "button": "Auto-categorize",
+      "running": "Categorizing…",
+      "done": "{updated} of {scanned} categorized.",
+      "none": "Nothing to categorize — no uncategorized transactions matched a rule.",
+      "error": "Couldn't categorize. Please try again."
+    },
     "fields": {
       "account": "Account",
       "category": "Category",
@@ -113,15 +148,125 @@
       "invalidCurrency": "Use a 3-letter currency code, e.g. EUR.",
       "invalidAmount": "Enter a valid amount, e.g. 1234.56.",
       "amountNonZero": "Amount can't be zero."
+    },
+    "makeRule": "Make a rule",
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}"
+    },
+    "duplicate": "Duplicate",
+    "transfer": {
+      "new": "Transfer",
+      "from": "From account",
+      "to": "To account",
+      "submit": "Transfer",
+      "sameAccount": "Source and destination must be different accounts.",
+      "defaultDescription": "Transfer"
     }
   },
   "import": {
     "nav": "Import",
     "title": "Import transactions",
-    "subtitle": "Upload a bank CSV, map its columns, and save a reusable template.",
+    "subtitle": "Upload a bank CSV or Excel file, map its columns, and save a reusable template.",
+    "domainsLegend": "What to import",
+    "domains": {
+      "everything": "Everything",
+      "transactions": "Transactions",
+      "investments": "Investments",
+      "realEstate": "Real estate"
+    },
+    "comingSoon": "Import for this domain is coming soon. For now you can export it, and import Transactions or Real Estate.",
+    "realEstate": {
+      "subtitle": "Upload a Finova real-estate JSON export to restore or merge it. Re-importing the same file is safe — duplicates are skipped.",
+      "dropLabel": "Finova JSON file",
+      "reviewing": "Reading file…",
+      "review": "Review",
+      "table": "Section",
+      "tables": {
+        "properties": "Properties",
+        "loans": "Loans",
+        "valuations": "Valuations",
+        "income": "Rental income",
+        "expenses": "Expenses"
+      },
+      "cols": {
+        "new": "New",
+        "duplicate": "Skipped",
+        "error": "Errors"
+      },
+      "commit": "Import",
+      "committing": "Importing…",
+      "nothingNew": "Nothing new to import",
+      "done": "Imported {committed} new rows, skipped {skipped} duplicates.",
+      "errors": {
+        "malformed": "This file isn't valid JSON.",
+        "notFinova": "This doesn't look like a Finova export.",
+        "unsupportedVersion": "This file was made by an incompatible version of Finova.",
+        "noRealEstate": "This file has no real-estate data to import.",
+        "unexpected": "Something went wrong. Please try again."
+      }
+    },
+    "investments": {
+      "subtitle": "Upload a Finova investments JSON export to restore or merge it. Re-importing the same file is safe — duplicates are skipped, and prices refresh automatically afterwards.",
+      "dropLabel": "Finova JSON file",
+      "reviewing": "Reading file…",
+      "review": "Review",
+      "table": "Section",
+      "tables": {
+        "portfolios": "Portfolios",
+        "accounts": "Accounts",
+        "transactions": "Transactions"
+      },
+      "cols": {
+        "new": "New",
+        "duplicate": "Skipped",
+        "error": "Errors"
+      },
+      "commit": "Import",
+      "committing": "Importing…",
+      "nothingNew": "Nothing new to import",
+      "done": "Imported {committed} new rows, skipped {skipped} duplicates. Holdings will update shortly.",
+      "errors": {
+        "malformed": "This file isn't valid JSON.",
+        "notFinova": "This doesn't look like a Finova export.",
+        "unsupportedVersion": "This file was made by an incompatible version of Finova.",
+        "noInvestments": "This file has no investments data to import.",
+        "unexpected": "Something went wrong. Please try again."
+      }
+    },
+    "everything": {
+      "subtitle": "Upload a full Finova JSON backup to restore or merge every domain at once. Re-importing the same file is safe — duplicates are skipped.",
+      "dropLabel": "Finova JSON backup",
+      "reviewing": "Reading file…",
+      "review": "Review",
+      "table": "Domain",
+      "tables": {
+        "transactions": "Transactions",
+        "investments": "Investments",
+        "realEstate": "Real estate"
+      },
+      "cols": {
+        "new": "New",
+        "duplicate": "Skipped",
+        "error": "Errors"
+      },
+      "commit": "Restore everything",
+      "committing": "Restoring…",
+      "nothingNew": "Nothing new to import",
+      "done": "Imported {committed} new rows, skipped {skipped} duplicates.",
+      "errors": {
+        "malformed": "This file isn't valid JSON.",
+        "notFinova": "This doesn't look like a Finova export.",
+        "unsupportedVersion": "This file was made by an incompatible version of Finova.",
+        "empty": "This file has no data to import.",
+        "unexpected": "Something went wrong. Please try again."
+      }
+    },
     "commitBanner": "Review your import below, then commit when the counts look right.",
     "upload": {
-      "label": "Bank CSV file",
+      "label": "Bank CSV or Excel file",
       "submit": "Parse file",
       "parsing": "Parsing…"
     },
@@ -190,7 +335,11 @@
       "newCount": "{count, plural, one {# new} other {# new}}",
       "duplicateCount": "{count, plural, one {# duplicate} other {# duplicates}}",
       "errorCount": "{count, plural, one {# error} other {# errors}}",
-      "status": { "new": "New", "duplicate": "Duplicate", "error": "Error" },
+      "status": {
+        "new": "New",
+        "duplicate": "Duplicate",
+        "error": "Error"
+      },
       "fuzzy": "Possible duplicate",
       "truncated": "Showing {shown} of {total} rows",
       "errors": {
@@ -222,8 +371,8 @@
       "noRows": "No data rows were found in that file.",
       "tooManyRows": "That file has too many rows.",
       "noFile": "Please choose a file to upload.",
-      "unsupportedType": "Please upload a .csv, .xls or .xlsx file.",
-      "excelNotSupported": "Excel files aren't supported yet — please export your statement as CSV.",
+      "unsupportedType": "Please upload a .csv or .xlsx file.",
+      "invalidExcel": "We couldn't read that Excel file. Please re-export it as .xlsx and try again.",
       "storageFailed": "We couldn't store that file. Please try again.",
       "unexpected": "Something went wrong. Please try again.",
       "saveFailed": "Couldn't save the template. Please try again."
@@ -234,7 +383,19 @@
     "subtitle": "Turn scattered bank statements and spreadsheets into one clear view — without connecting to your bank.",
     "ctaPrimary": "Get started",
     "ctaSecondary": "Sign in",
-    "disclaimer": "Finova is a personal-finance tool, not financial advice."
+    "disclaimer": "Finova is a personal-finance tool, not financial advice.",
+    "howItWorks": {
+      "title": "How Finova works",
+      "subtitle": "Four steps — and no bank connection required.",
+      "step1Title": "1 · Add your accounts",
+      "step1Body": "Create a checking, savings, cash or card account, with its own currency and opening balance.",
+      "step2Title": "2 · Add or import transactions",
+      "step2Body": "Type them in by hand, or upload a bank CSV — map the columns once, save a reusable template, and review before importing.",
+      "step3Title": "3 · Let rules categorize",
+      "step3Body": "Imported transactions are auto-categorized by built-in rules. Re-importing the same file never creates duplicates.",
+      "step4Title": "4 · See your dashboard & export",
+      "step4Body": "Track cash flow, balances, savings rate and spending by category — then export everything to CSV or JSON whenever you like."
+    }
   },
   "categories": {
     "title": "Categories",
@@ -261,5 +422,937 @@
       "gifts": "Gifts",
       "other_income": "Other income"
     }
+  },
+  "rules": {
+    "defaults": {
+      "mercadona": "Mercadona",
+      "carrefour": "Carrefour",
+      "lidl": "Lidl",
+      "dia": "Dia",
+      "aldi": "Aldi",
+      "consum": "Consum",
+      "eroski": "Eroski",
+      "glovo": "Glovo",
+      "uber_eats": "Uber Eats",
+      "just_eat": "Just Eat",
+      "deliveroo": "Deliveroo",
+      "mcdonalds": "McDonald's",
+      "starbucks": "Starbucks",
+      "telepizza": "Telepizza",
+      "uber": "Uber",
+      "cabify": "Cabify",
+      "renfe": "Renfe",
+      "repsol": "Repsol",
+      "cepsa": "Cepsa",
+      "endesa": "Endesa",
+      "iberdrola": "Iberdrola",
+      "naturgy": "Naturgy",
+      "movistar": "Movistar",
+      "vodafone": "Vodafone",
+      "orange": "Orange",
+      "nomina": "Payroll (Nómina)",
+      "payroll": "Payroll",
+      "alcampo": "Alcampo",
+      "hipercor": "Hipercor",
+      "condis": "Condis",
+      "bonpreu": "Bonpreu",
+      "walmart": "Walmart",
+      "tesco": "Tesco",
+      "supermercado": "Supermarket",
+      "fruteria": "Greengrocer",
+      "panaderia": "Bakery",
+      "burger_king": "Burger King",
+      "kfc": "KFC",
+      "dominos": "Domino's",
+      "pizza_hut": "Pizza Hut",
+      "taco_bell": "Taco Bell",
+      "doordash": "DoorDash",
+      "costa_coffee": "Costa Coffee",
+      "dunkin": "Dunkin",
+      "restaurante": "Restaurant",
+      "cafeteria": "Café",
+      "pizzeria": "Pizzeria",
+      "sushi": "Sushi",
+      "hamburgueseria": "Burger joint",
+      "cerveceria": "Beer hall",
+      "shell": "Shell",
+      "galp": "Galp",
+      "gasolinera": "Gas station",
+      "parking": "Parking",
+      "aparcamiento": "Car park",
+      "peaje": "Toll (peaje)",
+      "metro": "Metro",
+      "autobus": "Bus",
+      "cercanias": "Cercanías",
+      "bicing": "Bicing",
+      "taxi": "Taxi",
+      "freenow": "Free Now",
+      "blablacar": "BlaBlaCar",
+      "holaluz": "Holaluz",
+      "jazztel": "Jazztel",
+      "masmovil": "MásMóvil",
+      "yoigo": "Yoigo",
+      "digi": "Digi",
+      "electricidad": "Electricity",
+      "internet": "Internet",
+      "telefonia": "Telecom",
+      "canal_de_isabel": "Canal de Isabel II",
+      "farmacia": "Pharmacy",
+      "pharmacy": "Pharmacy",
+      "sanitas": "Sanitas",
+      "adeslas": "Adeslas",
+      "asisa": "Asisa",
+      "dkv": "DKV",
+      "gimnasio": "Gym",
+      "fisioterapia": "Physiotherapy",
+      "dentista": "Dentist",
+      "clinica": "Clinic",
+      "hospital": "Hospital",
+      "zara": "Zara",
+      "hym": "H&M",
+      "primark": "Primark",
+      "zalando": "Zalando",
+      "ikea": "IKEA",
+      "leroy_merlin": "Leroy Merlin",
+      "mediamarkt": "MediaMarkt",
+      "fnac": "Fnac",
+      "amazon": "Amazon",
+      "el_corte_ingles": "El Corte Inglés",
+      "aliexpress": "AliExpress",
+      "decathlon": "Decathlon",
+      "netflix": "Netflix",
+      "spotify": "Spotify",
+      "hbo_max": "HBO Max",
+      "disney_plus": "Disney+",
+      "dazn": "DAZN",
+      "playstation": "PlayStation",
+      "xbox": "Xbox",
+      "nintendo": "Nintendo",
+      "cine": "Cinema",
+      "teatro": "Theatre",
+      "ticketmaster": "Ticketmaster",
+      "filmin": "Filmin",
+      "udemy": "Udemy",
+      "coursera": "Coursera",
+      "duolingo": "Duolingo",
+      "universidad": "University",
+      "matricula": "Tuition (matrícula)",
+      "masterclass": "MasterClass",
+      "iberia": "Iberia",
+      "ryanair": "Ryanair",
+      "vueling": "Vueling",
+      "easyjet": "EasyJet",
+      "booking_com": "Booking.com",
+      "airbnb": "Airbnb",
+      "hostelworld": "Hostelworld",
+      "expedia": "Expedia",
+      "hertz": "Hertz",
+      "avis": "Avis",
+      "europcar": "Europcar",
+      "sixt": "Sixt",
+      "aeropuerto": "Airport",
+      "hotel": "Hotel",
+      "mapfre": "Mapfre",
+      "axa": "AXA",
+      "linea_directa": "Línea Directa",
+      "mutua_madrilena": "Mutua Madrileña",
+      "zurich_seguros": "Zurich Seguros",
+      "seguro_coche": "Car insurance",
+      "seguro_hogar": "Home insurance",
+      "sueldo": "Salary (sueldo)",
+      "salario": "Salary",
+      "paycheck": "Paycheck",
+      "regalo": "Gift (regalo)",
+      "herencia": "Inheritance",
+      "donacion": "Donation",
+      "factura_emitida": "Invoice issued",
+      "freelance": "Freelance",
+      "dividendo": "Dividend",
+      "dividend": "Dividend",
+      "devolucion": "Refund (devolución)",
+      "reembolso": "Reimbursement",
+      "cashback": "Cashback",
+      "bizum_recibido": "Bizum received",
+      "subsidio": "Subsidy",
+      "salary": "Salary (salary)",
+      "supermarket": "Supermarket (EN)",
+      "grocery": "Grocery",
+      "coffee": "Coffee shop",
+      "restaurant": "Restaurant (EN)",
+      "gym": "Gym (EN)",
+      "electricity": "Electricity (EN)"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "nav": "Dashboard",
+    "period": {
+      "label": "Period",
+      "30d": "30 days",
+      "90d": "90 days",
+      "ytd": "Year to date",
+      "12m": "12 months",
+      "all": "All time"
+    },
+    "kpi": {
+      "income": "Income",
+      "expense": "Expense",
+      "net": "Net cash flow",
+      "netNote": "This period",
+      "savingsRate": "Savings rate",
+      "savingsRateNote": "Share of income kept this period"
+    },
+    "bands": {
+      "have": "How much do I have?",
+      "earn": "Am I earning more than I spend?",
+      "spend": "Where does my money go?",
+      "activity": "What's happening?"
+    },
+    "delta": {
+      "vsPrev": "vs. last period"
+    },
+    "banner": {
+      "title": "{amount} uncategorized",
+      "body": "Organize it so your breakdown and savings rate mean something.",
+      "cta": "Organize now",
+      "running": "Organizing…",
+      "done": "Categorized {updated} of {scanned}.",
+      "none": "Nothing left to categorize.",
+      "error": "Couldn't organize right now. Try again.",
+      "dismiss": "Dismiss"
+    },
+    "currencyBreakdown": {
+      "title": "Net worth by currency",
+      "base": "Base"
+    },
+    "wealthAllocation": {
+      "title": "Where is my money?",
+      "cash": "Cash",
+      "realEstate": "Real estate"
+    },
+    "donutEmpty": {
+      "title": "Nothing categorized yet",
+      "body": "All your spending is uncategorized. Organize it to see where your money goes.",
+      "cta": "Organize spending"
+    },
+    "insights": {
+      "title": "Insights",
+      "soon": "Coming soon",
+      "narrative": "Monthly narrative — a plain-language recap of your money.",
+      "leakFinder": "Leak finder — recurring charges quietly adding up.",
+      "forecast": "Forecast — where your balance is heading."
+    },
+    "charts": {
+      "incomeVsExpense": "Income vs expense",
+      "balanceTrend": "Balance trend",
+      "spendingByCategory": "Spending by category"
+    },
+    "accountsStrip": {
+      "title": "Accounts",
+      "netWorth": "Net worth",
+      "perYear": "yr"
+    },
+    "keyStats": {
+      "averageSpend": "Average spend",
+      "biggestExpense": "Biggest expense",
+      "busiestDay": "Busiest day",
+      "count": "Transactions",
+      "txnCount": "{count, plural, one {# transaction} other {# transactions}}"
+    },
+    "ranking": {
+      "topCategories": "Where you spend most",
+      "byAccount": "Spending across accounts",
+      "incomeSources": "Where your income comes from",
+      "dividends": "Dividends",
+      "empty": "No spending in this period."
+    },
+    "granularity": {
+      "label": "Granularity",
+      "day": "Day",
+      "month": "Month",
+      "year": "Year"
+    },
+    "balances": {
+      "title": "Account balances"
+    },
+    "recent": {
+      "title": "Recent transactions",
+      "viewAll": "View all",
+      "add": "Add",
+      "empty": "No transactions in this period."
+    },
+    "table": {
+      "category": "Category",
+      "amount": "Amount",
+      "share": "Share",
+      "uncategorized": "Uncategorized"
+    },
+    "otherCurrencies": "Showing {currency}. You also have activity in other currencies — see account balances below.",
+    "empty": {
+      "title": "Welcome to Finova",
+      "body": "Add an account or import a statement to see your dashboard come to life.",
+      "addAccount": "Add an account",
+      "import": "Import a statement"
+    },
+    "earnings": {
+      "title": "How much do I earn?",
+      "units": {
+        "day": "Per day",
+        "month": "Per month",
+        "year": "Per year"
+      },
+      "per": {
+        "day": "/ day",
+        "month": "/ month",
+        "year": "/ year"
+      },
+      "empty": "No income recorded yet.",
+      "basedOn": "Based on your income in {month}. Per day divides it by the days in the month; per year multiplies it by 12."
+    }
+  },
+  "export": {
+    "title": "Export your data",
+    "nav": "Export",
+    "description": "Download a copy of your data. Pick a domain — or Everything for a full backup you can restore later. JSON is the restorable format; CSV is for spreadsheets.",
+    "domainsLegend": "What to export",
+    "domains": {
+      "everything": "Everything",
+      "transactions": "Transactions",
+      "investments": "Investments",
+      "realEstate": "Real estate"
+    },
+    "download": {
+      "csv": "Download CSV",
+      "json": "Download JSON"
+    },
+    "cards": {
+      "everythingJson": {
+        "title": "Full backup (JSON)",
+        "description": "Everything — transactions, investments and real estate — in one restorable file."
+      },
+      "transactionsCsv": {
+        "title": "Transactions (CSV)",
+        "description": "A spreadsheet-friendly ledger that re-imports cleanly."
+      },
+      "transactionsJson": {
+        "title": "Transactions (JSON)",
+        "description": "Accounts, categories and transactions in one restorable file."
+      },
+      "investmentsCsv": {
+        "title": "Investment transactions (CSV)",
+        "description": "Your buys, sells and other trades as a spreadsheet."
+      },
+      "investmentsJson": {
+        "title": "Investments (JSON)",
+        "description": "Portfolios, accounts and transactions in one restorable file."
+      },
+      "realEstateCsv": {
+        "title": "Properties (CSV)",
+        "description": "Your properties as a spreadsheet; loans and history stay in the JSON."
+      },
+      "realEstateJson": {
+        "title": "Real estate (JSON)",
+        "description": "Properties, loans, valuations, income and expenses in one restorable file."
+      }
+    },
+    "filters": {
+      "legend": "What to export",
+      "presets": {
+        "all": "All time",
+        "month": "This month",
+        "quarter": "Last 3 months",
+        "year": "This year"
+      },
+      "from": "From",
+      "to": "To",
+      "account": "Account",
+      "allAccounts": "All accounts",
+      "category": "Category",
+      "allCategories": "All categories",
+      "uncategorized": "Uncategorized",
+      "filteredNote": "Filters narrow the transactions in this export; accounts and categories are always included in full."
+    }
+  },
+  "expenses": {
+    "nav": "Expenses",
+    "title": "Expenses",
+    "empty": "No spending in this period.",
+    "uncategorized": "Uncategorized",
+    "kpi": {
+      "total": "Total spent",
+      "average": "Average expense",
+      "count": "Transactions",
+      "uncategorized": "Uncategorized"
+    },
+    "charts": {
+      "byCategory": "By category",
+      "trend": "Spending trend"
+    },
+    "ranking": {
+      "byCategory": "All categories",
+      "byMerchant": "Top merchants"
+    },
+    "biggest": {
+      "title": "Biggest expenses"
+    }
+  },
+  "investments": {
+    "nav": "Investments",
+    "title": "Investments",
+    "subtitle": "Track your portfolio manually — prices update automatically.",
+    "addTitle": "Add investment",
+    "search": {
+      "label": "Search asset",
+      "placeholder": "Ticker or name (e.g. AAPL, Bitcoin)",
+      "button": "Search",
+      "typeLabel": "Asset type",
+      "types": {
+        "stock": "Stock",
+        "etf": "ETF",
+        "fund": "Fund",
+        "crypto": "Crypto"
+      },
+      "noResults": "No results found.",
+      "searching": "Searching…",
+      "resolving": "Loading asset…",
+      "change": "Change asset"
+    },
+    "form": {
+      "type": "Type",
+      "buy": "Buy",
+      "sell": "Sell",
+      "date": "Trade date",
+      "quantity": "Quantity",
+      "price": "Price per unit",
+      "currency": "Currency",
+      "fees": "Fees",
+      "notes": "Notes",
+      "submit": "Add transaction",
+      "saved": "Added",
+      "save": "Save changes",
+      "editReason": "Reason for edit (optional)"
+    },
+    "list": {
+      "title": "Transactions",
+      "empty": "Add your first investment to get started.",
+      "date": "Date",
+      "asset": "Asset",
+      "type": "Type",
+      "quantity": "Quantity",
+      "price": "Price",
+      "fees": "Fees",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Delete this transaction permanently? This cannot be undone."
+    },
+    "errors": {
+      "invalidAmount": "Enter a valid amount.",
+      "tooManyDecimals": "Maximum 8 decimal places.",
+      "mustBePositive": "Must be greater than zero.",
+      "invalidDate": "Enter a valid date.",
+      "futureDate": "The date can't be in the future.",
+      "invalidCurrency": "Enter a valid currency code.",
+      "notesTooLong": "Notes are too long.",
+      "oversell": "You can't sell more than you hold.",
+      "mixedCurrency": "Use the same currency as this asset's earlier transactions.",
+      "assetResolve": "Couldn't load the asset details. Try again.",
+      "searchFailed": "Search failed. Try again.",
+      "invalid": "Invalid value.",
+      "unexpected": "Something went wrong. Your change was not saved.",
+      "wouldOversell": "Can't remove it: a later sell would exceed the held quantity."
+    },
+    "overview": {
+      "title": "Overview",
+      "value": "Portfolio value",
+      "invested": "Invested",
+      "unrealized": "Unrealized P/L",
+      "realized": "Realized P/L",
+      "byType": "Allocation by type",
+      "byCurrency": "Allocation by currency",
+      "holdings": "Holdings",
+      "avgCost": "Avg cost",
+      "price": "Price",
+      "pl": "P/L",
+      "unpriced": "No price yet",
+      "stale": "Last known price — provider unreachable",
+      "updated": "Prices updated {time}",
+      "neverUpdated": "Prices not fetched yet — run a refresh.",
+      "partial": "Some positions are unpriced or missing an FX rate and are excluded from totals.",
+      "chart": "Portfolio over time",
+      "refresh": "Refresh prices",
+      "refreshing": "Refreshing…",
+      "fxNote": "Foreign-currency positions are converted to {base} using ECB daily rates.",
+      "range": "Range",
+      "ranges": {
+        "1w": "1W",
+        "1m": "1M",
+        "3m": "3M",
+        "ytd": "YTD",
+        "1y": "1Y",
+        "all": "All"
+      },
+      "historyPending": "Value history appears after the next refresh downloads historical prices (needs FMP_API_KEY for stocks/ETFs).",
+      "refreshSummary": "Updated: {quotes} quotes, {history} history rows."
+    },
+    "tabs": {
+      "overview": "Overview",
+      "income": "Income",
+      "transactions": "Transactions"
+    },
+    "income": {
+      "empty": "No dividend data yet. Prices sync it automatically once an FMP_API_KEY is configured and a refresh runs.",
+      "totalReceived": "Dividends received",
+      "forwardAnnual": "Est. annual income",
+      "forwardNote": "Based on the last 12 months of dividends and your current shares.",
+      "yieldOnCost": "Yield on cost",
+      "byYear": "Dividends by year",
+      "upcoming": "Upcoming payments",
+      "perAsset": "Per asset",
+      "received": "Received",
+      "perShare12m": "12m / share"
+    }
+  },
+  "realEstate": {
+    "nav": "Real Estate",
+    "title": "Real Estate",
+    "subtitle": "Your properties, mortgages, rental income, and returns.",
+    "addTitle": "Add property",
+    "empty": {
+      "title": "No properties yet",
+      "body": "Register your first property to see its equity, yield, and cash flow."
+    },
+    "types": {
+      "primary_home": "Primary home",
+      "investment": "Investment",
+      "vacation": "Vacation home",
+      "land": "Land",
+      "commercial": "Commercial",
+      "other": "Other"
+    },
+    "overview": {
+      "totalsTitle": "Portfolio · {currency}",
+      "equity": "Net equity",
+      "value": "Property value",
+      "debt": "Outstanding debt",
+      "netProfit": "Net profit (all time)",
+      "propertyCount": "{count, plural, =1 {1 property} other {# properties}}",
+      "rentTitle": "Rental income · {currency}",
+      "rentPerDay": "Per day",
+      "rentPerMonth": "Per month",
+      "rentPerYear": "Per year",
+      "propertiesTitle": "Properties"
+    },
+    "card": {
+      "value": "Value",
+      "equity": "Equity",
+      "ltv": "LTV",
+      "grossYield": "Gross yield",
+      "netYield": "Net yield",
+      "cashFlow": "Cash flow / mo",
+      "roi": "ROI",
+      "rented": "Rented",
+      "sold": "Sold"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "e.g. Eixample apartment",
+      "type": "Property type",
+      "address": "Address",
+      "city": "City",
+      "country": "Country code",
+      "currency": "Currency",
+      "purchaseDate": "Purchase date",
+      "purchasePrice": "Purchase price",
+      "purchaseFees": "Purchase fees (notary, taxes, agency)",
+      "currentValue": "Current estimated value",
+      "isRented": "Currently rented out",
+      "rentalStartDate": "Rental start",
+      "rentalEndDate": "Rental end (optional)",
+      "notes": "Notes",
+      "submit": "Save property"
+    },
+    "detail": {
+      "back": "Back to portfolio",
+      "purchasedOn": "Purchased {date}",
+      "soldOn": "Sold {date}",
+      "costBasis": "Cost basis",
+      "currentValue": "Current value",
+      "equity": "Equity",
+      "debt": "Outstanding debt",
+      "annualRent": "Annualized rent",
+      "cashFlow": "Cash flow / mo",
+      "roi": "ROI",
+      "ltv": "LTV",
+      "grossYield": "Gross yield",
+      "netYield": "Net yield",
+      "totalIncome": "Total income",
+      "totalExpenses": "Total expenses",
+      "valuationsTitle": "Value over time",
+      "loansTitle": "Loans",
+      "incomeTitle": "Rental income",
+      "expensesTitle": "Expenses",
+      "empty": "Nothing here yet.",
+      "delete": "Delete",
+      "confirmDelete": "Delete this entry? This cannot be undone.",
+      "confirmDeleteProperty": "Delete this property and everything attached to it? This cannot be undone.",
+      "edit": "Edit",
+      "sell": "Mark as sold",
+      "addLoan": "Add loan",
+      "addIncome": "Add income",
+      "addExpense": "Add expense",
+      "addValuation": "Add valuation"
+    },
+    "loanForm": {
+      "lenderName": "Lender",
+      "loanType": "Loan type",
+      "loanTypes": {
+        "mortgage": "Mortgage",
+        "equity_release": "Equity release",
+        "personal_loan": "Personal loan",
+        "developer_loan": "Developer loan",
+        "other": "Other"
+      },
+      "originalAmount": "Original amount",
+      "outstanding": "Outstanding balance",
+      "interestRatePct": "Interest rate (annual %)",
+      "rateType": "Rate type",
+      "rateTypes": {
+        "fixed": "Fixed",
+        "variable": "Variable",
+        "mixed": "Mixed"
+      },
+      "startDate": "Start date",
+      "endDate": "Maturity date (optional)",
+      "monthlyPayment": "Monthly payment",
+      "euriborSpreadPct": "Euribor spread % (optional)",
+      "notes": "Notes",
+      "isPaidOff": "Paid off",
+      "submit": "Save loan",
+      "update": "Update loan"
+    },
+    "incomeForm": {
+      "periodStart": "Period start",
+      "periodEnd": "Period end",
+      "amountKind": "How you enter it",
+      "amountKindMonthly": "Monthly rent",
+      "amountKindTotal": "Total for the period",
+      "amount": "Amount received",
+      "amountMonthly": "Rent per month",
+      "computedTotal": "Total for the period: {amount}",
+      "tenantName": "Tenant (optional)",
+      "notes": "Notes",
+      "submit": "Save income"
+    },
+    "expenseForm": {
+      "category": "Category",
+      "categories": {
+        "mortgage_payment": "Mortgage payment",
+        "property_tax": "Property tax (IBI)",
+        "community_fee": "Community fees",
+        "insurance": "Insurance",
+        "maintenance": "Maintenance",
+        "management_fee": "Management fee",
+        "utilities": "Utilities",
+        "legal": "Legal",
+        "renovation": "Renovation",
+        "vacancy": "Vacancy",
+        "other": "Other"
+      },
+      "description": "Description",
+      "amount": "Amount",
+      "expenseDate": "Date",
+      "isRecurring": "Recurring",
+      "recurrence": "Recurrence",
+      "recurrences": {
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "yearly": "Yearly"
+      },
+      "notes": "Notes",
+      "submit": "Save expense"
+    },
+    "valuationForm": {
+      "valuationDate": "Valuation date",
+      "value": "Estimated value",
+      "source": "Source",
+      "sources": {
+        "manual": "Own estimate",
+        "appraisal": "Official appraisal",
+        "agent_estimate": "Agent estimate",
+        "zillow": "Zillow",
+        "idealista": "Idealista",
+        "other": "Other"
+      },
+      "notes": "Notes",
+      "submit": "Save valuation"
+    },
+    "sellForm": {
+      "soldDate": "Sale date",
+      "soldPrice": "Sale price",
+      "soldFees": "Selling fees",
+      "submit": "Confirm sale"
+    },
+    "tables": {
+      "lender": "Lender",
+      "type": "Type",
+      "outstanding": "Outstanding",
+      "rate": "Rate",
+      "payment": "Payment / mo",
+      "paidOff": "Paid off",
+      "period": "Period",
+      "tenant": "Tenant",
+      "amount": "Amount",
+      "paid": "Paid",
+      "pending": "Pending",
+      "category": "Category",
+      "description": "Description",
+      "date": "Date",
+      "value": "Value",
+      "source": "Source"
+    },
+    "errors": {
+      "invalidAmount": "Enter a valid amount",
+      "invalidDate": "Enter a valid date",
+      "invalidPercent": "Enter a valid percentage",
+      "invalidCountry": "Use a two-letter code (e.g. ES)",
+      "required": "Required",
+      "tooLong": "Too long",
+      "endBeforeStart": "End date is before the start",
+      "invalid": "Invalid value",
+      "unexpected": "Something went wrong. Try again."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "label": "Settings sections",
+      "profile": "Profile",
+      "categories": "Categories",
+      "rules": "Rules"
+    },
+    "profile": {
+      "account": "Account",
+      "signedInAs": "Signed in as {email}",
+      "currencies": "Currencies",
+      "baseCurrency": "Base currency",
+      "baseCurrencyNote": "The currency your totals are reported in.",
+      "displayCurrency": "Display currency",
+      "displayCurrencyNote": "Preferred currency shown across the dashboard.",
+      "preferences": "Preferences",
+      "language": "Language",
+      "theme": "Theme",
+      "save": "Save",
+      "saved": "Saved",
+      "error": "Something went wrong. Please try again."
+    },
+    "categories": {
+      "intro": "Organize your income and expense categories.",
+      "newCategory": "New category",
+      "topLevel": "Top level (no parent)",
+      "editName": "Edit name",
+      "renameConvertsNote": "Renaming a default category stops it from using the built-in translation.",
+      "fields": {
+        "name": "Name",
+        "kind": "Type",
+        "parent": "Parent category",
+        "icon": "Icon",
+        "color": "Color"
+      },
+      "kinds": {
+        "income": "Income",
+        "expense": "Expense"
+      },
+      "addSub": "Add subcategory",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Delete? Transactions become uncategorized.",
+      "deleteYes": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "create": "Create",
+      "error": "Something went wrong. Please try again."
+    },
+    "rules": {
+      "intro": "Rules auto-categorize transactions on import. Higher priority (lower number) wins.",
+      "newRule": "New rule",
+      "empty": "No rules yet.",
+      "editName": "Edit name",
+      "renameConvertsNote": "Renaming a default rule stops it from using the built-in translation.",
+      "conditions": "Conditions",
+      "fields": {
+        "name": "Name",
+        "category": "Category",
+        "priority": "Priority",
+        "description": "Description",
+        "amount_cents": "Amount",
+        "account_id": "Account"
+      },
+      "ops": {
+        "contains": "contains",
+        "equals": "equals",
+        "starts_with": "starts with",
+        "regex": "matches regex",
+        "lt": "<",
+        "lte": "≤",
+        "gt": ">",
+        "gte": "≥",
+        "eq": "="
+      },
+      "and": "and",
+      "choose": "Choose…",
+      "valuePlaceholder": "value",
+      "absolute": "ignore sign",
+      "addClause": "Add condition",
+      "removeClause": "Remove condition",
+      "clauseField": "Field",
+      "clauseOp": "Operator",
+      "clauseValue": "Value",
+      "priorityNote": "Lower numbers apply first. User rules (0) beat defaults.",
+      "summary": "→ {target} · priority {priority}",
+      "enabled": "Enabled",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this rule?",
+      "deleteYes": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "create": "Create",
+      "error": "Something went wrong. Please try again.",
+      "preview": {
+        "title": "Test against your data",
+        "loading": "Testing…",
+        "matches": "Matches {matched} of {total} transactions.",
+        "none": "No preview available."
+      }
+    },
+    "danger": {
+      "title": "Danger zone",
+      "warning": "Permanently delete your account and all data — accounts, transactions, categories, rules, investments and properties. This cannot be undone.",
+      "downloadFirst": "Download your data first",
+      "confirmLabel": "Type {email} to confirm",
+      "deleteButton": "Delete my account",
+      "error": "Deletion failed. Please try again."
+    }
+  },
+  "goodbye": {
+    "title": "Your account has been deleted",
+    "body": "All your data has been permanently removed. Thank you for using Finova.",
+    "home": "Back to home"
+  },
+  "auth": {
+    "greeting": "Hey, {email}!",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "genericError": "An error occurred",
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "repeatPassword": "Repeat password",
+      "newPassword": "New password"
+    },
+    "login": {
+      "title": "Login",
+      "description": "Enter your email below to login to your account",
+      "forgot": "Forgot your password?",
+      "submit": "Login",
+      "submitting": "Logging in…",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up"
+    },
+    "signup": {
+      "title": "Sign up",
+      "description": "Create a new account",
+      "submit": "Sign up",
+      "submitting": "Creating an account…",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Login",
+      "passwordMismatch": "Passwords do not match"
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "description": "Type in your email and we'll send you a link to reset your password",
+      "submit": "Send reset email",
+      "submitting": "Sending…",
+      "successTitle": "Check your email",
+      "successDescription": "Password reset instructions sent",
+      "successBody": "If you registered using your email and password, you will receive a password reset email.",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Login"
+    },
+    "update": {
+      "title": "Reset your password",
+      "description": "Please enter your new password below.",
+      "submit": "Save new password",
+      "submitting": "Saving…"
+    },
+    "success": {
+      "title": "Thank you for signing up!",
+      "description": "Check your email to confirm",
+      "body": "You've successfully signed up. Please check your email to confirm your account before signing in."
+    },
+    "error": {
+      "title": "Sorry, something went wrong.",
+      "withCode": "Code error: {code}",
+      "generic": "An unspecified error occurred."
+    }
+  },
+  "legal": {
+    "footerPrivacy": "Privacy",
+    "footerTerms": "Terms",
+    "disclaimer": "Finova is a personal finance tool and does not provide financial, investment, or tax advice.",
+    "draftNotice": "This is a template, not legal advice. Replace it with your reviewed policy — including your real company details, jurisdiction, and contact — before launch.",
+    "lastUpdatedLabel": "Last updated",
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "This policy explains what data Finova stores and the control you have over it.",
+      "dataHeading": "What we store",
+      "dataBody": "The financial data you enter or import — accounts, transactions, categories, rules, investments, and properties — plus your account email and preferences. Data is stored in a Postgres database (Supabase) protected by row-level security, so only you can access your rows.",
+      "rightsHeading": "Export and deletion",
+      "rightsBody": "You can export all of your data as CSV or JSON at any time, and permanently delete your account and all associated data from Settings. Deletion is immediate and irreversible.",
+      "securityHeading": "Security",
+      "securityBody": "Access requires authentication; sessions are cookie-based. We do not sell your data and do not connect to your bank. Uploaded statement files are stored privately and scoped to your account.",
+      "contactHeading": "Contact",
+      "contactBody": "For privacy questions, contact the address published on this site. (Replace with your real contact before launch.)",
+      "controllerHeading": "Data controller",
+      "controllerBody": "The data controller for the purposes of applicable data-protection law is {company}. Contact details are below.",
+      "legalBasisHeading": "Legal basis for processing",
+      "legalBasisBody": "We process your account and financial data to perform our contract with you (providing the service you signed up for) and, where applicable, to comply with legal obligations. We do not process your data for any purpose incompatible with these.",
+      "subprocessorsHeading": "Sub-processors and third parties",
+      "subprocessorsBody": "We use Supabase (database, authentication, and file storage) as our primary infrastructure sub-processor. If you use the optional Investments module, ticker/FX/crypto reference data is fetched from market-data providers (e.g. Finnhub, Financial Modeling Prep, CoinGecko, Frankfurter/ECB) using only the ticker/symbol you add — no other personal data is sent to them. We do not sell your data to anyone, and we do not share it with advertisers.",
+      "retentionHeading": "Data retention",
+      "retentionBody": "Your data is retained for as long as your account is active. If you delete your account (Settings → Danger Zone), all associated data is permanently and immediately erased — there is no grace period or backup retention beyond the operational database backups described in our internal backup policy, which are themselves rotated on a [30-day] cycle.",
+      "cookiesHeading": "Cookies and local storage",
+      "cookiesBody": "We use strictly necessary cookies for authentication (session) and your language/theme preference. We do not use advertising or third-party tracking cookies.",
+      "childrenHeading": "Children's privacy",
+      "childrenBody": "Finova is not directed at children and is not intended for use by anyone under the age of [16/18, per your jurisdiction].",
+      "transfersHeading": "International data transfers",
+      "transfersBody": "Your data may be processed in a data-center region operated by our infrastructure provider outside your own country. Where required, such transfers rely on appropriate safeguards (e.g. Standard Contractual Clauses). [Confirm the specific region(s) and safeguard mechanism with your provider's DPA before launch.]"
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "intro": "By using Finova you agree to these terms.",
+      "useHeading": "Using the service",
+      "useBody": "Finova is provided to help you track and understand your personal finances. You are responsible for the accuracy of the data you enter and for keeping your account credentials secure.",
+      "noAdviceHeading": "Not financial advice",
+      "noAdviceBody": "Finova does not provide financial, investment, or tax advice. Figures, charts, and insights are informational only; decisions you make based on them are your own responsibility.",
+      "liabilityHeading": "Availability and liability",
+      "liabilityBody": "The service is provided “as is”, without warranties. To the extent permitted by law, we are not liable for losses arising from use of the service or from inaccuracies in your data.",
+      "changesHeading": "Changes",
+      "changesBody": "We may update these terms; continued use after an update constitutes acceptance of the revised terms.",
+      "eligibilityHeading": "Eligibility",
+      "eligibilityBody": "You must be at least [16/18] years old and legally able to enter into a binding contract to use Finova.",
+      "ipHeading": "Intellectual property",
+      "ipBody": "Finova's software, design, and branding are owned by {company} and are not licensed to you beyond what's needed to use the service. Your own financial data remains yours.",
+      "terminationHeading": "Termination",
+      "terminationBody": "You may stop using the service and delete your account at any time. We may suspend or terminate accounts that violate these terms or applicable law, with notice where reasonably possible.",
+      "governingLawHeading": "Governing law",
+      "governingLawBody": "These terms are governed by the laws of [JURISDICTION], without regard to conflict-of-law principles. [Confirm venue/arbitration clause with counsel if you want one.]"
+    },
+    "companyPlaceholder": "[LEGAL ENTITY NAME], [ADDRESS], [JURISDICTION] — replace before launch"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "body": "An unexpected error occurred. It's been logged — please try again.",
+    "retry": "Try again"
   }
 }

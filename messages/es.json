@@ -6,15 +6,33 @@
   "common": {
     "signIn": "Iniciar sesión",
     "signUp": "Empezar",
-    "language": "Idioma"
+    "language": "Idioma",
+    "theme": "Tema",
+    "logout": "Cerrar sesión",
+    "skipToContent": "Saltar al contenido"
   },
   "locale": {
     "es": "Español",
     "en": "English"
   },
+  "theme": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+  "nav": {
+    "menu": "Menú de cuenta",
+    "data": "Datos",
+    "settings": "Ajustes"
+  },
   "protected": {
     "title": "Tu cuenta",
-    "signedInAs": "Sesión iniciada como {email}"
+    "signedInAs": "Sesión iniciada como {email}",
+    "comingSoon": "Próximamente más preferencias."
+  },
+  "data": {
+    "nav": "Datos",
+    "title": "Datos"
   },
   "accounts": {
     "title": "Cuentas",
@@ -35,7 +53,9 @@
       "name": "Nombre",
       "type": "Tipo",
       "currency": "Moneda",
-      "openingBalance": "Saldo inicial"
+      "openingBalance": "Saldo inicial",
+      "interestRate": "Tipo de interés (TAE %)",
+      "interestRateNote": "Opcional. Se usa para proyectar el interés anual de esta cuenta — no es una transacción real."
     },
     "types": {
       "checking": "Cuenta corriente",
@@ -50,8 +70,16 @@
       "nameTooLong": "El nombre debe tener 100 caracteres o menos.",
       "invalidCurrency": "Usa un código de moneda de 3 letras, p. ej. EUR.",
       "invalidAmount": "Introduce un importe válido, p. ej. 1234.56.",
+      "invalidRate": "Introduce un tipo válido, p. ej. 2 o 2.5.",
       "unexpected": "Algo salió mal. Inténtalo de nuevo.",
       "hasTransactions": "Esta cuenta todavía tiene transacciones. Elimínalas o muévelas primero."
+    },
+    "reconcile": {
+      "button": "Conciliar",
+      "label": "Saldo real",
+      "help": "Introduce el saldo real de la cuenta; registraremos un ajuste puntual por la diferencia (tu historial se mantiene intacto).",
+      "submit": "Ajustar",
+      "description": "Ajuste de saldo"
     }
   },
   "transactions": {
@@ -76,6 +104,13 @@
     "emptyFiltered": "Ninguna transacción coincide con estos filtros.",
     "needAccount": "Crea una cuenta primero y luego podrás añadir transacciones.",
     "tagsPlaceholder": "supermercado, trabajo (separadas por comas)",
+    "recategorize": {
+      "button": "Auto-categorizar",
+      "running": "Categorizando…",
+      "done": "{updated} de {scanned} categorizadas.",
+      "none": "Nada que categorizar — ninguna transacción sin categoría coincidió con una regla.",
+      "error": "No se pudo categorizar. Inténtalo de nuevo."
+    },
     "fields": {
       "account": "Cuenta",
       "category": "Categoría",
@@ -113,15 +148,125 @@
       "invalidCurrency": "Usa un código de moneda de 3 letras, p. ej. EUR.",
       "invalidAmount": "Introduce un importe válido, p. ej. 1234.56.",
       "amountNonZero": "El importe no puede ser cero."
+    },
+    "makeRule": "Crear regla",
+    "pagination": {
+      "label": "Paginación",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "pageOf": "Página {page} de {total}"
+    },
+    "duplicate": "Duplicar",
+    "transfer": {
+      "new": "Transferencia",
+      "from": "Cuenta de origen",
+      "to": "Cuenta de destino",
+      "submit": "Transferir",
+      "sameAccount": "La cuenta de origen y destino deben ser distintas.",
+      "defaultDescription": "Transferencia"
     }
   },
   "import": {
     "nav": "Importar",
     "title": "Importar transacciones",
-    "subtitle": "Sube un CSV del banco, asigna sus columnas y guarda una plantilla reutilizable.",
+    "subtitle": "Sube un CSV o Excel del banco, asigna sus columnas y guarda una plantilla reutilizable.",
+    "domainsLegend": "Qué importar",
+    "domains": {
+      "everything": "Todo",
+      "transactions": "Movimientos",
+      "investments": "Inversiones",
+      "realEstate": "Inmuebles"
+    },
+    "comingSoon": "La importación de este dominio llegará pronto. Por ahora puedes exportarlo e importar Movimientos o Inmuebles.",
+    "realEstate": {
+      "subtitle": "Sube un JSON de inmuebles exportado de Finova para restaurarlo o fusionarlo. Reimportar el mismo archivo es seguro: los duplicados se omiten.",
+      "dropLabel": "Archivo JSON de Finova",
+      "reviewing": "Leyendo archivo…",
+      "review": "Revisión",
+      "table": "Sección",
+      "tables": {
+        "properties": "Inmuebles",
+        "loans": "Préstamos",
+        "valuations": "Valoraciones",
+        "income": "Ingresos por alquiler",
+        "expenses": "Gastos"
+      },
+      "cols": {
+        "new": "Nuevos",
+        "duplicate": "Omitidos",
+        "error": "Errores"
+      },
+      "commit": "Importar",
+      "committing": "Importando…",
+      "nothingNew": "Nada nuevo que importar",
+      "done": "Importadas {committed} filas nuevas; {skipped} duplicadas omitidas.",
+      "errors": {
+        "malformed": "Este archivo no es un JSON válido.",
+        "notFinova": "Esto no parece una exportación de Finova.",
+        "unsupportedVersion": "Este archivo se creó con una versión incompatible de Finova.",
+        "noRealEstate": "Este archivo no contiene datos de inmuebles para importar.",
+        "unexpected": "Algo salió mal. Inténtalo de nuevo."
+      }
+    },
+    "investments": {
+      "subtitle": "Sube un JSON de inversiones exportado de Finova para restaurarlo o fusionarlo. Reimportar el mismo archivo es seguro: los duplicados se omiten y los precios se actualizan automáticamente después.",
+      "dropLabel": "Archivo JSON de Finova",
+      "reviewing": "Leyendo archivo…",
+      "review": "Revisión",
+      "table": "Sección",
+      "tables": {
+        "portfolios": "Carteras",
+        "accounts": "Cuentas",
+        "transactions": "Movimientos"
+      },
+      "cols": {
+        "new": "Nuevos",
+        "duplicate": "Omitidos",
+        "error": "Errores"
+      },
+      "commit": "Importar",
+      "committing": "Importando…",
+      "nothingNew": "Nada nuevo que importar",
+      "done": "Importadas {committed} filas nuevas; {skipped} duplicadas omitidas. Las posiciones se actualizarán en breve.",
+      "errors": {
+        "malformed": "Este archivo no es un JSON válido.",
+        "notFinova": "Esto no parece una exportación de Finova.",
+        "unsupportedVersion": "Este archivo se creó con una versión incompatible de Finova.",
+        "noInvestments": "Este archivo no contiene datos de inversiones para importar.",
+        "unexpected": "Algo salió mal. Inténtalo de nuevo."
+      }
+    },
+    "everything": {
+      "subtitle": "Sube una copia de seguridad JSON completa de Finova para restaurar o fusionar todos los dominios a la vez. Reimportar el mismo archivo es seguro: los duplicados se omiten.",
+      "dropLabel": "Copia de seguridad JSON de Finova",
+      "reviewing": "Leyendo archivo…",
+      "review": "Revisión",
+      "table": "Dominio",
+      "tables": {
+        "transactions": "Movimientos",
+        "investments": "Inversiones",
+        "realEstate": "Inmuebles"
+      },
+      "cols": {
+        "new": "Nuevos",
+        "duplicate": "Omitidos",
+        "error": "Errores"
+      },
+      "commit": "Restaurar todo",
+      "committing": "Restaurando…",
+      "nothingNew": "Nada nuevo que importar",
+      "done": "Importadas {committed} filas nuevas; {skipped} duplicadas omitidas.",
+      "errors": {
+        "malformed": "Este archivo no es un JSON válido.",
+        "notFinova": "Esto no parece una exportación de Finova.",
+        "unsupportedVersion": "Este archivo se creó con una versión incompatible de Finova.",
+        "empty": "Este archivo no contiene datos para importar.",
+        "unexpected": "Algo salió mal. Inténtalo de nuevo."
+      }
+    },
     "commitBanner": "Revisa tu importación abajo y confírmala cuando los totales sean correctos.",
     "upload": {
-      "label": "Archivo CSV del banco",
+      "label": "Archivo CSV o Excel del banco",
       "submit": "Analizar archivo",
       "parsing": "Analizando…"
     },
@@ -190,7 +335,11 @@
       "newCount": "{count, plural, one {# nueva} other {# nuevas}}",
       "duplicateCount": "{count, plural, one {# duplicada} other {# duplicadas}}",
       "errorCount": "{count, plural, one {# error} other {# errores}}",
-      "status": { "new": "Nueva", "duplicate": "Duplicada", "error": "Error" },
+      "status": {
+        "new": "Nueva",
+        "duplicate": "Duplicada",
+        "error": "Error"
+      },
       "fuzzy": "Posible duplicado",
       "truncated": "Mostrando {shown} de {total} filas",
       "errors": {
@@ -222,8 +371,8 @@
       "noRows": "No se encontraron filas de datos en ese archivo.",
       "tooManyRows": "Ese archivo tiene demasiadas filas.",
       "noFile": "Elige un archivo para subir.",
-      "unsupportedType": "Sube un archivo .csv, .xls o .xlsx.",
-      "excelNotSupported": "Los archivos de Excel aún no son compatibles; exporta tu extracto como CSV.",
+      "unsupportedType": "Sube un archivo .csv o .xlsx.",
+      "invalidExcel": "No pudimos leer ese archivo de Excel. Vuelve a exportarlo como .xlsx e inténtalo de nuevo.",
       "storageFailed": "No pudimos guardar ese archivo. Inténtalo de nuevo.",
       "unexpected": "Algo salió mal. Inténtalo de nuevo.",
       "saveFailed": "No se pudo guardar la plantilla. Inténtalo de nuevo."
@@ -234,7 +383,19 @@
     "subtitle": "Convierte extractos bancarios y hojas de cálculo dispersos en una visión clara, sin conectar tu banco.",
     "ctaPrimary": "Empezar",
     "ctaSecondary": "Iniciar sesión",
-    "disclaimer": "Finova es una herramienta de finanzas personales, no asesoramiento financiero."
+    "disclaimer": "Finova es una herramienta de finanzas personales, no asesoramiento financiero.",
+    "howItWorks": {
+      "title": "Cómo funciona Finova",
+      "subtitle": "Cuatro pasos — y sin conectar tu banco.",
+      "step1Title": "1 · Añade tus cuentas",
+      "step1Body": "Crea una cuenta corriente, de ahorros, de efectivo o de tarjeta, con su propia moneda y saldo inicial.",
+      "step2Title": "2 · Añade o importa transacciones",
+      "step2Body": "Introdúcelas a mano o sube un CSV del banco: asigna las columnas una vez, guarda una plantilla reutilizable y revisa antes de importar.",
+      "step3Title": "3 · Deja que las reglas categoricen",
+      "step3Body": "Las transacciones importadas se categorizan automáticamente con reglas integradas. Volver a importar el mismo archivo nunca crea duplicados.",
+      "step4Title": "4 · Consulta tu panel y exporta",
+      "step4Body": "Controla el flujo de caja, los saldos, la tasa de ahorro y el gasto por categoría — y exporta todo a CSV o JSON cuando quieras."
+    }
   },
   "categories": {
     "title": "Categorías",
@@ -261,5 +422,937 @@
       "gifts": "Regalos",
       "other_income": "Otros ingresos"
     }
+  },
+  "rules": {
+    "defaults": {
+      "mercadona": "Mercadona",
+      "carrefour": "Carrefour",
+      "lidl": "Lidl",
+      "dia": "Dia",
+      "aldi": "Aldi",
+      "consum": "Consum",
+      "eroski": "Eroski",
+      "glovo": "Glovo",
+      "uber_eats": "Uber Eats",
+      "just_eat": "Just Eat",
+      "deliveroo": "Deliveroo",
+      "mcdonalds": "McDonald's",
+      "starbucks": "Starbucks",
+      "telepizza": "Telepizza",
+      "uber": "Uber",
+      "cabify": "Cabify",
+      "renfe": "Renfe",
+      "repsol": "Repsol",
+      "cepsa": "Cepsa",
+      "endesa": "Endesa",
+      "iberdrola": "Iberdrola",
+      "naturgy": "Naturgy",
+      "movistar": "Movistar",
+      "vodafone": "Vodafone",
+      "orange": "Orange",
+      "nomina": "Nómina",
+      "payroll": "Pago de nómina",
+      "alcampo": "Alcampo",
+      "hipercor": "Hipercor",
+      "condis": "Condis",
+      "bonpreu": "Bonpreu",
+      "walmart": "Walmart",
+      "tesco": "Tesco",
+      "supermercado": "Supermercado",
+      "fruteria": "Frutería",
+      "panaderia": "Panadería",
+      "burger_king": "Burger King",
+      "kfc": "KFC",
+      "dominos": "Domino's",
+      "pizza_hut": "Pizza Hut",
+      "taco_bell": "Taco Bell",
+      "doordash": "DoorDash",
+      "costa_coffee": "Costa Coffee",
+      "dunkin": "Dunkin",
+      "restaurante": "Restaurante",
+      "cafeteria": "Cafetería",
+      "pizzeria": "Pizzería",
+      "sushi": "Sushi",
+      "hamburgueseria": "Hamburguesería",
+      "cerveceria": "Cervecería",
+      "shell": "Shell",
+      "galp": "Galp",
+      "gasolinera": "Gasolinera",
+      "parking": "Aparcamiento",
+      "aparcamiento": "Aparcamiento",
+      "peaje": "Peaje",
+      "metro": "Metro",
+      "autobus": "Autobús",
+      "cercanias": "Cercanías",
+      "bicing": "Bicing",
+      "taxi": "Taxi",
+      "freenow": "Free Now",
+      "blablacar": "BlaBlaCar",
+      "holaluz": "Holaluz",
+      "jazztel": "Jazztel",
+      "masmovil": "MásMóvil",
+      "yoigo": "Yoigo",
+      "digi": "Digi",
+      "electricidad": "Electricidad",
+      "internet": "Internet",
+      "telefonia": "Telefonía",
+      "canal_de_isabel": "Canal de Isabel II",
+      "farmacia": "Farmacia",
+      "pharmacy": "Farmacia",
+      "sanitas": "Sanitas",
+      "adeslas": "Adeslas",
+      "asisa": "Asisa",
+      "dkv": "DKV",
+      "gimnasio": "Gimnasio",
+      "fisioterapia": "Fisioterapia",
+      "dentista": "Dentista",
+      "clinica": "Clínica",
+      "hospital": "Hospital",
+      "zara": "Zara",
+      "hym": "H&M",
+      "primark": "Primark",
+      "zalando": "Zalando",
+      "ikea": "IKEA",
+      "leroy_merlin": "Leroy Merlin",
+      "mediamarkt": "MediaMarkt",
+      "fnac": "Fnac",
+      "amazon": "Amazon",
+      "el_corte_ingles": "El Corte Inglés",
+      "aliexpress": "AliExpress",
+      "decathlon": "Decathlon",
+      "netflix": "Netflix",
+      "spotify": "Spotify",
+      "hbo_max": "HBO Max",
+      "disney_plus": "Disney+",
+      "dazn": "DAZN",
+      "playstation": "PlayStation",
+      "xbox": "Xbox",
+      "nintendo": "Nintendo",
+      "cine": "Cine",
+      "teatro": "Teatro",
+      "ticketmaster": "Ticketmaster",
+      "filmin": "Filmin",
+      "udemy": "Udemy",
+      "coursera": "Coursera",
+      "duolingo": "Duolingo",
+      "universidad": "Universidad",
+      "matricula": "Matrícula",
+      "masterclass": "MasterClass",
+      "iberia": "Iberia",
+      "ryanair": "Ryanair",
+      "vueling": "Vueling",
+      "easyjet": "EasyJet",
+      "booking_com": "Booking.com",
+      "airbnb": "Airbnb",
+      "hostelworld": "Hostelworld",
+      "expedia": "Expedia",
+      "hertz": "Hertz",
+      "avis": "Avis",
+      "europcar": "Europcar",
+      "sixt": "Sixt",
+      "aeropuerto": "Aeropuerto",
+      "hotel": "Hotel",
+      "mapfre": "Mapfre",
+      "axa": "AXA",
+      "linea_directa": "Línea Directa",
+      "mutua_madrilena": "Mutua Madrileña",
+      "zurich_seguros": "Zurich Seguros",
+      "seguro_coche": "Seguro de coche",
+      "seguro_hogar": "Seguro de hogar",
+      "sueldo": "Sueldo",
+      "salario": "Salario",
+      "paycheck": "Paycheck",
+      "regalo": "Regalo",
+      "herencia": "Herencia",
+      "donacion": "Donación",
+      "factura_emitida": "Factura emitida",
+      "freelance": "Freelance",
+      "dividendo": "Dividendo",
+      "dividend": "Dividendo",
+      "devolucion": "Devolución",
+      "reembolso": "Reembolso",
+      "cashback": "Cashback",
+      "bizum_recibido": "Bizum recibido",
+      "subsidio": "Subsidio",
+      "salary": "Salario (salary)",
+      "supermarket": "Supermercado (supermarket)",
+      "grocery": "Alimentación (grocery)",
+      "coffee": "Cafetería (coffee)",
+      "restaurant": "Restaurante (restaurant)",
+      "gym": "Gimnasio (gym)",
+      "electricity": "Electricidad (electricity)"
+    }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "nav": "Panel",
+    "period": {
+      "label": "Periodo",
+      "30d": "30 días",
+      "90d": "90 días",
+      "ytd": "Año en curso",
+      "12m": "12 meses",
+      "all": "Todo"
+    },
+    "kpi": {
+      "income": "Ingresos",
+      "expense": "Gastos",
+      "net": "Flujo de caja neto",
+      "netNote": "Este periodo",
+      "savingsRate": "Tasa de ahorro",
+      "savingsRateNote": "Parte de los ingresos que conservas en este periodo"
+    },
+    "bands": {
+      "have": "¿Cuánto tengo?",
+      "earn": "¿Gano más de lo que gasto?",
+      "spend": "¿A dónde va mi dinero?",
+      "activity": "¿Qué está pasando?"
+    },
+    "delta": {
+      "vsPrev": "vs. periodo anterior"
+    },
+    "banner": {
+      "title": "{amount} sin categorizar",
+      "body": "Organízalo para que tu desglose y tu tasa de ahorro signifiquen algo.",
+      "cta": "Organizar ahora",
+      "running": "Organizando…",
+      "done": "Categorizadas {updated} de {scanned}.",
+      "none": "No queda nada por categorizar.",
+      "error": "No se pudo organizar ahora. Inténtalo de nuevo.",
+      "dismiss": "Descartar"
+    },
+    "currencyBreakdown": {
+      "title": "Patrimonio por moneda",
+      "base": "Base"
+    },
+    "wealthAllocation": {
+      "title": "¿Dónde está mi dinero?",
+      "cash": "Efectivo",
+      "realEstate": "Inmuebles"
+    },
+    "donutEmpty": {
+      "title": "Aún no hay nada categorizado",
+      "body": "Todo tu gasto está sin categorizar. Organízalo para ver a dónde va tu dinero.",
+      "cta": "Organizar gastos"
+    },
+    "insights": {
+      "title": "Insights",
+      "soon": "Próximamente",
+      "narrative": "Resumen mensual — un repaso de tu dinero en lenguaje claro.",
+      "leakFinder": "Detector de fugas — cargos recurrentes que se acumulan.",
+      "forecast": "Previsión — hacia dónde va tu saldo."
+    },
+    "charts": {
+      "incomeVsExpense": "Ingresos vs gastos",
+      "balanceTrend": "Evolución del saldo",
+      "spendingByCategory": "Gasto por categoría"
+    },
+    "accountsStrip": {
+      "title": "Cuentas",
+      "netWorth": "Patrimonio neto",
+      "perYear": "año"
+    },
+    "keyStats": {
+      "averageSpend": "Gasto medio",
+      "biggestExpense": "Mayor gasto",
+      "busiestDay": "Día más activo",
+      "count": "Movimientos",
+      "txnCount": "{count, plural, one {# movimiento} other {# movimientos}}"
+    },
+    "ranking": {
+      "topCategories": "Dónde más gastas",
+      "byAccount": "Gasto entre cuentas",
+      "incomeSources": "De dónde viene tu ingreso",
+      "dividends": "Dividendos",
+      "empty": "No hay gastos en este periodo."
+    },
+    "granularity": {
+      "label": "Granularidad",
+      "day": "Día",
+      "month": "Mes",
+      "year": "Año"
+    },
+    "balances": {
+      "title": "Saldos por cuenta"
+    },
+    "recent": {
+      "title": "Movimientos recientes",
+      "viewAll": "Ver todos",
+      "add": "Añadir",
+      "empty": "No hay movimientos en este periodo."
+    },
+    "table": {
+      "category": "Categoría",
+      "amount": "Importe",
+      "share": "Porcentaje",
+      "uncategorized": "Sin categoría"
+    },
+    "otherCurrencies": "Mostrando {currency}. También tienes actividad en otras monedas — consulta los saldos por cuenta más abajo.",
+    "empty": {
+      "title": "Te damos la bienvenida a Finova",
+      "body": "Añade una cuenta o importa un extracto para ver tu panel cobrar vida.",
+      "addAccount": "Añadir una cuenta",
+      "import": "Importar un extracto"
+    },
+    "earnings": {
+      "title": "¿Cuánto gano?",
+      "units": {
+        "day": "Por día",
+        "month": "Por mes",
+        "year": "Por año"
+      },
+      "per": {
+        "day": "/ día",
+        "month": "/ mes",
+        "year": "/ año"
+      },
+      "empty": "Aún no hay ingresos registrados.",
+      "basedOn": "Basado en tus ingresos de {month}. Por día lo divide entre los días del mes; por año lo multiplica por 12."
+    }
+  },
+  "export": {
+    "title": "Exporta tus datos",
+    "nav": "Exportar",
+    "description": "Descarga una copia de tus datos. Elige un dominio, o Todo para una copia de seguridad completa que puedes restaurar. El JSON es el formato restaurable; el CSV es para hojas de cálculo.",
+    "domainsLegend": "Qué exportar",
+    "domains": {
+      "everything": "Todo",
+      "transactions": "Movimientos",
+      "investments": "Inversiones",
+      "realEstate": "Inmuebles"
+    },
+    "download": {
+      "csv": "Descargar CSV",
+      "json": "Descargar JSON"
+    },
+    "cards": {
+      "everythingJson": {
+        "title": "Copia completa (JSON)",
+        "description": "Todo —movimientos, inversiones e inmuebles— en un único archivo restaurable."
+      },
+      "transactionsCsv": {
+        "title": "Movimientos (CSV)",
+        "description": "Un libro de movimientos compatible con hojas de cálculo que se reimporta sin problemas."
+      },
+      "transactionsJson": {
+        "title": "Movimientos (JSON)",
+        "description": "Cuentas, categorías y movimientos en un único archivo restaurable."
+      },
+      "investmentsCsv": {
+        "title": "Movimientos de inversión (CSV)",
+        "description": "Tus compras, ventas y otras operaciones como hoja de cálculo."
+      },
+      "investmentsJson": {
+        "title": "Inversiones (JSON)",
+        "description": "Carteras, cuentas y movimientos en un único archivo restaurable."
+      },
+      "realEstateCsv": {
+        "title": "Inmuebles (CSV)",
+        "description": "Tus inmuebles como hoja de cálculo; los préstamos y el histórico van en el JSON."
+      },
+      "realEstateJson": {
+        "title": "Inmuebles (JSON)",
+        "description": "Inmuebles, préstamos, valoraciones, ingresos y gastos en un único archivo restaurable."
+      }
+    },
+    "filters": {
+      "legend": "Qué exportar",
+      "presets": {
+        "all": "Todo el historial",
+        "month": "Este mes",
+        "quarter": "Últimos 3 meses",
+        "year": "Este año"
+      },
+      "from": "Desde",
+      "to": "Hasta",
+      "account": "Cuenta",
+      "allAccounts": "Todas las cuentas",
+      "category": "Categoría",
+      "allCategories": "Todas las categorías",
+      "uncategorized": "Sin categoría",
+      "filteredNote": "Los filtros acotan los movimientos de esta exportación; las cuentas y categorías se incluyen siempre completas."
+    }
+  },
+  "expenses": {
+    "nav": "Gastos",
+    "title": "Gastos",
+    "empty": "No hay gastos en este periodo.",
+    "uncategorized": "Sin categoría",
+    "kpi": {
+      "total": "Total gastado",
+      "average": "Gasto medio",
+      "count": "Transacciones",
+      "uncategorized": "Sin categoría"
+    },
+    "charts": {
+      "byCategory": "Por categoría",
+      "trend": "Tendencia de gasto"
+    },
+    "ranking": {
+      "byCategory": "Todas las categorías",
+      "byMerchant": "Comercios principales"
+    },
+    "biggest": {
+      "title": "Mayores gastos"
+    }
+  },
+  "investments": {
+    "nav": "Inversiones",
+    "title": "Inversiones",
+    "subtitle": "Registra tu cartera manualmente — los precios se actualizan solos.",
+    "addTitle": "Añadir inversión",
+    "search": {
+      "label": "Buscar activo",
+      "placeholder": "Ticker o nombre (p. ej. AAPL, Bitcoin)",
+      "button": "Buscar",
+      "typeLabel": "Tipo de activo",
+      "types": {
+        "stock": "Acción",
+        "etf": "ETF",
+        "fund": "Fondo",
+        "crypto": "Cripto"
+      },
+      "noResults": "Sin resultados.",
+      "searching": "Buscando…",
+      "resolving": "Cargando activo…",
+      "change": "Cambiar activo"
+    },
+    "form": {
+      "type": "Tipo",
+      "buy": "Compra",
+      "sell": "Venta",
+      "date": "Fecha de operación",
+      "quantity": "Cantidad",
+      "price": "Precio por unidad",
+      "currency": "Moneda",
+      "fees": "Comisiones",
+      "notes": "Notas",
+      "submit": "Añadir operación",
+      "saved": "Añadida",
+      "save": "Guardar cambios",
+      "editReason": "Motivo del cambio (opcional)"
+    },
+    "list": {
+      "title": "Operaciones",
+      "empty": "Añade tu primera inversión para empezar.",
+      "date": "Fecha",
+      "asset": "Activo",
+      "type": "Tipo",
+      "quantity": "Cantidad",
+      "price": "Precio",
+      "fees": "Comisiones",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar esta operación de forma permanente? No se puede deshacer."
+    },
+    "errors": {
+      "invalidAmount": "Introduce un importe válido.",
+      "tooManyDecimals": "Máximo 8 decimales.",
+      "mustBePositive": "Debe ser mayor que cero.",
+      "invalidDate": "Introduce una fecha válida.",
+      "futureDate": "La fecha no puede ser futura.",
+      "invalidCurrency": "Introduce un código de moneda válido.",
+      "notesTooLong": "Las notas son demasiado largas.",
+      "oversell": "No puedes vender más de lo que tienes.",
+      "mixedCurrency": "Usa la misma moneda que las operaciones anteriores de este activo.",
+      "assetResolve": "No se pudieron cargar los datos del activo. Inténtalo de nuevo.",
+      "searchFailed": "La búsqueda ha fallado. Inténtalo de nuevo.",
+      "invalid": "Valor no válido.",
+      "unexpected": "Algo ha ido mal. El cambio no se ha guardado.",
+      "wouldOversell": "No se puede eliminar: una venta posterior superaría la cantidad en cartera."
+    },
+    "overview": {
+      "title": "Resumen",
+      "value": "Valor de la cartera",
+      "invested": "Invertido",
+      "unrealized": "P/G latente",
+      "realized": "P/G realizada",
+      "byType": "Distribución por tipo",
+      "byCurrency": "Distribución por moneda",
+      "holdings": "Posiciones",
+      "avgCost": "Coste medio",
+      "price": "Precio",
+      "pl": "P/G",
+      "unpriced": "Sin precio aún",
+      "stale": "Último precio conocido — proveedor no disponible",
+      "updated": "Precios actualizados {time}",
+      "neverUpdated": "Precios aún no descargados — ejecuta una actualización.",
+      "partial": "Algunas posiciones no tienen precio o tipo de cambio y quedan fuera de los totales.",
+      "chart": "Evolución de la cartera",
+      "refresh": "Actualizar precios",
+      "refreshing": "Actualizando…",
+      "fxNote": "Las posiciones en otras divisas se convierten a {base} con los tipos diarios del BCE.",
+      "range": "Periodo",
+      "ranges": {
+        "1w": "1S",
+        "1m": "1M",
+        "3m": "3M",
+        "ytd": "Año",
+        "1y": "1A",
+        "all": "Todo"
+      },
+      "historyPending": "El histórico de valor aparecerá tras la próxima actualización, cuando se descarguen los precios históricos (requiere FMP_API_KEY para acciones/ETF).",
+      "refreshSummary": "Actualizado: {quotes} cotizaciones, {history} filas de histórico."
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "income": "Ingresos",
+      "transactions": "Operaciones"
+    },
+    "income": {
+      "empty": "Aún no hay datos de dividendos. Se sincronizan automáticamente cuando se configura FMP_API_KEY y se ejecuta una actualización.",
+      "totalReceived": "Dividendos cobrados",
+      "forwardAnnual": "Ingreso anual estimado",
+      "forwardNote": "Basado en los dividendos de los últimos 12 meses y tus acciones actuales.",
+      "yieldOnCost": "Rentabilidad sobre coste",
+      "byYear": "Dividendos por año",
+      "upcoming": "Próximos pagos",
+      "perAsset": "Por activo",
+      "received": "Cobrado",
+      "perShare12m": "12m / acción"
+    }
+  },
+  "realEstate": {
+    "nav": "Inmuebles",
+    "title": "Inmuebles",
+    "subtitle": "Tus propiedades, hipotecas, ingresos por alquiler y rentabilidad.",
+    "addTitle": "Añadir propiedad",
+    "empty": {
+      "title": "Aún no hay propiedades",
+      "body": "Registra tu primera propiedad para ver su patrimonio, rentabilidad y flujo de caja."
+    },
+    "types": {
+      "primary_home": "Vivienda habitual",
+      "investment": "Inversión",
+      "vacation": "Vivienda vacacional",
+      "land": "Terreno",
+      "commercial": "Local comercial",
+      "other": "Otro"
+    },
+    "overview": {
+      "totalsTitle": "Cartera · {currency}",
+      "equity": "Patrimonio neto",
+      "value": "Valor de las propiedades",
+      "debt": "Deuda pendiente",
+      "netProfit": "Beneficio neto (total)",
+      "propertyCount": "{count, plural, =1 {1 propiedad} other {# propiedades}}",
+      "rentTitle": "Ingresos por alquiler · {currency}",
+      "rentPerDay": "Por día",
+      "rentPerMonth": "Por mes",
+      "rentPerYear": "Por año",
+      "propertiesTitle": "Propiedades"
+    },
+    "card": {
+      "value": "Valor",
+      "equity": "Patrimonio",
+      "ltv": "LTV",
+      "grossYield": "Rentabilidad bruta",
+      "netYield": "Rentabilidad neta",
+      "cashFlow": "Flujo de caja / mes",
+      "roi": "ROI",
+      "rented": "Alquilada",
+      "sold": "Vendida"
+    },
+    "form": {
+      "name": "Nombre",
+      "namePlaceholder": "p. ej. Piso del Eixample",
+      "type": "Tipo de propiedad",
+      "address": "Dirección",
+      "city": "Ciudad",
+      "country": "Código de país",
+      "currency": "Divisa",
+      "purchaseDate": "Fecha de compra",
+      "purchasePrice": "Precio de compra",
+      "purchaseFees": "Gastos de compra (notaría, impuestos, agencia)",
+      "currentValue": "Valor estimado actual",
+      "isRented": "Actualmente alquilada",
+      "rentalStartDate": "Inicio del alquiler",
+      "rentalEndDate": "Fin del alquiler (opcional)",
+      "notes": "Notas",
+      "submit": "Guardar propiedad"
+    },
+    "detail": {
+      "back": "Volver a la cartera",
+      "purchasedOn": "Comprada el {date}",
+      "soldOn": "Vendida el {date}",
+      "costBasis": "Coste total",
+      "currentValue": "Valor actual",
+      "equity": "Patrimonio",
+      "debt": "Deuda pendiente",
+      "annualRent": "Alquiler anualizado",
+      "cashFlow": "Flujo de caja / mes",
+      "roi": "ROI",
+      "ltv": "LTV",
+      "grossYield": "Rentabilidad bruta",
+      "netYield": "Rentabilidad neta",
+      "totalIncome": "Ingresos totales",
+      "totalExpenses": "Gastos totales",
+      "valuationsTitle": "Valor a lo largo del tiempo",
+      "loansTitle": "Préstamos",
+      "incomeTitle": "Ingresos por alquiler",
+      "expensesTitle": "Gastos",
+      "empty": "Aún no hay nada aquí.",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar esta entrada? No se puede deshacer.",
+      "confirmDeleteProperty": "¿Eliminar esta propiedad y todo lo asociado? No se puede deshacer.",
+      "edit": "Editar",
+      "sell": "Marcar como vendida",
+      "addLoan": "Añadir préstamo",
+      "addIncome": "Añadir ingreso",
+      "addExpense": "Añadir gasto",
+      "addValuation": "Añadir tasación"
+    },
+    "loanForm": {
+      "lenderName": "Entidad",
+      "loanType": "Tipo de préstamo",
+      "loanTypes": {
+        "mortgage": "Hipoteca",
+        "equity_release": "Préstamo hipotecario adicional",
+        "personal_loan": "Préstamo personal",
+        "developer_loan": "Préstamo promotor",
+        "other": "Otro"
+      },
+      "originalAmount": "Importe inicial",
+      "outstanding": "Saldo pendiente",
+      "interestRatePct": "Tipo de interés (% anual)",
+      "rateType": "Tipo",
+      "rateTypes": {
+        "fixed": "Fijo",
+        "variable": "Variable",
+        "mixed": "Mixto"
+      },
+      "startDate": "Fecha de inicio",
+      "endDate": "Vencimiento (opcional)",
+      "monthlyPayment": "Cuota mensual",
+      "euriborSpreadPct": "Diferencial Euríbor % (opcional)",
+      "notes": "Notas",
+      "isPaidOff": "Amortizado",
+      "submit": "Guardar préstamo",
+      "update": "Actualizar préstamo"
+    },
+    "incomeForm": {
+      "periodStart": "Inicio del periodo",
+      "periodEnd": "Fin del periodo",
+      "amountKind": "Cómo lo introduces",
+      "amountKindMonthly": "Alquiler mensual",
+      "amountKindTotal": "Total del periodo",
+      "amount": "Importe cobrado",
+      "amountMonthly": "Alquiler al mes",
+      "computedTotal": "Total del periodo: {amount}",
+      "tenantName": "Inquilino (opcional)",
+      "notes": "Notas",
+      "submit": "Guardar ingreso"
+    },
+    "expenseForm": {
+      "category": "Categoría",
+      "categories": {
+        "mortgage_payment": "Cuota hipotecaria",
+        "property_tax": "IBI",
+        "community_fee": "Comunidad",
+        "insurance": "Seguro",
+        "maintenance": "Mantenimiento",
+        "management_fee": "Gestión",
+        "utilities": "Suministros",
+        "legal": "Legal",
+        "renovation": "Reforma",
+        "vacancy": "Periodo vacío",
+        "other": "Otro"
+      },
+      "description": "Descripción",
+      "amount": "Importe",
+      "expenseDate": "Fecha",
+      "isRecurring": "Recurrente",
+      "recurrence": "Periodicidad",
+      "recurrences": {
+        "monthly": "Mensual",
+        "quarterly": "Trimestral",
+        "yearly": "Anual"
+      },
+      "notes": "Notas",
+      "submit": "Guardar gasto"
+    },
+    "valuationForm": {
+      "valuationDate": "Fecha de tasación",
+      "value": "Valor estimado",
+      "source": "Fuente",
+      "sources": {
+        "manual": "Estimación propia",
+        "appraisal": "Tasación oficial",
+        "agent_estimate": "Estimación de inmobiliaria",
+        "zillow": "Zillow",
+        "idealista": "Idealista",
+        "other": "Otra"
+      },
+      "notes": "Notas",
+      "submit": "Guardar tasación"
+    },
+    "sellForm": {
+      "soldDate": "Fecha de venta",
+      "soldPrice": "Precio de venta",
+      "soldFees": "Gastos de la venta",
+      "submit": "Confirmar venta"
+    },
+    "tables": {
+      "lender": "Entidad",
+      "type": "Tipo",
+      "outstanding": "Pendiente",
+      "rate": "Interés",
+      "payment": "Cuota / mes",
+      "paidOff": "Amortizado",
+      "period": "Periodo",
+      "tenant": "Inquilino",
+      "amount": "Importe",
+      "paid": "Cobrado",
+      "pending": "Pendiente",
+      "category": "Categoría",
+      "description": "Descripción",
+      "date": "Fecha",
+      "value": "Valor",
+      "source": "Fuente"
+    },
+    "errors": {
+      "invalidAmount": "Introduce un importe válido",
+      "invalidDate": "Introduce una fecha válida",
+      "invalidPercent": "Introduce un porcentaje válido",
+      "invalidCountry": "Usa un código de dos letras (p. ej. ES)",
+      "required": "Obligatorio",
+      "tooLong": "Demasiado largo",
+      "endBeforeStart": "La fecha de fin es anterior al inicio",
+      "invalid": "Valor no válido",
+      "unexpected": "Algo ha ido mal. Inténtalo de nuevo."
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "tabs": {
+      "label": "Secciones de ajustes",
+      "profile": "Perfil",
+      "categories": "Categorías",
+      "rules": "Reglas"
+    },
+    "profile": {
+      "account": "Cuenta",
+      "signedInAs": "Sesión iniciada como {email}",
+      "currencies": "Monedas",
+      "baseCurrency": "Moneda base",
+      "baseCurrencyNote": "La moneda en la que se calculan tus totales.",
+      "displayCurrency": "Moneda de visualización",
+      "displayCurrencyNote": "Moneda preferida que se muestra en el panel.",
+      "preferences": "Preferencias",
+      "language": "Idioma",
+      "theme": "Tema",
+      "save": "Guardar",
+      "saved": "Guardado",
+      "error": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "categories": {
+      "intro": "Organiza tus categorías de ingresos y gastos.",
+      "newCategory": "Nueva categoría",
+      "topLevel": "Nivel superior (sin superior)",
+      "editName": "Editar nombre",
+      "renameConvertsNote": "Renombrar una categoría predeterminada hace que deje de usar la traducción integrada.",
+      "fields": {
+        "name": "Nombre",
+        "kind": "Tipo",
+        "parent": "Categoría superior",
+        "icon": "Icono",
+        "color": "Color"
+      },
+      "kinds": {
+        "income": "Ingreso",
+        "expense": "Gasto"
+      },
+      "addSub": "Añadir subcategoría",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar? Las transacciones quedarán sin categoría.",
+      "deleteYes": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "create": "Crear",
+      "error": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "rules": {
+      "intro": "Las reglas categorizan automáticamente al importar. Gana la de mayor prioridad (número más bajo).",
+      "newRule": "Nueva regla",
+      "empty": "Aún no hay reglas.",
+      "editName": "Editar nombre",
+      "renameConvertsNote": "Renombrar una regla predeterminada hace que deje de usar la traducción integrada.",
+      "conditions": "Condiciones",
+      "fields": {
+        "name": "Nombre",
+        "category": "Categoría",
+        "priority": "Prioridad",
+        "description": "Descripción",
+        "amount_cents": "Importe",
+        "account_id": "Cuenta"
+      },
+      "ops": {
+        "contains": "contiene",
+        "equals": "es igual a",
+        "starts_with": "empieza por",
+        "regex": "coincide con regex",
+        "lt": "<",
+        "lte": "≤",
+        "gt": ">",
+        "gte": "≥",
+        "eq": "="
+      },
+      "and": "y",
+      "choose": "Elegir…",
+      "valuePlaceholder": "valor",
+      "absolute": "ignorar signo",
+      "addClause": "Añadir condición",
+      "removeClause": "Quitar condición",
+      "clauseField": "Campo",
+      "clauseOp": "Operador",
+      "clauseValue": "Valor",
+      "priorityNote": "Los números más bajos se aplican primero. Las reglas del usuario (0) ganan a las predeterminadas.",
+      "summary": "→ {target} · prioridad {priority}",
+      "enabled": "Activada",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar esta regla?",
+      "deleteYes": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "create": "Crear",
+      "error": "Algo salió mal. Inténtalo de nuevo.",
+      "preview": {
+        "title": "Probar con tus datos",
+        "loading": "Probando…",
+        "matches": "Coincide con {matched} de {total} transacciones.",
+        "none": "No hay vista previa disponible."
+      }
+    },
+    "danger": {
+      "title": "Zona de peligro",
+      "warning": "Elimina permanentemente tu cuenta y todos tus datos: cuentas, transacciones, categorías, reglas, inversiones e inmuebles. Esta acción no se puede deshacer.",
+      "downloadFirst": "Descarga tus datos primero",
+      "confirmLabel": "Escribe {email} para confirmar",
+      "deleteButton": "Eliminar mi cuenta",
+      "error": "No se pudo eliminar. Inténtalo de nuevo."
+    }
+  },
+  "goodbye": {
+    "title": "Tu cuenta ha sido eliminada",
+    "body": "Todos tus datos se han eliminado permanentemente. Gracias por usar Finova.",
+    "home": "Volver al inicio"
+  },
+  "auth": {
+    "greeting": "¡Hola, {email}!",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "genericError": "Se produjo un error",
+    "fields": {
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "repeatPassword": "Repetir contraseña",
+      "newPassword": "Nueva contraseña"
+    },
+    "login": {
+      "title": "Iniciar sesión",
+      "description": "Introduce tu correo para acceder a tu cuenta",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "submit": "Iniciar sesión",
+      "submitting": "Iniciando sesión…",
+      "noAccount": "¿No tienes cuenta?",
+      "signUpLink": "Registrarse"
+    },
+    "signup": {
+      "title": "Registrarse",
+      "description": "Crea una cuenta nueva",
+      "submit": "Registrarse",
+      "submitting": "Creando la cuenta…",
+      "haveAccount": "¿Ya tienes cuenta?",
+      "loginLink": "Iniciar sesión",
+      "passwordMismatch": "Las contraseñas no coinciden"
+    },
+    "forgot": {
+      "title": "Restablecer tu contraseña",
+      "description": "Escribe tu correo y te enviaremos un enlace para restablecer la contraseña",
+      "submit": "Enviar correo de restablecimiento",
+      "submitting": "Enviando…",
+      "successTitle": "Revisa tu correo",
+      "successDescription": "Instrucciones de restablecimiento enviadas",
+      "successBody": "Si te registraste con tu correo y contraseña, recibirás un correo para restablecerla.",
+      "haveAccount": "¿Ya tienes cuenta?",
+      "loginLink": "Iniciar sesión"
+    },
+    "update": {
+      "title": "Restablecer tu contraseña",
+      "description": "Introduce tu nueva contraseña.",
+      "submit": "Guardar nueva contraseña",
+      "submitting": "Guardando…"
+    },
+    "success": {
+      "title": "¡Gracias por registrarte!",
+      "description": "Revisa tu correo para confirmar",
+      "body": "Te has registrado correctamente. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión."
+    },
+    "error": {
+      "title": "Lo sentimos, algo salió mal.",
+      "withCode": "Código de error: {code}",
+      "generic": "Se produjo un error no especificado."
+    }
+  },
+  "legal": {
+    "footerPrivacy": "Privacidad",
+    "footerTerms": "Términos",
+    "disclaimer": "Finova es una herramienta de finanzas personales y no ofrece asesoramiento financiero, de inversión ni fiscal.",
+    "draftNotice": "Esto es una plantilla, no asesoramiento legal. Sustitúyela por tu política revisada —con los datos reales de tu empresa, jurisdicción y contacto— antes del lanzamiento.",
+    "lastUpdatedLabel": "Última actualización",
+    "privacy": {
+      "title": "Política de privacidad",
+      "intro": "Esta política explica qué datos almacena Finova y el control que tienes sobre ellos.",
+      "dataHeading": "Qué almacenamos",
+      "dataBody": "Los datos financieros que introduces o importas —cuentas, transacciones, categorías, reglas, inversiones e inmuebles— además del correo de tu cuenta y tus preferencias. Los datos se guardan en una base de datos Postgres (Supabase) protegida con seguridad a nivel de fila, de modo que solo tú puedes acceder a tus filas.",
+      "rightsHeading": "Exportación y eliminación",
+      "rightsBody": "Puedes exportar todos tus datos en CSV o JSON en cualquier momento y eliminar permanentemente tu cuenta y todos los datos asociados desde Ajustes. La eliminación es inmediata e irreversible.",
+      "securityHeading": "Seguridad",
+      "securityBody": "El acceso requiere autenticación; las sesiones se basan en cookies. No vendemos tus datos ni nos conectamos a tu banco. Los archivos de extractos que subes se almacenan de forma privada y limitados a tu cuenta.",
+      "contactHeading": "Contacto",
+      "contactBody": "Para consultas de privacidad, escribe a la dirección publicada en este sitio. (Sustituye por tu contacto real antes del lanzamiento.)",
+      "controllerHeading": "Responsable del tratamiento",
+      "controllerBody": "El responsable del tratamiento a efectos de la normativa de protección de datos aplicable es {company}. Los datos de contacto figuran más abajo.",
+      "legalBasisHeading": "Base legal del tratamiento",
+      "legalBasisBody": "Tratamos tus datos de cuenta y financieros para ejecutar el contrato contigo (prestar el servicio contratado) y, cuando proceda, para cumplir obligaciones legales. No tratamos tus datos para ningún fin incompatible con estos.",
+      "subprocessorsHeading": "Subencargados y terceros",
+      "subprocessorsBody": "Usamos Supabase (base de datos, autenticación y almacenamiento de archivos) como principal subencargado de infraestructura. Si usas el módulo opcional de Inversiones, los datos de referencia de tickers/divisas/cripto se obtienen de proveedores de datos de mercado (p. ej. Finnhub, Financial Modeling Prep, CoinGecko, Frankfurter/BCE) usando únicamente el símbolo que añades — no se envía ningún otro dato personal. No vendemos tus datos a nadie ni los compartimos con anunciantes.",
+      "retentionHeading": "Conservación de datos",
+      "retentionBody": "Tus datos se conservan mientras tu cuenta esté activa. Si eliminas tu cuenta (Ajustes → Zona de peligro), todos los datos asociados se borran de forma permanente e inmediata — no hay periodo de gracia ni conservación en copias de seguridad más allá de las copias operativas descritas en nuestra política interna, rotadas en un ciclo de [30 días].",
+      "cookiesHeading": "Cookies y almacenamiento local",
+      "cookiesBody": "Usamos cookies estrictamente necesarias para la autenticación (sesión) y tu preferencia de idioma/tema. No usamos cookies de publicidad ni de seguimiento de terceros.",
+      "childrenHeading": "Privacidad de menores",
+      "childrenBody": "Finova no está dirigida a menores y no está pensada para su uso por personas menores de [16/18 años, según tu jurisdicción].",
+      "transfersHeading": "Transferencias internacionales de datos",
+      "transfersBody": "Tus datos pueden tratarse en una región del centro de datos operado por nuestro proveedor de infraestructura fuera de tu país. Cuando sea necesario, dichas transferencias se apoyan en garantías adecuadas (p. ej. Cláusulas Contractuales Tipo). [Confirma la(s) región(es) concreta(s) y el mecanismo de garantía con el DPA de tu proveedor antes del lanzamiento.]"
+    },
+    "terms": {
+      "title": "Términos del servicio",
+      "intro": "Al usar Finova aceptas estos términos.",
+      "useHeading": "Uso del servicio",
+      "useBody": "Finova se ofrece para ayudarte a controlar y entender tus finanzas personales. Eres responsable de la exactitud de los datos que introduces y de mantener seguras tus credenciales.",
+      "noAdviceHeading": "No es asesoramiento financiero",
+      "noAdviceBody": "Finova no ofrece asesoramiento financiero, de inversión ni fiscal. Las cifras, gráficos e ideas son solo informativos; las decisiones que tomes a partir de ellos son tu responsabilidad.",
+      "liabilityHeading": "Disponibilidad y responsabilidad",
+      "liabilityBody": "El servicio se presta «tal cual», sin garantías. En la medida permitida por la ley, no somos responsables de pérdidas derivadas del uso del servicio ni de inexactitudes en tus datos.",
+      "changesHeading": "Cambios",
+      "changesBody": "Podemos actualizar estos términos; el uso continuado tras una actualización implica la aceptación de los términos revisados.",
+      "eligibilityHeading": "Elegibilidad",
+      "eligibilityBody": "Debes tener al menos [16/18] años y capacidad legal para celebrar un contrato vinculante para usar Finova.",
+      "ipHeading": "Propiedad intelectual",
+      "ipBody": "El software, diseño y marca de Finova son propiedad de {company} y no se te licencian más allá de lo necesario para usar el servicio. Tus propios datos financieros siguen siendo tuyos.",
+      "terminationHeading": "Terminación",
+      "terminationBody": "Puedes dejar de usar el servicio y eliminar tu cuenta en cualquier momento. Podemos suspender o cancelar cuentas que incumplan estos términos o la ley aplicable, notificándolo cuando sea razonablemente posible.",
+      "governingLawHeading": "Ley aplicable",
+      "governingLawBody": "Estos términos se rigen por las leyes de [JURISDICCIÓN], sin tener en cuenta sus normas de conflicto de leyes. [Confirma con un abogado si quieres una cláusula de fuero/arbitraje.]"
+    },
+    "companyPlaceholder": "[RAZÓN SOCIAL], [DIRECCIÓN], [JURISDICCIÓN] — sustituir antes del lanzamiento"
+  },
+  "errorBoundary": {
+    "title": "Algo salió mal",
+    "body": "Se produjo un error inesperado. Ha quedado registrado; inténtalo de nuevo.",
+    "retry": "Reintentar"
   }
 }

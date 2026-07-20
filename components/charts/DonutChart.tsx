@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 
 export interface DonutChartProps {
   className?: string
-  data: { name: string; value: number }[]
+  data: { name: string; value: number; color?: string }[]
 }
 
 export function DonutChart({ data, className }: DonutChartProps) {
@@ -24,7 +24,7 @@ export function DonutChart({ data, className }: DonutChartProps) {
             isAnimationActive={false}
           >
             {data.map((entry, i) => (
-              <Cell key={entry.name} fill={seriesColor(i)} />
+              <Cell key={entry.name} fill={entry.color ?? seriesColor(i)} />
             ))}
           </Pie>
           <Tooltip

@@ -1,7 +1,12 @@
 import 'server-only'
 import { requireUser } from '@/lib/auth/require-user'
 import { transactionFingerprint } from '@/lib/domain/import/fingerprint'
+import type { Rule } from '@/lib/domain/rules/types'
 import { createClient } from '@/lib/supabase/server'
+import {
+  categorizationRuleRowSchema,
+  toDomainRule,
+} from '@/lib/validation/categorization-rule'
 import {
   type ImportTemplateRow,
   importTemplateRowSchema,
@@ -44,6 +49,28 @@ export async function listTemplates(): Promise<ImportTemplateRow[]> {
     throw new Error(error.message)
   }
   return importTemplateRowSchema.array().parse(data)
+}
+
+/**
+ * The caller's enabled categorization rules (P3-03), ordered by precedence:
+ * `priority` ascending, `created_at` ascending on ties — the order
+ * `selectCategory` relies on. RLS-scoped to the owner; rows are parsed at the
+ * boundary and mapped to the domain `Rule`.
+ */
+export async function listEnabledRulesForCategorization(): Promise<Rule[]> {
+  await requireUser()
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('categorization_rules')
+    .select('*')
+    .eq('enabled', true)
+    .order('priority', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+  return categorizationRuleRowSchema.array().parse(data).map(toDomainRule)
 }
 
 /** Add one UTC day to a `YYYY-MM-DD` date, returning `YYYY-MM-DD`. */

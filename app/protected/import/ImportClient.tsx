@@ -11,6 +11,7 @@ import {
   emptyFormState,
   formStateFromMapping,
   type MappingFormState,
+  suggestMapping,
 } from '@/lib/domain/import/mapping-form'
 import type { ParseUploadData } from '@/lib/domain/import/parse-upload'
 import type { AccountRow } from '@/lib/validation/account'
@@ -36,7 +37,7 @@ const KNOWN_PARSE_ERRORS = new Set([
   'tooManyRows',
   'noFile',
   'unsupportedType',
-  'excelNotSupported',
+  'invalidExcel',
   'storageFailed',
 ])
 
@@ -58,7 +59,7 @@ export function ImportClient({ accounts }: { accounts: AccountRow[] }) {
       setForm(
         parseState.template
           ? formStateFromMapping(parseState.template.mapping)
-          : emptyFormState()
+          : suggestMapping(parseState.data.headers)
       )
       setLoaded({
         batchId: parseState.batchId,
@@ -125,7 +126,7 @@ export function ImportClient({ accounts }: { accounts: AccountRow[] }) {
               id="import-file"
               name="file"
               type="file"
-              accept=".csv,.xls,.xlsx"
+              accept=".csv,.xlsx"
               required
               className="text-ink text-sm file:mr-4 file:rounded-full file:border-0 file:bg-brand file:px-4 file:py-2 file:font-medium file:text-white"
             />

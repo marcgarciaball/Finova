@@ -5,6 +5,7 @@ import {
   emptyFormState,
   formStateFromMapping,
   type MappingFormState,
+  suggestMapping,
 } from './mapping-form'
 
 const base = (over: Partial<MappingFormState> = {}): MappingFormState => ({
@@ -114,5 +115,56 @@ describe('formStateFromMapping (round-trips with build)', () => {
 
   it.each(mappings)('build(formStateFromMapping(m)) === m', (m) => {
     expect(buildColumnMapping(formStateFromMapping(m))).toEqual(m)
+  })
+})
+
+describe('suggestMapping', () => {
+  it('maps a simple EN single-amount header set', () => {
+    const s = suggestMapping(['Date', 'Description', 'Amount'])
+    expect(s.dateColumn).toBe('Date')
+    expect(s.descriptionColumn).toBe('Description')
+    expect(s.amountKind).toBe('single')
+    expect(s.singleColumn).toBe('Amount')
+    expect(s.currencyMode).toBe('none')
+  })
+
+  it('maps an ES single-amount statement (ignores Saldo)', () => {
+    const s = suggestMapping(['Fecha', 'Concepto', 'Importe', 'Saldo'])
+    expect(s.dateColumn).toBe('Fecha')
+    expect(s.descriptionColumn).toBe('Concepto')
+    expect(s.amountKind).toBe('single')
+    expect(s.singleColumn).toBe('Importe')
+  })
+
+  it('switches to debit/credit when both columns are present', () => {
+    const s = suggestMapping(['Fecha', 'Concepto', 'Cargo', 'Abono', 'Saldo'])
+    expect(s.amountKind).toBe('debitCredit')
+    expect(s.debitColumn).toBe('Cargo')
+    expect(s.creditColumn).toBe('Abono')
+    expect(s.singleColumn).toBe('')
+  })
+
+  it('prefers "Completed Date" over "Started Date" and maps a currency column', () => {
+    const s = suggestMapping([
+      'Type',
+      'Started Date',
+      'Completed Date',
+      'Description',
+      'Amount',
+      'Currency',
+      'Balance',
+    ])
+    expect(s.dateColumn).toBe('Completed Date')
+    expect(s.amountKind).toBe('single')
+    expect(s.singleColumn).toBe('Amount')
+    expect(s.currencyMode).toBe('column')
+    expect(s.currencyColumn).toBe('Currency')
+  })
+
+  it('leaves unknown headers blank', () => {
+    const s = suggestMapping(['Col1', 'Col2', 'Col3'])
+    expect(s.dateColumn).toBe('')
+    expect(s.descriptionColumn).toBe('')
+    expect(s.singleColumn).toBe('')
   })
 })

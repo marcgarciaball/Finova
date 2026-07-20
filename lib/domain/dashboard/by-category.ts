@@ -1,0 +1,94 @@
+/**
+ * Spending/income-by-category aggregation (P4-02, extended for income).
+ * Pure and deterministic.
+ *
+ * "Spending" is expense — the *negative* sign of `amount_cents` (ADR-007),
+ * reported as a positive magnitude, exactly like the totals module's `expense`.
+ * "Income" is the mirror: positive rows, reported as-is. Each function only
+ * sees its own side (income never appears in spend, expense never appears in
+ * income); transfers never appear in either (a transfer is neither spending
+ * nor income). Breakdowns are kept per currency (the domain never sums across
+ * currencies), and rows with no category aggregate under a `categoryId: null`
+ * bucket so the UI can show "Uncategorized" rather than dropping the amount.
+ *
+ * The core is id-only and i18n-free: `categoryLabel` (P1-05) resolves the
+ * display label at render time.
+ */
+
+export type CategorizedTxn = {
+  /** Signed minor units. */
+  amount_cents: number
+  category_id: string | null
+  currency: string
+  is_transfer: boolean
+}
+
+export interface CategorySpend {
+  categoryId: string | null
+  /** Number of transactions in this category. */
+  count: number
+  /** Fraction of the currency's total (0..1; 0 when total is 0). */
+  share: number
+  /** Positive magnitude, in cents. */
+  total: number
+}
+
+function groupByCategory(
+  txns: CategorizedTxn[],
+  include: (amountCents: number) => boolean
+): Record<string, CategorySpend[]> {
+  const NULL_KEY = ' null'
+  const byCurrency = new Map<
+    string,
+    Map<string, { categoryId: string | null; total: number; count: number }>
+  >()
+
+  for (const txn of txns) {
+    if (txn.is_transfer || !include(txn.amount_cents)) continue
+    let groups = byCurrency.get(txn.currency)
+    if (!groups) {
+      groups = new Map()
+      byCurrency.set(txn.currency, groups)
+    }
+    const key = txn.category_id ?? NULL_KEY
+    const entry = groups.get(key)
+    const magnitude = Math.abs(txn.amount_cents)
+    if (entry) {
+      entry.total += magnitude
+      entry.count += 1
+    } else {
+      groups.set(key, {
+        categoryId: txn.category_id,
+        total: magnitude,
+        count: 1,
+      })
+    }
+  }
+
+  const out: Record<string, CategorySpend[]> = {}
+  for (const [currency, groups] of byCurrency) {
+    const entries = [...groups.values()]
+    const grand = entries.reduce((sum, e) => sum + e.total, 0)
+    out[currency] = entries
+      .map((e) => ({
+        categoryId: e.categoryId,
+        total: e.total,
+        count: e.count,
+        share: grand === 0 ? 0 : e.total / grand,
+      }))
+      .sort((a, b) => b.total - a.total || b.count - a.count)
+  }
+  return out
+}
+
+export function spendingByCategory(
+  txns: CategorizedTxn[]
+): Record<string, CategorySpend[]> {
+  return groupByCategory(txns, (amount) => amount < 0)
+}
+
+export function incomeByCategory(
+  txns: CategorizedTxn[]
+): Record<string, CategorySpend[]> {
+  return groupByCategory(txns, (amount) => amount > 0)
+}

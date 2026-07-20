@@ -5,10 +5,12 @@ import { cn } from '@/lib/utils'
 
 export interface HeroCardProps {
   className?: string
+  currency?: string
   delta?: number
   deltaSuffix?: string
-  format?: (n: number) => string
   label: string
+  locale?: string
+  suffix?: string
   trend?: number[]
   value: number
 }
@@ -16,7 +18,9 @@ export interface HeroCardProps {
 export function HeroCard({
   label,
   value,
-  format,
+  suffix,
+  currency,
+  locale,
   delta,
   deltaSuffix = '',
   trend,
@@ -27,7 +31,7 @@ export function HeroCard({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-900 to-brand-700 p-6 text-white shadow-glass',
+        '@container relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-900 to-brand-700 p-6 text-white shadow-glass',
         className
       )}
     >
@@ -43,7 +47,13 @@ export function HeroCard({
         <span className="font-medium text-sm text-white/70 uppercase tracking-wide">
           {label}
         </span>
-        <Stat value={value} format={format} className="text-white" />
+        <Stat
+          value={value}
+          suffix={suffix}
+          currency={currency}
+          locale={locale}
+          className="text-[clamp(1.5rem,11cqi,2.25rem)] text-white"
+        />
         {delta !== undefined && (
           <span className="inline-flex w-fit items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 font-medium text-sm tabular-nums">
             <Icon className="size-3.5" aria-hidden="true" />

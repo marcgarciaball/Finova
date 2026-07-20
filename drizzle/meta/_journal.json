@@ -50,6 +50,104 @@
       "when": 1782222187966,
       "tag": "0006_yielding_captain_britain",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1782663392555,
+      "tag": "0007_fluffy_quasimodo",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1782672631048,
+      "tag": "0008_nebulous_karma",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1782721000063,
+      "tag": "0009_jittery_agent_brand",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1782997871062,
+      "tag": "0010_add_category_icon_color",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1782997872000,
+      "tag": "0011_expand_default_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1783074960802,
+      "tag": "0012_english_keyword_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1783345410416,
+      "tag": "0013_fat_ken_ellis",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1783432607548,
+      "tag": "0014_chunky_sunset_bain",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1783497106859,
+      "tag": "0015_optimal_landau",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1783514079712,
+      "tag": "0016_eminent_the_leader",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1784121452563,
+      "tag": "0017_motionless_demogoblin",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1784184362162,
+      "tag": "0018_puzzling_adam_destine",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1784204965296,
+      "tag": "0019_elite_jean_grey",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1784554127391,
+      "tag": "0020_loud_scorpion",
+      "breakpoints": true
     }
   ]
 }

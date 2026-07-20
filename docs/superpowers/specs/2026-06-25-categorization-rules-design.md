@@ -1,0 +1,161 @@
+# P3-01 — Categorization rules: schema, RLS & skill
+
+Status: approved (2026-06-25)
+Ticket: P3-01 — Skill `add-categorization-rule` + rules schema + RLS
+Phase: 3 — Categorization & rules
+
+## Goal
+
+Lay the data foundation for the categorization-rules subsystem: a `categorization_rules`
+table (owner-scoped, RLS-enforced), its Zod-validated condition shape, the shared domain
+types, and an `add-categorization-rule` skill documenting the recipe. This ticket ships **no
+matching logic** — that is P3-02 — and **no rule application** — that is P3-03. It exists so
+those tickets build against a stable, tested schema and type contract.
+
+The `lib/domain/import/categorize.ts` seam (built in P2-08) already carries a
+`CategorizationRule` placeholder and invokes `applyImportCategorization(txns, rules)` at commit
+time with an empty rule set. P3-01 replaces that placeholder with the real `Rule` type; the
+function keeps returning `null` for every row (the matching body lands in P3-03), so the commit
+call site stays stable.
+
+## Decisions (locked during brainstorming)
+
+1. **Conditions are modeled as a `jsonb` column validated by Zod** — consistent with the
+   existing `import_templates.mapping` pattern (jsonb whose runtime source of truth is a Zod
+   schema structurally locked to a TypeScript type). Matching happens in the domain layer
+   in-process (P3-03 applies rules during commit), so the conditions never need to be SQL-queryable.
+2. **AND-only clauses, focused operators.** A rule is a non-empty array of clauses; all must
+   match. OR is achieved by authoring two rules. This covers the P3-02 dimensions
+   (merchant/description/amount/account) without nested boolean groups (YAGNI for v1).
+3. **`category_id` is `ON DELETE CASCADE`.** A rule whose target category no longer exists
+   cannot act, so it is removed with the category. This differs deliberately from
+   `transactions.category_id` (SET NULL — a transaction is a record worth preserving
+   uncategorized; a rule is not).
+4. **Domain `Rule`/`Clause` types are defined in P3-01**, not deferred to P3-02, so the
+   validator, the `categorize.ts` seam, and the future matcher share one shape.
+
+## Architecture
+
+### 1. Domain types — `lib/domain/rules/types.ts` (new)
+
+Single source of truth for the rule/clause shape. Pure types, no logic.
+
+```ts
+export type DescriptionOp = 'contains' | 'equals' | 'starts_with' | 'regex'
+export type AmountOp = 'lt' | 'lte' | 'gt' | 'gte' | 'eq'
+
+export type Clause =
+  | { field: 'description'; op: DescriptionOp; value: string }
+  // `absolute: true` compares |amount_cents| (sign-agnostic); default compares the signed value.
+  | { field: 'amount_cents'; op: AmountOp; value: number; absolute?: boolean }
+  | { field: 'account_id'; op: 'eq'; value: string }
+
+/** Non-empty; clauses are AND-combined. */
+export type RuleConditions = Clause[]
+
+/** A categorization rule as the matcher (P3-02) and the import seam (P3-03) consume it. */
+export interface Rule {
+  id: string
+  categoryId: string
+  conditions: RuleConditions
+  /** Lower number = higher priority; created_at breaks ties. Semantic owned by P3-02. */
+  priority: number
+  enabled: boolean
+}
+```
+
+`lib/domain/import/categorize.ts` is updated to import `Rule` and type
+`applyImportCategorization(txns: RawTxn[], rules: Rule[])`. Its body is unchanged — every row
+resolves to `null` until P3-03 implements matching. The `CategorizationRule` placeholder
+interface is deleted.
+
+### 2. Schema — `lib/db/schema/categorization-rules.ts` + migration `drizzle/0007_*.sql`
+
+Table `categorization_rules`:
+
+| Column        | Type                      | Notes |
+|---------------|---------------------------|-------|
+| `id`          | uuid pk, `gen_random_uuid()` | |
+| `user_id`     | uuid not null             | FK `auth.users` ON DELETE CASCADE; owner = `auth.uid()` |
+| `name`        | text not null             | check `char_length(trim(name)) between 1 and 100` |
+| `conditions`  | jsonb not null            | Zod-validated at the app layer; non-empty array of clauses |
+| `category_id` | uuid not null             | FK `categories` **ON DELETE CASCADE** |
+| `priority`    | integer not null default 0 | check `priority >= 0`; lower = higher priority |
+| `enabled`     | boolean not null default true | |
+| `created_at`  | timestamptz not null default now() | |
+| `updated_at`  | timestamptz not null default now() | `categorization_rules_set_updated_at` trigger reusing `set_updated_at()` |
+
+Indexes:
+- `categorization_rules_user_id_idx` on `(user_id)`
+- `categorization_rules_user_enabled_priority_idx` on `(user_id, enabled, priority)` — the
+  ordered fetch P3-03 uses to pull a user's active rules in precedence order.
+
+RLS: four owner-scoped default-deny policies mirroring `categories` exactly
+(`*_select_own` / `*_insert_own` / `*_update_own` / `*_delete_own`, each on `authenticatedRole`,
+`using`/`withCheck` = `(select auth.uid()) = user_id`).
+
+Migration `0007` is generated by drizzle-kit, then hand-extended with the `set_updated_at`
+trigger (the established pattern — drizzle-kit doesn't emit triggers). No data backfill.
+
+### 3. Validation — `lib/validation/categorization-rule.ts`
+
+The runtime source of truth for the `conditions` jsonb, structurally locked to the `Clause`
+union via a discriminated `z.union`:
+
+- `descriptionClauseSchema` — `op` enum, `value` non-empty string. For `op: 'regex'`, `value`
+  is length-capped at 200 chars (a cheap ReDoS mitigation; full safe-execution is a P3-02
+  matcher concern — matching runs in-process over the user's *own* rules and *own* data, so the
+  blast radius of a pathological pattern is self-limited).
+- `amountClauseSchema` — `op` enum, `value` integer, optional `absolute` boolean.
+- `accountClauseSchema` — `op: 'eq'`, `value` uuid.
+- `conditionsSchema = z.array(clauseSchema).min(1)`.
+- `createCategorizationRuleSchema` — `name`, `conditions`, `categoryId` (uuid), optional
+  `priority` (int ≥ 0, default 0), optional `enabled` (default true).
+- `updateCategorizationRuleSchema` — partial, requires `id`.
+- `categorizationRuleRowSchema` — the persisted row shape (for reading jsonb back safely).
+
+A type-level assertion ties `z.infer<typeof conditionsSchema>` to `RuleConditions` so the
+schema and the domain type cannot drift.
+
+### 4. Skill — `docs/skills/add-categorization-rule.md`
+
+Mirrors `add-import-adapter.md` in structure. Documents:
+- The clause vocabulary and AND-only semantics; how to express common rules
+  (merchant contains, expense over a threshold, scoped to an account).
+- The priority / first-match-wins model (lower number wins; ties by `created_at`).
+- Authoring conditions against `conditionsSchema` as the source of truth.
+- TDD recipe for a matcher fixture (forward-references the P3-02 matcher), and the RLS
+  expectation (owner-scoped, default-deny).
+- Pointer for P3-04 default-rule authoring.
+
+### 5. Tests
+
+- `lib/validation/categorization-rule.test.ts` — clause discrimination, non-empty conditions,
+  regex length cap, amount `absolute` flag, uuid validation, defaults for `priority`/`enabled`.
+- `tests/rls/categorization-rules.rls.test.ts` — owner isolation (A can't read/write B's rules),
+  default-deny, per the established pattern. Skipped unless `TEST_DATABASE_URL` is set.
+
+## Data flow (for context — implemented in later tickets)
+
+```
+import commit (P2-08 seam)
+  → applyImportCategorization(rawTxns, rules)    // P3-01 types; P3-03 fills the body
+      → for each txn: first enabled rule (priority asc, created_at asc)
+        whose AND-clauses all match → rule.categoryId, else null   // matcher = P3-02
+```
+
+P3-01 ships only the left edge: the `rules` data, its types, and validation. The arrows are
+documented so P3-02/P3-03 have an unambiguous contract.
+
+## Out of scope
+
+- Matching engine (`matchRule` / clause evaluation) — **P3-02**.
+- Apply-on-import + apply-on-demand wiring — **P3-03**.
+- Default seeded rules — **P3-04**.
+- CRUD Server Actions + UI — **P3-02 follow-up / P5-01 Settings**.
+- OR / nested boolean groups — explicitly deferred (author multiple rules instead).
+
+## Verification
+
+`npm run typecheck`, `npm run lint`, `npm test` green. `npm run db:migrate` to apply `0007`,
+then the RLS suite against a disposable DB (`TEST_DATABASE_URL=… npm test -- rls`).

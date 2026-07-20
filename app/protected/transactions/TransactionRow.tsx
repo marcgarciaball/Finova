@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState, useTransition } from 'react'
 import { Badge } from '@/components/ui/Badge'
@@ -11,7 +12,11 @@ import { transactionType } from '@/lib/domain/transactions/filters'
 import type { AccountRow } from '@/lib/validation/account'
 import type { CategoryRow } from '@/lib/validation/category'
 import type { TransactionRow as Transaction } from '@/lib/validation/transaction'
-import { deleteTransaction, recategorizeTransaction } from './actions'
+import {
+  deleteTransaction,
+  duplicateTransaction,
+  recategorizeTransaction,
+} from './actions'
 import { TransactionForm } from './TransactionForm'
 
 const SELECT_CLASS =
@@ -33,6 +38,7 @@ export function TransactionRow({
   const t = useTranslations('transactions')
   const tCat = useTranslations('categories.defaults')
   const locale = useLocale()
+  const router = useRouter()
   const [editing, setEditing] = useState(false)
   const [pending, startTransition] = useTransition()
 
@@ -130,6 +136,26 @@ export function TransactionRow({
             ))}
           </select>
 
+          {/* Turn a categorized row into a rule (P3-05): deep-link the rules
+              editor prefilled from this row's description + category. */}
+          {transaction.category_id ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={pending}
+              onClick={() =>
+                router.push(
+                  `/protected/settings/rules?description=${encodeURIComponent(
+                    transaction.description
+                  )}&categoryId=${transaction.category_id}`
+                )
+              }
+            >
+              {t('makeRule')}
+            </Button>
+          ) : null}
+
           <Button
             type="button"
             variant="ghost"
@@ -139,6 +165,23 @@ export function TransactionRow({
           >
             {t('edit')}
           </Button>
+          {/* Duplicate (roadmap 1.2) — same purchase again, dated today. Not
+              offered on transfer legs (a copy would be an unpaired transfer). */}
+          {type !== 'transfer' ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={pending}
+              onClick={() =>
+                startTransition(() => {
+                  void duplicateTransaction(transaction.id)
+                })
+              }
+            >
+              {t('duplicate')}
+            </Button>
+          ) : null}
           <Button
             type="button"
             variant="destructive"

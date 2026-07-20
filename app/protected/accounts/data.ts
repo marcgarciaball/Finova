@@ -23,6 +23,37 @@ export async function listAccounts(): Promise<AccountRow[]> {
   return accountRowSchema.array().parse(data)
 }
 
+/** Minimal transaction rows for computing live account balances. */
+export interface AccountBalanceTxn {
+  account_id: string
+  amount_cents: number
+  currency: string
+}
+
+/**
+ * Every transaction (minimal projection) for the current user, so the accounts
+ * page can show each account's **live** balance (opening + signed sum) via the
+ * P4-01 `accountBalances` core — not just the static opening balance. RLS-scoped.
+ */
+export async function listTxnsForAccountBalances(): Promise<
+  AccountBalanceTxn[]
+> {
+  await requireUser()
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('account_id, amount_cents, currency')
+
+  if (error) {
+    throw new Error(error.message)
+  }
+  return (data ?? []).map((r) => ({
+    account_id: String(r.account_id),
+    amount_cents: Number(r.amount_cents),
+    currency: String(r.currency),
+  }))
+}
+
 /** The current user's reporting currency, used to default the account form. */
 export async function getBaseCurrency(): Promise<string> {
   await requireUser()

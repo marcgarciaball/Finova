@@ -46,9 +46,16 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${interTight.variable} ${jetbrains.variable} font-sans antialiased`}
       >
-        <Suspense>
-          <IntlProviders>{children}</IntlProviders>
-        </Suspense>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Suspense>
+            <IntlProviders>{children}</IntlProviders>
+          </Suspense>
+        </ThemeProvider>
       </body>
     </html>
   )
@@ -65,14 +72,7 @@ async function IntlProviders({ children }: { children: React.ReactNode }) {
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        {children}
-      </ThemeProvider>
+      {children}
     </NextIntlClientProvider>
   )
 }

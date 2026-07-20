@@ -5,6 +5,7 @@ import {
   parseFilters,
   type RawParams,
 } from '@/lib/domain/transactions/filters'
+import { parsePage, totalPages } from '@/lib/domain/transactions/pagination'
 import { CreateTransactionPanel } from './CreateTransactionPanel'
 import {
   getBaseCurrency,
@@ -13,7 +14,9 @@ import {
   listTransactions,
   listTransactionsForTotals,
 } from './data'
+import { RecategorizeButton } from './RecategorizeButton'
 import { TransactionFilters } from './TransactionFilters'
+import { TransactionPagination } from './TransactionPagination'
 import { TransactionsSummary } from './TransactionsSummary'
 import { TransactionList } from './transaction-list'
 
@@ -24,11 +27,13 @@ export default async function TransactionsPage({
 }) {
   await requireUser()
   const t = await getTranslations('transactions')
-  const filters = parseFilters(await searchParams)
+  const raw = await searchParams
+  const filters = parseFilters(raw)
+  const page = parsePage(raw.page)
 
-  const [transactions, totalsRows, accounts, categories, baseCurrency] =
+  const [txnPage, totalsRows, accounts, categories, baseCurrency] =
     await Promise.all([
-      listTransactions(filters),
+      listTransactions(filters, page),
       listTransactionsForTotals(filters),
       listAccountsForPicker(),
       listCategoriesForPicker(),
@@ -36,11 +41,13 @@ export default async function TransactionsPage({
     ])
 
   const todayIso = new Date().toISOString().slice(0, 10)
+  const pageCount = totalPages(txnPage.total)
 
   return (
     <div className="flex w-full flex-1 flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-bold text-2xl">{t('title')}</h1>
+        <RecategorizeButton />
       </div>
       <CreateTransactionPanel
         accounts={accounts}
@@ -51,12 +58,17 @@ export default async function TransactionsPage({
       <TransactionFilters accounts={accounts} categories={categories} />
       <TransactionsSummary transactions={totalsRows} />
       <TransactionList
-        transactions={transactions}
+        transactions={txnPage.rows}
         accounts={accounts}
         categories={categories}
         baseCurrency={baseCurrency}
         todayIso={todayIso}
         filtered={hasActiveFilters(filters)}
+      />
+      <TransactionPagination
+        page={page}
+        totalPages={pageCount}
+        filters={filters}
       />
     </div>
   )

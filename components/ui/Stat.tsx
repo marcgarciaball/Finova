@@ -4,7 +4,13 @@ import { cn } from '@/lib/utils'
 
 export interface StatProps {
   className?: string
-  format?: (n: number) => string
+  currency?: string
+  /** Renders `emptyDisplay` instead of the animated value (e.g. "no data yet"). */
+  empty?: boolean
+  emptyDisplay?: string
+  locale?: string
+  /** Appended to the plain-number format, e.g. "%" or "pp". Ignored when `currency` is set. */
+  suffix?: string
   value: number
 }
 
@@ -17,9 +23,23 @@ function prefersReducedMotion() {
 
 export function Stat({
   value,
-  format = (n) => n.toLocaleString(),
+  currency,
+  locale,
+  suffix = '',
+  empty,
+  emptyDisplay = '—',
   className,
 }: StatProps) {
+  const fmt =
+    currency && locale
+      ? (n: number) =>
+          new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(n / 100)
+      : (n: number) => `${n.toLocaleString()}${suffix}`
   const [display, setDisplay] = React.useState(value)
 
   React.useEffect(() => {
@@ -45,11 +65,11 @@ export function Stat({
   return (
     <span
       className={cn(
-        'font-bold font-display text-4xl text-ink tabular-nums tracking-tight',
+        'whitespace-nowrap font-bold font-display text-4xl text-ink tabular-nums tracking-tight',
         className
       )}
     >
-      {format(display)}
+      {empty ? emptyDisplay : fmt(display)}
     </span>
   )
 }

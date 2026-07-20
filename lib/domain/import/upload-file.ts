@@ -20,6 +20,7 @@ interface ExtensionSpec {
 
 const BY_EXTENSION: Record<string, ExtensionSpec> = {
   '.csv': { kind: 'csv', contentType: 'text/csv' },
+  // Legacy binary .xls (BIFF/OLE2) is parsed by SheetJS; modern .xlsx by ExcelJS.
   '.xls': { kind: 'excel', contentType: 'application/vnd.ms-excel' },
   '.xlsx': {
     kind: 'excel',

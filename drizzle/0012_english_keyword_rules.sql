@@ -1,0 +1,202 @@
+-- ---------------------------------------------------------------------------
+-- Hand-written: add generic ENGLISH keyword rules (salary, supermarket,
+-- grocery, coffee, restaurant, gym, electricity) so English-language
+-- statements categorize like Spanish ones do — the previous set only had
+-- Spanish generics (salario, supermercado, restaurante…) plus brand names.
+-- `seed_default_rules()` is CREATE OR REPLACE'd with the fuller list (mirrors
+-- lib/domain/rules/defaults.ts — keep the two in sync), and, unlike 0011,
+-- this migration BACKFILLS every existing user by re-running the seed:
+-- ON CONFLICT (user_id, name_key) DO NOTHING keeps rows the user already has
+-- (including edited ones). Known tradeoff: a default rule the user explicitly
+-- deleted is re-created, since a deleted row is indistinguishable from a
+-- never-seeded one.
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.seed_default_rules(p_user_id uuid)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  INSERT INTO public.categorization_rules
+    (user_id, name, name_key, conditions, category_id, priority, is_default)
+  SELECT
+    p_user_id,
+    v.name,
+    v.name_key,
+    jsonb_build_array(
+      jsonb_build_object('field', 'description', 'op', 'contains', 'value', v.token)
+    ),
+    c.id,
+    v.priority,
+    true
+  FROM (VALUES
+    ('mercadona', 'Mercadona', 'groceries', 'mercadona', 100),
+    ('carrefour', 'Carrefour', 'groceries', 'carrefour', 101),
+    ('lidl', 'Lidl', 'groceries', 'lidl', 102),
+    ('dia', 'Dia', 'groceries', 'supermercado dia', 103),
+    ('aldi', 'Aldi', 'groceries', 'aldi', 104),
+    ('consum', 'Consum', 'groceries', 'consum', 105),
+    ('eroski', 'Eroski', 'groceries', 'eroski', 106),
+    ('glovo', 'Glovo', 'restaurants', 'glovo', 110),
+    ('uber_eats', 'Uber Eats', 'restaurants', 'uber eats', 111),
+    ('just_eat', 'Just Eat', 'restaurants', 'just eat', 112),
+    ('deliveroo', 'Deliveroo', 'restaurants', 'deliveroo', 113),
+    ('mcdonalds', 'McDonald''s', 'restaurants', 'mcdonald', 114),
+    ('starbucks', 'Starbucks', 'restaurants', 'starbucks', 115),
+    ('telepizza', 'Telepizza', 'restaurants', 'telepizza', 116),
+    ('uber', 'Uber', 'transport', 'uber', 120),
+    ('cabify', 'Cabify', 'transport', 'cabify', 121),
+    ('renfe', 'Renfe', 'transport', 'renfe', 122),
+    ('repsol', 'Repsol', 'transport', 'repsol', 123),
+    ('cepsa', 'Cepsa', 'transport', 'cepsa', 124),
+    ('endesa', 'Endesa', 'utilities', 'endesa', 130),
+    ('iberdrola', 'Iberdrola', 'utilities', 'iberdrola', 131),
+    ('naturgy', 'Naturgy', 'utilities', 'naturgy', 132),
+    ('movistar', 'Movistar', 'utilities', 'movistar', 133),
+    ('vodafone', 'Vodafone', 'utilities', 'vodafone', 134),
+    ('orange', 'Orange', 'utilities', 'orange', 135),
+    ('nomina', 'Payroll (Nómina)', 'salary', 'nomina', 140),
+    ('payroll', 'Payroll', 'salary', 'payroll', 141),
+    ('alcampo', 'Alcampo', 'groceries', 'alcampo', 150),
+    ('hipercor', 'Hipercor', 'groceries', 'hipercor', 151),
+    ('condis', 'Condis', 'groceries', 'condis', 152),
+    ('bonpreu', 'Bonpreu', 'groceries', 'bonpreu', 153),
+    ('walmart', 'Walmart', 'groceries', 'walmart', 154),
+    ('tesco', 'Tesco', 'groceries', 'tesco', 155),
+    ('supermercado', 'Supermarket', 'groceries', 'supermercado', 156),
+    ('fruteria', 'Greengrocer', 'groceries', 'fruteria', 157),
+    ('panaderia', 'Bakery', 'groceries', 'panaderia', 158),
+    ('burger_king', 'Burger King', 'restaurants', 'burger king', 160),
+    ('kfc', 'KFC', 'restaurants', 'kfc', 161),
+    ('dominos', 'Domino''s', 'restaurants', 'domino', 162),
+    ('pizza_hut', 'Pizza Hut', 'restaurants', 'pizza hut', 163),
+    ('taco_bell', 'Taco Bell', 'restaurants', 'taco bell', 164),
+    ('doordash', 'DoorDash', 'restaurants', 'doordash', 165),
+    ('costa_coffee', 'Costa Coffee', 'restaurants', 'costa coffee', 166),
+    ('dunkin', 'Dunkin', 'restaurants', 'dunkin', 167),
+    ('restaurante', 'Restaurant', 'restaurants', 'restaurante', 168),
+    ('cafeteria', 'Café', 'restaurants', 'cafeteria', 169),
+    ('pizzeria', 'Pizzeria', 'restaurants', 'pizzeria', 170),
+    ('sushi', 'Sushi', 'restaurants', 'sushi', 171),
+    ('hamburgueseria', 'Burger joint', 'restaurants', 'hamburgueseria', 172),
+    ('cerveceria', 'Beer hall', 'restaurants', 'cerveceria', 173),
+    ('shell', 'Shell', 'transport', 'shell', 180),
+    ('galp', 'Galp', 'transport', 'galp', 181),
+    ('gasolinera', 'Gas station', 'transport', 'gasolinera', 182),
+    ('parking', 'Parking', 'transport', 'parking', 183),
+    ('aparcamiento', 'Car park', 'transport', 'aparcamiento', 184),
+    ('peaje', 'Toll (peaje)', 'transport', 'peaje', 185),
+    ('metro', 'Metro', 'transport', 'metro ', 186),
+    ('autobus', 'Bus', 'transport', 'autobus', 187),
+    ('cercanias', 'Cercanías', 'transport', 'cercanias', 188),
+    ('bicing', 'Bicing', 'transport', 'bicing', 189),
+    ('taxi', 'Taxi', 'transport', 'taxi', 190),
+    ('freenow', 'Free Now', 'transport', 'freenow', 191),
+    ('blablacar', 'BlaBlaCar', 'transport', 'blablacar', 192),
+    ('holaluz', 'Holaluz', 'utilities', 'holaluz', 200),
+    ('jazztel', 'Jazztel', 'utilities', 'jazztel', 201),
+    ('masmovil', 'MásMóvil', 'utilities', 'masmovil', 202),
+    ('yoigo', 'Yoigo', 'utilities', 'yoigo', 203),
+    ('digi', 'Digi', 'utilities', 'digi', 204),
+    ('electricidad', 'Electricity', 'utilities', 'electricidad', 205),
+    ('internet', 'Internet', 'utilities', 'internet', 206),
+    ('telefonia', 'Telecom', 'utilities', 'telefonia', 207),
+    ('canal_de_isabel', 'Canal de Isabel II', 'utilities', 'canal de isabel', 208),
+    ('farmacia', 'Pharmacy', 'health', 'farmacia', 220),
+    ('pharmacy', 'Pharmacy', 'health', 'pharmacy', 221),
+    ('sanitas', 'Sanitas', 'health', 'sanitas', 222),
+    ('adeslas', 'Adeslas', 'health', 'adeslas', 223),
+    ('asisa', 'Asisa', 'health', 'asisa', 224),
+    ('dkv', 'DKV', 'health', 'dkv', 225),
+    ('gimnasio', 'Gym', 'health', 'gimnasio', 226),
+    ('fisioterapia', 'Physiotherapy', 'health', 'fisioterapia', 227),
+    ('dentista', 'Dentist', 'health', 'dentista', 228),
+    ('clinica', 'Clinic', 'health', 'clinica', 229),
+    ('hospital', 'Hospital', 'health', 'hospital', 230),
+    ('zara', 'Zara', 'shopping', 'zara', 240),
+    ('hym', 'H&M', 'shopping', 'h&m', 241),
+    ('primark', 'Primark', 'shopping', 'primark', 242),
+    ('zalando', 'Zalando', 'shopping', 'zalando', 243),
+    ('ikea', 'IKEA', 'shopping', 'ikea', 244),
+    ('leroy_merlin', 'Leroy Merlin', 'shopping', 'leroy merlin', 245),
+    ('mediamarkt', 'MediaMarkt', 'shopping', 'mediamarkt', 246),
+    ('fnac', 'Fnac', 'shopping', 'fnac', 247),
+    ('amazon', 'Amazon', 'shopping', 'amazon', 248),
+    ('el_corte_ingles', 'El Corte Inglés', 'shopping', 'el corte ingles', 249),
+    ('aliexpress', 'AliExpress', 'shopping', 'aliexpress', 250),
+    ('decathlon', 'Decathlon', 'shopping', 'decathlon', 251),
+    ('netflix', 'Netflix', 'entertainment', 'netflix', 260),
+    ('spotify', 'Spotify', 'entertainment', 'spotify', 261),
+    ('hbo_max', 'HBO Max', 'entertainment', 'hbo max', 262),
+    ('disney_plus', 'Disney+', 'entertainment', 'disney+', 263),
+    ('dazn', 'DAZN', 'entertainment', 'dazn', 264),
+    ('playstation', 'PlayStation', 'entertainment', 'playstation', 265),
+    ('xbox', 'Xbox', 'entertainment', 'xbox', 266),
+    ('nintendo', 'Nintendo', 'entertainment', 'nintendo', 267),
+    ('cine', 'Cinema', 'entertainment', 'cine ', 268),
+    ('teatro', 'Theatre', 'entertainment', 'teatro', 269),
+    ('ticketmaster', 'Ticketmaster', 'entertainment', 'ticketmaster', 270),
+    ('filmin', 'Filmin', 'entertainment', 'filmin', 271),
+    ('udemy', 'Udemy', 'education', 'udemy', 280),
+    ('coursera', 'Coursera', 'education', 'coursera', 281),
+    ('duolingo', 'Duolingo', 'education', 'duolingo', 282),
+    ('universidad', 'University', 'education', 'universidad', 283),
+    ('matricula', 'Tuition (matrícula)', 'education', 'matricula', 284),
+    ('masterclass', 'MasterClass', 'education', 'masterclass', 285),
+    ('iberia', 'Iberia', 'travel', 'iberia', 290),
+    ('ryanair', 'Ryanair', 'travel', 'ryanair', 291),
+    ('vueling', 'Vueling', 'travel', 'vueling', 292),
+    ('easyjet', 'EasyJet', 'travel', 'easyjet', 293),
+    ('booking_com', 'Booking.com', 'travel', 'booking.com', 294),
+    ('airbnb', 'Airbnb', 'travel', 'airbnb', 295),
+    ('hostelworld', 'Hostelworld', 'travel', 'hostelworld', 296),
+    ('expedia', 'Expedia', 'travel', 'expedia', 297),
+    ('hertz', 'Hertz', 'travel', 'hertz', 298),
+    ('avis', 'Avis', 'travel', 'avis ', 299),
+    ('europcar', 'Europcar', 'travel', 'europcar', 300),
+    ('sixt', 'Sixt', 'travel', 'sixt', 301),
+    ('aeropuerto', 'Airport', 'travel', 'aeropuerto', 302),
+    ('hotel', 'Hotel', 'travel', 'hotel ', 303),
+    ('mapfre', 'Mapfre', 'other_expense', 'mapfre', 310),
+    ('axa', 'AXA', 'other_expense', 'axa', 311),
+    ('linea_directa', 'Línea Directa', 'other_expense', 'linea directa', 312),
+    ('mutua_madrilena', 'Mutua Madrileña', 'other_expense', 'mutua madrilena', 313),
+    ('zurich_seguros', 'Zurich Seguros', 'other_expense', 'zurich seguros', 314),
+    ('seguro_coche', 'Car insurance', 'other_expense', 'seguro coche', 315),
+    ('seguro_hogar', 'Home insurance', 'other_expense', 'seguro hogar', 316),
+    ('sueldo', 'Salary (sueldo)', 'salary', 'sueldo', 320),
+    ('salario', 'Salary', 'salary', 'salario', 321),
+    ('paycheck', 'Paycheck', 'salary', 'paycheck', 322),
+    ('regalo', 'Gift (regalo)', 'gifts', 'regalo', 330),
+    ('herencia', 'Inheritance', 'gifts', 'herencia', 331),
+    ('donacion', 'Donation', 'gifts', 'donacion', 332),
+    ('factura_emitida', 'Invoice issued', 'other_income', 'factura emitida', 340),
+    ('freelance', 'Freelance', 'other_income', 'freelance', 341),
+    ('dividendo', 'Dividend', 'other_income', 'dividendo', 342),
+    ('dividend', 'Dividend', 'other_income', 'dividend', 343),
+    ('devolucion', 'Refund (devolución)', 'other_income', 'devolucion', 344),
+    ('reembolso', 'Reimbursement', 'other_income', 'reembolso', 345),
+    ('cashback', 'Cashback', 'other_income', 'cashback', 346),
+    ('bizum_recibido', 'Bizum received', 'other_income', 'bizum recibido', 347),
+    ('subsidio', 'Subsidy', 'other_income', 'subsidio', 348),
+    ('salary', 'Salary (salary)', 'salary', 'salary', 350),
+    ('supermarket', 'Supermarket (EN)', 'groceries', 'supermarket', 351),
+    ('grocery', 'Grocery', 'groceries', 'grocery', 352),
+    ('coffee', 'Coffee shop', 'restaurants', 'coffee', 353),
+    ('restaurant', 'Restaurant (EN)', 'restaurants', 'restaurant', 354),
+    ('gym', 'Gym (EN)', 'health', 'gym', 355),
+    ('electricity', 'Electricity (EN)', 'utilities', 'electricity', 356)
+  ) AS v(name_key, name, category_key, token, priority)
+  JOIN public.categories c
+    ON c.user_id = p_user_id AND c.name_key = v.category_key
+  ON CONFLICT (user_id, name_key) WHERE name_key IS NOT NULL DO NOTHING;
+END;
+$$;
+
+-- Backfill: re-seed every user that already has categories. Idempotent —
+-- the seed's ON CONFLICT (user_id, name_key) DO NOTHING skips rules that
+-- already exist, so only the missing ones (the 0011 expansion for pre-0011
+-- signups, plus the new English keywords for everyone) are inserted.
+SELECT public.seed_default_rules(u.user_id)
+FROM (SELECT DISTINCT user_id FROM public.categories) AS u;

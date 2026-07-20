@@ -42,6 +42,12 @@ export const categories = pgTable(
     nameKey: text('name_key'),
     kind: text('kind').notNull(),
     isDefault: boolean('is_default').notNull().default(false),
+    // Lucide icon name (e.g. 'Home') + a `--cat-*` CSS-var reference. Both
+    // null for custom categories until a picker exists; defaults are seeded
+    // with these set — see `lib/domain/categories/icons.ts`.
+    iconName: text('icon_name'),
+    color: text('color'),
+    importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -50,6 +56,9 @@ export const categories = pgTable(
       .defaultNow(),
   },
   (table) => [
+    uniqueIndex('categories_user_fingerprint_unique')
+      .on(table.userId, table.importFingerprint)
+      .where(sql`${table.importFingerprint} is not null`),
     check(
       'categories_name_check',
       sql`char_length(trim(${table.name})) between 1 and 100`
