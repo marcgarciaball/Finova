@@ -148,6 +148,13 @@
       "when": 1784554127391,
       "tag": "0020_loud_scorpion",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1784725373161,
+      "tag": "0021_solid_exodus",
+      "breakpoints": true
     }
   ]
 }
