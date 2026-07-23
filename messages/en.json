@@ -742,10 +742,8 @@
         "year": "/ year"
       },
       "nav": {
-        "prevMonth": "Previous month",
-        "nextMonth": "Next month",
-        "prevYear": "Previous year",
-        "nextYear": "Next year"
+        "selectMonth": "Month",
+        "selectYear": "Year"
       },
       "empty": "No income recorded yet.",
       "basedOn": "Based on your income in {month}. Per day divides it by the days in the month.",

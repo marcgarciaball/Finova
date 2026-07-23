@@ -365,8 +365,6 @@ export default async function DashboardPage({
     earningsEarliestPeriod,
     earningsCurrentPeriod
   )
-  const earningsCanGoPrev = earningsPeriod > earningsEarliestPeriod
-  const earningsCanGoNext = earningsPeriod < earningsCurrentPeriod
   const earningsIsPartialYear =
     earningsView === 'year' && earningsPeriod === earningsCurrentPeriod
 
@@ -612,8 +610,8 @@ export default async function DashboardPage({
           rows={earningsRows}
           view={earningsView}
           period={earningsPeriod}
-          canGoPrev={earningsCanGoPrev}
-          canGoNext={earningsCanGoNext}
+          earliestPeriod={earningsEarliestPeriod}
+          latestPeriod={earningsCurrentPeriod}
           isPartialYear={earningsIsPartialYear}
           currency={currency}
         />
