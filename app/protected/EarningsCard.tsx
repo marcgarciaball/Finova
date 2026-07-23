@@ -118,36 +118,36 @@ export function EarningsCard({
         <h3 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
           {t('title')}
         </h3>
-        <div className="flex items-center gap-1">
-          <Button
-            aria-label={
-              view === 'month' ? t('nav.prevMonth') : t('nav.prevYear')
-            }
-            variant="ghost"
-            size="icon"
-            disabled={!canGoPrev}
-            onClick={() => shift(-1)}
-          >
-            <ChevronLeft />
-          </Button>
-          <SegmentedControl
-            aria-label={t('title')}
-            value={unit}
-            onValueChange={onUnitChange}
-            options={UNITS.map((u) => ({ label: t(`units.${u}`), value: u }))}
-          />
-          <Button
-            aria-label={
-              view === 'month' ? t('nav.nextMonth') : t('nav.nextYear')
-            }
-            variant="ghost"
-            size="icon"
-            disabled={!canGoNext}
-            onClick={() => shift(1)}
-          >
-            <ChevronRight />
-          </Button>
-        </div>
+        <SegmentedControl
+          aria-label={t('title')}
+          value={unit}
+          onValueChange={onUnitChange}
+          options={UNITS.map((u) => ({ label: t(`units.${u}`), value: u }))}
+        />
+      </div>
+
+      <div className="flex items-center justify-center gap-3">
+        <Button
+          aria-label={view === 'month' ? t('nav.prevMonth') : t('nav.prevYear')}
+          variant="ghost"
+          size="icon"
+          disabled={!canGoPrev}
+          onClick={() => shift(-1)}
+        >
+          <ChevronLeft />
+        </Button>
+        <span className="min-w-32 text-center font-semibold text-ink text-sm capitalize">
+          {periodLabel}
+        </span>
+        <Button
+          aria-label={view === 'month' ? t('nav.nextMonth') : t('nav.nextYear')}
+          variant="ghost"
+          size="icon"
+          disabled={!canGoNext}
+          onClick={() => shift(1)}
+        >
+          <ChevronRight />
+        </Button>
       </div>
 
       <div className="flex items-baseline gap-2">
