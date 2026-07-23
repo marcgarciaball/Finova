@@ -112,6 +112,7 @@
       "error": "Couldn't categorize. Please try again."
     },
     "selection": {
+      "enable": "Select transactions",
       "selectPage": "Select all on this page",
       "selectRow": "Select transaction",
       "count": "{count} selected",
@@ -161,10 +162,7 @@
     },
     "makeRule": "Make a rule",
     "pagination": {
-      "label": "Pagination",
-      "previous": "Previous",
-      "next": "Next",
-      "pageOf": "Page {page} of {total}"
+      "loadMore": "Load more"
     },
     "duplicate": "Duplicate",
     "transfer": {
@@ -174,6 +172,12 @@
       "submit": "Transfer",
       "sameAccount": "Source and destination must be different accounts.",
       "defaultDescription": "Transfer"
+    },
+    "sort": {
+      "label": "Sort by",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount"
     }
   },
   "import": {
@@ -427,10 +431,15 @@
       "entertainment": "Entertainment",
       "education": "Education",
       "travel": "Travel",
+      "bizum_expense": "Bizum sent",
+      "transactions_expense": "Transactions",
+      "card_transaction": "Card transaction",
       "other_expense": "Other",
       "salary": "Salary",
       "gifts": "Gifts",
-      "other_income": "Other income"
+      "other_income": "Other income",
+      "bizum_income": "Bizum received",
+      "transactions_income": "Transactions"
     }
   },
   "rules": {
@@ -590,7 +599,20 @@
       "coffee": "Coffee shop",
       "restaurant": "Restaurant (EN)",
       "gym": "Gym (EN)",
-      "electricity": "Electricity (EN)"
+      "electricity": "Electricity (EN)",
+      "plenergy": "Plenergy",
+      "cortefiel": "Cortefiel",
+      "paypal": "PayPal",
+      "irpf": "Income tax (IRPF)",
+      "itv": "Vehicle inspection (ITV)",
+      "impuestos": "Taxes (impuestos)",
+      "abono_bizum": "Bizum received",
+      "pago_bizum": "Bizum sent",
+      "transferencia_a": "Transfer sent",
+      "abono_transferencia": "Transfer received",
+      "adeudo_recibo": "Direct debit (adeudo recibo)",
+      "bar": "Bar",
+      "card_transaction_fallback": "Card transaction"
     }
   },
   "dashboard": {
@@ -638,7 +660,8 @@
     "wealthAllocation": {
       "title": "Where is my money?",
       "cash": "Cash",
-      "realEstate": "Real estate"
+      "realEstate": "Real estate",
+      "manualAssets": "Manual assets"
     },
     "donutEmpty": {
       "title": "Nothing categorized yet",
@@ -674,6 +697,8 @@
       "byAccount": "Spending across accounts",
       "incomeSources": "Where your income comes from",
       "dividends": "Dividends",
+      "rent": "Rent",
+      "manualAssetsIncome": "Bonds & other assets",
       "empty": "No spending in this period."
     },
     "granularity": {
@@ -1130,6 +1155,104 @@
       "endBeforeStart": "End date is before the start",
       "invalid": "Invalid value",
       "unexpected": "Something went wrong. Try again."
+    },
+    "sort": {
+      "label": "Sort by",
+      "name": "Name"
+    }
+  },
+  "manualAssets": {
+    "nav": "Manual Assets",
+    "title": "Manual Assets",
+    "subtitle": "Bonds, private equity, P2P loans, collectibles — anything with no market feed.",
+    "addTitle": "Add asset",
+    "empty": {
+      "title": "No manual assets yet",
+      "body": "Track a bond, private equity stake, P2P loan, or collectible by entering its value yourself."
+    },
+    "types": {
+      "bond": "Bond",
+      "private_equity": "Private equity",
+      "p2p_lending": "P2P lending",
+      "collectible": "Collectible",
+      "other": "Other"
+    },
+    "overview": {
+      "totalsTitle": "Portfolio · {currency}",
+      "value": "Total value",
+      "assetCount": "{count, plural, =1 {1 asset} other {# assets}}",
+      "assetsTitle": "Assets"
+    },
+    "card": {
+      "value": "Value",
+      "gainLoss": "Gain/loss",
+      "closed": "Closed"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "e.g. Corporate bond 2030",
+      "type": "Asset type",
+      "currency": "Currency",
+      "acquisitionDate": "Acquisition date",
+      "costBasis": "Cost basis",
+      "currentValue": "Current estimated value",
+      "notes": "Notes",
+      "isClosed": "Closed (sold / redeemed / matured)",
+      "submit": "Save asset",
+      "update": "Update asset"
+    },
+    "detail": {
+      "back": "Back to manual assets",
+      "acquiredOn": "Acquired {date}",
+      "currentValue": "Current value",
+      "costBasis": "Cost basis",
+      "gainLoss": "Gain/loss",
+      "valuationsTitle": "Value over time",
+      "empty": "Nothing here yet.",
+      "delete": "Delete",
+      "confirmDelete": "Delete this entry? This cannot be undone.",
+      "confirmDeleteAsset": "Delete this asset and everything attached to it? This cannot be undone.",
+      "edit": "Edit",
+      "addValuation": "Add valuation",
+      "incomeTitle": "Income received",
+      "incomeEmpty": "No income recorded yet.",
+      "addIncome": "Add income"
+    },
+    "valuationForm": {
+      "valuationDate": "Valuation date",
+      "value": "Estimated value",
+      "source": "Source",
+      "sources": {
+        "manual": "Own estimate",
+        "other": "Other"
+      },
+      "notes": "Notes",
+      "submit": "Save valuation"
+    },
+    "incomeForm": {
+      "receivedDate": "Date received",
+      "amount": "Amount",
+      "notes": "Notes",
+      "submit": "Save income"
+    },
+    "tables": {
+      "date": "Date",
+      "value": "Value",
+      "source": "Source",
+      "amount": "Amount"
+    },
+    "errors": {
+      "invalidAmount": "Enter a valid amount",
+      "invalidDate": "Enter a valid date",
+      "required": "This field is required",
+      "tooLong": "Too long",
+      "invalid": "Invalid value",
+      "validationFailed": "Please fix the highlighted fields",
+      "unexpected": "Something went wrong. Please try again."
+    },
+    "sort": {
+      "label": "Sort by",
+      "name": "Name"
     }
   },
   "settings": {

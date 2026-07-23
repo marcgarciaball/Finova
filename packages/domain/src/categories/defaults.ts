@@ -47,11 +47,24 @@ export const DEFAULT_CATEGORIES: readonly DefaultCategory[] = [
   { key: 'entertainment', en: 'Entertainment', kind: 'expense' },
   { key: 'education', en: 'Education', kind: 'expense' },
   { key: 'travel', en: 'Travel', kind: 'expense' },
+  // Bizum payments and generic bank transfers/direct debits sent — a real
+  // transaction, not a shrug-worthy "Other" catch-all.
+  { key: 'bizum_expense', en: 'Bizum sent', kind: 'expense' },
+  { key: 'transactions_expense', en: 'Transactions', kind: 'expense' },
+  // Card purchases that matched no merchant-specific rule (see the
+  // `card_transaction_fallback` default rule in rules/defaults.ts) — still a
+  // known card transaction, so it shouldn't fall into "Other".
+  { key: 'card_transaction', en: 'Card transaction', kind: 'expense' },
   { key: 'other_expense', en: 'Other', kind: 'expense' },
   // — Income —
   { key: 'salary', en: 'Salary', kind: 'income' },
   { key: 'gifts', en: 'Gifts', kind: 'income' },
   { key: 'other_income', en: 'Other income', kind: 'income' },
+  // Bizum received is money coming back for something already paid (a
+  // person-to-person repayment) — not earnings, so dashboards that answer
+  // "how much do I earn" exclude this category by `name_key`.
+  { key: 'bizum_income', en: 'Bizum received', kind: 'income' },
+  { key: 'transactions_income', en: 'Transactions', kind: 'income' },
 ] as const
 
 /** Every default `name_key`, parents and children, flattened. */

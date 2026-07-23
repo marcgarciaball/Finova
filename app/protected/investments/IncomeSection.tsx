@@ -4,6 +4,7 @@ import { BarChart } from '@/components/charts/BarChart'
 import { KpiCard } from '@/components/dashboard/KpiCard'
 import { GlassCard } from '@/components/ui/GlassCard'
 import type { InvestmentsIncome } from './income-data'
+import { PerAssetIncomeTable } from './PerAssetIncomeTable'
 
 /**
  * Dividend income tab (Inversiones Phase C): received, forward estimate,
@@ -95,49 +96,30 @@ export async function IncomeSection({ income }: { income: InvestmentsIncome }) {
 
       <GlassCard className="flex flex-col gap-3 overflow-x-auto">
         <p className="text-ink-soft text-sm">{t('income.perAsset')}</p>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-ink-soft">
-              <th className="py-2 pr-4 font-medium">{t('list.asset')}</th>
-              <th className="py-2 pr-4 text-right font-medium">
-                {t('income.received')}
-              </th>
-              <th className="py-2 pr-4 text-right font-medium">
-                {t('income.perShare12m')}
-              </th>
-              <th className="py-2 pr-4 text-right font-medium">
-                {t('income.forwardAnnual')}
-              </th>
-              <th className="py-2 text-right font-medium">
-                {t('income.yieldOnCost')}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {income.perAsset.map((a) => (
-              <tr key={a.ticker} className="border-glass-line border-t">
-                <td className="py-2 pr-4">
-                  <span className="font-medium text-ink">{a.ticker}</span>
-                  <span className="text-ink-soft"> · {a.name}</span>
-                </td>
-                <td className="py-2 pr-4 text-right text-ink">
-                  {fmt(a.receivedCents, a.currency)}
-                </td>
-                <td className="py-2 pr-4 text-right text-ink">
-                  {fmt(a.trailing12mPerShareCents, a.currency)}
-                </td>
-                <td className="py-2 pr-4 text-right text-ink">
-                  {fmt(a.forwardAnnualCents, a.currency)}
-                </td>
-                <td className="py-2 text-right text-ink">
-                  {a.yieldOnCostPct === null
-                    ? '—'
-                    : `${a.yieldOnCostPct.toFixed(2)}%`}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <PerAssetIncomeTable
+          rows={income.perAsset.map((a) => ({
+            forwardAnnualCents: a.forwardAnnualCents,
+            forwardAnnualDisplay: fmt(a.forwardAnnualCents, a.currency),
+            name: a.name,
+            perShare12mDisplay: fmt(a.trailing12mPerShareCents, a.currency),
+            receivedCents: a.receivedCents,
+            receivedDisplay: fmt(a.receivedCents, a.currency),
+            ticker: a.ticker,
+            trailing12mPerShareCents: a.trailing12mPerShareCents,
+            yieldOnCostDisplay:
+              a.yieldOnCostPct === null
+                ? '—'
+                : `${a.yieldOnCostPct.toFixed(2)}%`,
+            yieldOnCostPct: a.yieldOnCostPct,
+          }))}
+          labels={{
+            asset: t('list.asset'),
+            forwardAnnual: t('income.forwardAnnual'),
+            perShare12m: t('income.perShare12m'),
+            received: t('income.received'),
+            yieldOnCost: t('income.yieldOnCost'),
+          }}
+        />
       </GlassCard>
     </div>
   )

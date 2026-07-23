@@ -24,6 +24,12 @@ export function resolveAuthRedirect(
   pathname: string,
   hasUser: boolean
 ): AuthRouteDecision {
+  // API routes handle their own auth (bearer token, or none by design) —
+  // a session-cookie redirect here would make cron/service callers
+  // unreachable, since they never carry a browser session.
+  if (pathname.startsWith('/api/')) {
+    return { type: 'allow' }
+  }
   if (PUBLIC_PATHS.has(pathname)) {
     return { type: 'allow' }
   }

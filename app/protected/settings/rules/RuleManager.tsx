@@ -28,12 +28,13 @@ export function RuleManager({
 }) {
   const t = useTranslations('settings.rules')
   const tDefaults = useTranslations('categories.defaults')
+  const tRuleDefaults = useTranslations('rules.defaults')
   const [creating, setCreating] = useState(Boolean(initialDraft))
   const [editingId, setEditingId] = useState<string | null>(null)
 
   const categoryById = new Map(categories.map((c) => [c.id, c] as const))
   const ruleName = (r: CategorizationRuleRow): string =>
-    r.name_key ? t(`defaults.${r.name_key}`) : r.name
+    r.name_key ? tRuleDefaults(r.name_key) : r.name
   const targetLabel = (r: CategorizationRuleRow): string => {
     const c = categoryById.get(r.category_id)
     return c ? categoryLabel(c, tDefaults) : '—'

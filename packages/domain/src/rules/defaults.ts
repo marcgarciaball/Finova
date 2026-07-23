@@ -1080,7 +1080,7 @@ export const DEFAULT_RULES: readonly DefaultRule[] = [
   {
     key: 'bizum_recibido',
     en: 'Bizum received',
-    categoryKey: 'other_income',
+    categoryKey: 'bizum_income',
     contains: 'bizum recibido',
     priority: 347,
   },
@@ -1142,5 +1142,108 @@ export const DEFAULT_RULES: readonly DefaultRule[] = [
     categoryKey: 'utilities',
     contains: 'electricity',
     priority: 356,
+  },
+  // — More Spanish bank-statement patterns: fuel, clothing, online payments,
+  //   taxes/fees, and direct-debit/transfer/Bizum lines (P5-xx merchant gap) —
+  {
+    key: 'plenergy',
+    en: 'Plenergy',
+    categoryKey: 'transport',
+    contains: 'plenergy',
+    priority: 360,
+  },
+  {
+    key: 'cortefiel',
+    en: 'Cortefiel',
+    categoryKey: 'shopping',
+    contains: 'cortefiel',
+    priority: 361,
+  },
+  {
+    key: 'paypal',
+    en: 'PayPal',
+    categoryKey: 'shopping',
+    contains: 'paypal',
+    priority: 362,
+  },
+  {
+    key: 'irpf',
+    en: 'Income tax (IRPF)',
+    categoryKey: 'other_expense',
+    contains: 'irpf',
+    priority: 363,
+  },
+  {
+    key: 'itv',
+    en: 'Vehicle inspection (ITV)',
+    categoryKey: 'other_expense',
+    contains: 'itv',
+    priority: 364,
+  },
+  {
+    key: 'impuestos',
+    en: 'Taxes (impuestos)',
+    categoryKey: 'other_expense',
+    contains: 'impuestos',
+    priority: 365,
+  },
+  // Bizum/transfer lines: matched on the specific credit/debit phrasing banks
+  // use (`abono` = credited, `transferencia a` = sent to) rather than the bare
+  // "bizum"/"transferencia" token, since the direction can't be inferred from
+  // the description alone and a default rule is a single description clause.
+  {
+    key: 'abono_bizum',
+    en: 'Bizum received',
+    categoryKey: 'bizum_income',
+    contains: 'abono bizum',
+    priority: 366,
+  },
+  {
+    key: 'pago_bizum',
+    en: 'Bizum sent',
+    categoryKey: 'bizum_expense',
+    contains: 'pago bizum',
+    priority: 367,
+  },
+  {
+    key: 'transferencia_a',
+    en: 'Transfer sent',
+    categoryKey: 'transactions_expense',
+    contains: 'transferencia a ',
+    priority: 368,
+  },
+  {
+    key: 'abono_transferencia',
+    en: 'Transfer received',
+    categoryKey: 'transactions_income',
+    contains: 'abono transferencia',
+    priority: 369,
+  },
+  {
+    key: 'adeudo_recibo',
+    en: 'Direct debit (adeudo recibo)',
+    categoryKey: 'transactions_expense',
+    contains: 'adeudo recibo',
+    priority: 370,
+  },
+  // Trailing space avoids matching "bar" as a mid-word substring (e.g.
+  // "Barcelona", "embarque") — same trick as 'metro '/'avis '/'hotel '/'cine '.
+  {
+    key: 'bar',
+    en: 'Bar',
+    categoryKey: 'restaurants',
+    contains: 'bar ',
+    priority: 371,
+  },
+  // Last-resort catch-all: a card purchase ("COMPRA TARJ.") that matched no
+  // merchant-specific rule above still lands as a known card transaction
+  // instead of staying uncategorized. Highest priority number so every more
+  // specific rule (groceries, restaurants, transport…) gets first refusal.
+  {
+    key: 'card_transaction_fallback',
+    en: 'Card transaction',
+    categoryKey: 'card_transaction',
+    contains: 'compra tarj',
+    priority: 990,
   },
 ] as const

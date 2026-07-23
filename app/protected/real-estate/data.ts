@@ -10,6 +10,9 @@ import {
   ltvPct,
   netYieldPct,
   outstandingDebtCents,
+  type PropertyExpenseEvent,
+  type PropertyLoanSnapshot,
+  type RentalIncomeEvent,
   roiPct,
 } from '@finova/domain/real-estate/metrics'
 import { requireUser } from '@/lib/auth/require-user'
@@ -317,6 +320,82 @@ export async function getRealEstateEquityByCurrency(): Promise<
   return [...byCurrency.entries()].map(([currency, cents]) => ({
     currency,
     equityCents: cents,
+  }))
+}
+
+/**
+ * Every paid rental-income row, in native currency — feeds
+ * incomeInRangeCents() so the dashboard can fold rent into earnings for a
+ * given period. Rows span arbitrary date ranges (a lease can cover months a
+ * discrete "date" wouldn't capture), so callers must prorate by day overlap
+ * rather than matching a single date, same as the Real Estate page's own
+ * cash-flow and annualized-rent figures. Never converted across currencies
+ * (properties don't share a portfolio base currency).
+ */
+export async function getRentalIncomeEvents(): Promise<RentalIncomeEvent[]> {
+  await requireUser()
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('rental_income')
+    .select('amount_cents, currency, period_start, period_end')
+    .eq('is_paid', true)
+  if (error) {
+    throw new Error(error.message)
+  }
+  return (data ?? []).map((r) => ({
+    amountCents: Number(r.amount_cents),
+    currency: String(r.currency),
+    isPaid: true,
+    periodEnd: String(r.period_end),
+    periodStart: String(r.period_start),
+  }))
+}
+
+/**
+ * Every property-expense row, in native currency — feeds cashFlowCents() so
+ * the dashboard can net rent against costs (mortgage, maintenance, …) for a
+ * given period, same as the Real Estate page's own cash-flow figure.
+ */
+export async function getPropertyExpenseEvents(): Promise<
+  PropertyExpenseEvent[]
+> {
+  await requireUser()
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('property_expenses')
+    .select('amount_cents, category, currency, expense_date')
+  if (error) {
+    throw new Error(error.message)
+  }
+  return (data ?? []).map((r) => ({
+    amountCents: Number(r.amount_cents),
+    category: String(r.category),
+    currency: String(r.currency),
+    expenseDate: String(r.expense_date),
+  }))
+}
+
+/**
+ * Every property-loan row, in native currency — feeds cashFlowCents() so
+ * scheduled mortgage payments count against rent the same way the Real
+ * Estate page's own cash-flow figure does.
+ */
+export async function getPropertyLoanSnapshots(): Promise<
+  PropertyLoanSnapshot[]
+> {
+  await requireUser()
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('property_loans')
+    .select('currency, is_paid_off, monthly_payment_cents, outstanding_cents')
+  if (error) {
+    throw new Error(error.message)
+  }
+  return (data ?? []).map((r) => ({
+    currency: String(r.currency),
+    isPaidOff: Boolean(r.is_paid_off),
+    monthlyPaymentCents: Number(r.monthly_payment_cents),
+    outstandingCents: Number(r.outstanding_cents),
   }))
 }
 

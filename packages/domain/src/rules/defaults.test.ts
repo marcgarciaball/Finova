@@ -76,6 +76,18 @@ describe('DEFAULT_RULES matching behavior', () => {
     expect(match('SOME LOCAL SHOP 1234')).toBeNull()
   })
 
+  it('falls back to card_transaction for an unmatched card purchase', () => {
+    expect(match('COMPRA TARJ. 5402XXXXXXXX7019 MY MERCAT JALON-XALO')).toBe(
+      'card_transaction'
+    )
+  })
+
+  it('still prefers a specific merchant rule over the card fallback', () => {
+    expect(match('COMPRA TARJ. 5402XXXXXXXX7019 BAR EL GAT-BENICHEMBLA')).toBe(
+      'restaurants'
+    )
+  })
+
   it('routes an English salary description to salary', () => {
     expect(
       selectCategory(asRules, {
@@ -93,6 +105,17 @@ describe('DEFAULT_RULES matching behavior', () => {
   it('routes English grocery/supermarket keywords to groceries', () => {
     expect(match('Corner Grocery Store')).toBe('groceries')
     expect(match('City Supermarket')).toBe('groceries')
+  })
+
+  it('routes a card purchase at a bar to restaurants', () => {
+    expect(match('COMPRA TARJ. 5402XXXXXXXX7019 BAR EL GAT-BENICHEMBLA')).toBe(
+      'restaurants'
+    )
+  })
+
+  it('does not mistake "Barcelona" for a bar (trailing-space token)', () => {
+    expect(match('COMPRA MERCADONA BARCELONA')).toBe('groceries')
+    expect(match('SOME BARCELONA SHOP 1234')).toBeNull()
   })
 })
 

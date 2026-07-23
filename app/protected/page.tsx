@@ -22,6 +22,11 @@ import {
   totalBalanceByCurrency,
   trendOf,
 } from '@finova/domain/dashboard'
+import { incomeInRangeCents as manualAssetIncomeInRangeCents } from '@finova/domain/manual-assets/income'
+import {
+  cashFlowCents,
+  incomeInRangeCents,
+} from '@finova/domain/real-estate/metrics'
 import { summarizeByCurrency } from '@finova/domain/transactions/totals'
 import { Plus } from 'lucide-react'
 import { getLocale, getTranslations } from 'next-intl/server'
@@ -48,9 +53,18 @@ import { InsightsPlaceholder } from './InsightsPlaceholder'
 import { getInvestmentsIncome } from './investments/income-data'
 import { getInvestmentsOverview } from './investments/overview-data'
 import { KeyStatsStrip } from './KeyStatsStrip'
+import {
+  getManualAssetIncomeEvents,
+  getManualAssetsValueByCurrency,
+} from './manual-assets/data'
 import { PeriodSelector } from './PeriodSelector'
 import { RecentTransactions } from './RecentTransactions'
-import { getRealEstateEquityByCurrency } from './real-estate/data'
+import {
+  getPropertyExpenseEvents,
+  getPropertyLoanSnapshots,
+  getRealEstateEquityByCurrency,
+  getRentalIncomeEvents,
+} from './real-estate/data'
 import { type RankRow, SpendingRanking } from './SpendingRanking'
 import { WealthAllocation } from './WealthAllocation'
 
@@ -123,15 +137,77 @@ export default async function DashboardPage({
     ? dividendsIn(prevRange.startIso, prevRange.endExclusiveIso)
     : 0
 
+  // Rental income lives in the Real Estate module, not the cash ledger —
+  // fold paid rent into income the same way dividends are folded in above.
+  // Never converted across currencies, so only rows in the display currency
+  // count (matches getRealEstateEquityByCurrency's per-currency treatment).
+  // Rows span arbitrary date ranges (a lease can straddle month or period
+  // boundaries), so amounts are prorated by day overlap — same as the Real
+  // Estate page's own cash-flow figures — rather than matched to one date.
+  const rentEvents = (await getRentalIncomeEvents()).filter(
+    (e) => e.currency === currency
+  )
+  // Net rent against costs for the Earnings card only — mortgage/maintenance
+  // spend so "how much I earn" reflects take-home, not gross rent received.
+  const propertyExpenseEvents = (await getPropertyExpenseEvents()).filter(
+    (e) => e.currency === currency
+  )
+  const propertyLoanSnapshots = (await getPropertyLoanSnapshots()).filter(
+    (l) => l.currency === currency
+  )
+  const dayBeforeIso = (iso: string): string => {
+    const [y, m, d] = iso.split('-').map(Number) as [number, number, number]
+    return new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10)
+  }
+  const EARLIEST_ISO = '1900-01-01'
+  const rentIn = (start: string | null, endExclusive: string | null): number =>
+    incomeInRangeCents(
+      rentEvents,
+      start ?? EARLIEST_ISO,
+      endExclusive === null ? todayIso : dayBeforeIso(endExclusive)
+    )
+  const rentCents = rentIn(periodStart, null)
+  const prevRentCents = prevRange
+    ? rentIn(prevRange.startIso, prevRange.endExclusiveIso)
+    : 0
+
+  // Manual assets (bond coupons, P2P interest, distributions, …) — folded in
+  // the same way as rent, filtered to the display currency.
+  const manualAssetIncomeEvents = (await getManualAssetIncomeEvents()).filter(
+    (e) => e.currency === currency
+  )
+  const manualIncomeIn = (
+    start: string | null,
+    endExclusive: string | null
+  ): number =>
+    manualAssetIncomeInRangeCents(
+      manualAssetIncomeEvents,
+      start ?? EARLIEST_ISO,
+      endExclusive === null ? todayIso : dayBeforeIso(endExclusive)
+    )
+  const manualAssetIncomeCents = manualIncomeIn(periodStart, null)
+  const prevManualAssetIncomeCents = prevRange
+    ? manualIncomeIn(prevRange.startIso, prevRange.endExclusiveIso)
+    : 0
+
   const totals = {
-    income: cashTotals.income + dividendCents,
+    income:
+      cashTotals.income + dividendCents + rentCents + manualAssetIncomeCents,
     expense: cashTotals.expense,
-    net: cashTotals.net + dividendCents,
+    net: cashTotals.net + dividendCents + rentCents + manualAssetIncomeCents,
   }
   const prevTotals = {
-    income: prevCashTotals.income + prevDividendCents,
+    income:
+      prevCashTotals.income +
+      prevDividendCents +
+      prevRentCents +
+      prevManualAssetIncomeCents,
     expense: prevCashTotals.expense,
-    net: prevCashTotals.net + prevDividendCents,
+    net:
+      prevCashTotals.net +
+      prevDividendCents +
+      prevRentCents +
+      prevManualAssetIncomeCents,
   }
   const rate = savingsRate(totals)
   const prevRate = savingsRate(prevTotals)
@@ -173,6 +249,18 @@ export default async function DashboardPage({
   }
   const realEstateCents =
     realEstateEquity.find((re) => re.currency === currency)?.equityCents ?? 0
+  // Manual assets (bonds, private equity, P2P loans, collectibles, …) join
+  // net worth at their latest manually-entered value, per currency — never
+  // converted across currencies, same treatment as real estate equity.
+  const manualAssetsValue = await getManualAssetsValueByCurrency()
+  for (const ma of manualAssetsValue) {
+    if (ma.valueCents !== 0) {
+      totalByCurrency[ma.currency] =
+        (totalByCurrency[ma.currency] ?? 0) + ma.valueCents
+    }
+  }
+  const manualAssetsCents =
+    manualAssetsValue.find((ma) => ma.currency === currency)?.valueCents ?? 0
   const totalBalance = totalByCurrency[currency] ?? 0
   // Investment amounts only line up with cash when the portfolio's base
   // currency matches the dashboard's display currency. allocationByType is
@@ -245,12 +333,82 @@ export default async function DashboardPage({
   // independent of the period selector. Prefer the current month; if it has
   // no income yet (salary not arrived), fall back to the latest earning month.
   const currentMonth = todayIso.slice(0, 7)
-  const dividendMonthCents = (month: string): number =>
-    invIncome.baseCurrency === currency
-      ? invIncome.receivedEventsBase
-          .filter((e) => e.date.slice(0, 7) === month && e.date <= todayIso)
-          .reduce((sum, e) => sum + e.cents, 0)
-      : 0
+  const monthRange = (
+    month: string
+  ): { start: string; endExclusive: string } => {
+    const [y, m] = month.split('-').map(Number) as [number, number]
+    return {
+      endExclusive: new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 10),
+      start: `${month}-01`,
+    }
+  }
+  // Dividends/coupons/interest are point-in-time payments (quarterly, annual,
+  // …), not recurring monthly cash — matching them to one exact calendar
+  // month would show €0 most months even for an active holding. Instead,
+  // average the trailing 12 months' total, ending at that month, the same
+  // "typical monthly amount" idea as the Investments page's forward-annual
+  // estimate. Rent uses the same trailing-12-month average (of net cash flow,
+  // via cashFlowCents) so this card's rent figure matches the Real Estate
+  // page's own "monthly cash flow" figure instead of a specific month's
+  // partial/day-prorated amount.
+  const trailingYearStartIso = (asOfIso: string): string => {
+    const [y, m, d] = asOfIso.split('-').map(Number) as [number, number, number]
+    return new Date(Date.UTC(y - 1, m - 1, d + 1)).toISOString().slice(0, 10)
+  }
+  const monthAsOfIso = (month: string): string => {
+    const { endExclusive } = monthRange(month)
+    const monthEndInclusive = dayBeforeIso(endExclusive)
+    return monthEndInclusive < todayIso ? monthEndInclusive : todayIso
+  }
+  const dividendMonthCents = (month: string): number => {
+    if (invIncome.baseCurrency !== currency) {
+      return 0
+    }
+    const asOf = monthAsOfIso(month)
+    const total = invIncome.receivedEventsBase
+      .filter((e) => e.date >= trailingYearStartIso(asOf) && e.date <= asOf)
+      .reduce((sum, e) => sum + e.cents, 0)
+    return Math.round(total / 12)
+  }
+  const rentMonthCents = (month: string): number => {
+    const asOf = monthAsOfIso(month)
+    const total = cashFlowCents(
+      rentEvents,
+      propertyExpenseEvents,
+      propertyLoanSnapshots,
+      trailingYearStartIso(asOf),
+      asOf
+    )
+    return Math.round(total / 12)
+  }
+  const manualAssetIncomeMonthCents = (month: string): number => {
+    const asOf = monthAsOfIso(month)
+    const total = manualAssetIncomeInRangeCents(
+      manualAssetIncomeEvents,
+      trailingYearStartIso(asOf),
+      asOf
+    )
+    return Math.round(total / 12)
+  }
+  // A rent row's period can span several calendar months (e.g. rent entered
+  // as one lump sum for a multi-month lease) — list every month it touches,
+  // not just the one its periodStart falls in.
+  const monthsInRange = (startIso: string, endIso: string): string[] => {
+    const [sy, sm] = startIso.split('-').map(Number) as [number, number]
+    const [ey, em] = endIso.split('-').map(Number) as [number, number]
+    const months: string[] = []
+    let y = sy
+    let m = sm
+    while (y < ey || (y === ey && m <= em)) {
+      months.push(`${y}-${String(m).padStart(2, '0')}`)
+      m += 1
+      if (m > 12) {
+        m = 1
+        y += 1
+      }
+    }
+    return months
+  }
   const earningMonths = new Set<string>([
     ...(incomeExpenseSeries(txns, 'month')[currency] ?? [])
       .filter((b) => b.income > 0)
@@ -260,6 +418,17 @@ export default async function DashboardPage({
           .filter((e) => e.date <= todayIso)
           .map((e) => e.date.slice(0, 7))
       : []),
+    ...rentEvents
+      .filter((e) => e.periodStart <= todayIso)
+      .flatMap((e) =>
+        monthsInRange(
+          e.periodStart,
+          e.periodEnd <= todayIso ? e.periodEnd : todayIso
+        )
+      ),
+    ...manualAssetIncomeEvents
+      .filter((e) => e.receivedDate <= todayIso)
+      .map((e) => e.receivedDate.slice(0, 7)),
   ])
   const earningsMonth = earningMonths.has(currentMonth)
     ? currentMonth
@@ -267,9 +436,24 @@ export default async function DashboardPage({
   const monthTxns = txns.filter(
     (x) => x.occurred_at.slice(0, 7) === earningsMonth
   )
+  // Bizum reimbursements and the uncategorized-transfer catch-all are both
+  // ambiguous incoming money (could be a repayment or a debt, not earnings) —
+  // excluded from "how much do I earn" only, not from income elsewhere.
+  const EARNINGS_EXCLUDED_CATEGORIES = new Set([
+    'bizum_income',
+    'transactions_income',
+  ])
+  const monthEarningTxns = monthTxns.filter(
+    (x) =>
+      !EARNINGS_EXCLUDED_CATEGORIES.has(
+        byId.get(x.category_id ?? '')?.name_key ?? ''
+      )
+  )
   const monthDividends = dividendMonthCents(earningsMonth)
+  const monthRent = rentMonthCents(earningsMonth)
+  const monthManualAssetIncome = manualAssetIncomeMonthCents(earningsMonth)
   const earningsRows = [
-    ...(incomeByCategory(monthTxns)[currency] ?? []).map((s) => ({
+    ...(incomeByCategory(monthEarningTxns)[currency] ?? []).map((s) => ({
       key: s.categoryId ?? '__uncategorized__',
       label: labelFor(s.categoryId),
       icon: iconFor(s.categoryId),
@@ -282,6 +466,26 @@ export default async function DashboardPage({
             label: t('ranking.dividends'),
             icon: <CategoryIcon iconName="HandCoins" />,
             cents: monthDividends,
+          },
+        ]
+      : []),
+    ...(monthRent > 0
+      ? [
+          {
+            key: '__rent__',
+            label: t('ranking.rent'),
+            icon: <CategoryIcon iconName="Home" />,
+            cents: monthRent,
+          },
+        ]
+      : []),
+    ...(monthManualAssetIncome > 0
+      ? [
+          {
+            key: '__manual_assets_income__',
+            label: t('ranking.manualAssetsIncome'),
+            icon: <CategoryIcon iconName="Landmark" />,
+            cents: monthManualAssetIncome,
           },
         ]
       : []),
@@ -365,6 +569,7 @@ export default async function DashboardPage({
           cashCents={cashCents}
           investedByType={investedByType}
           realEstateCents={realEstateCents}
+          manualAssetsCents={manualAssetsCents}
           currency={currency}
         />
         <AccountsStrip

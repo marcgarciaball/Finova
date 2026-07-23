@@ -25,6 +25,7 @@ const STOPWORDS = new Set([
   'transferencia',
   'transf',
   'traspaso',
+  'tarj',
   'bizum',
   'adeudo',
   'domiciliacion',
@@ -49,17 +50,25 @@ const STOPWORDS = new Set([
 
 const MIN_TOKEN_LEN = 3
 
+/** Masked card/account numbers, e.g. `5402xxxxxxxx7019` — digits and `x` only. */
+const MASKED_NUMBER = /^[0-9x]+$/
+
 /**
  * The merchant-ish token to match on: the first normalized word that isn't a
- * banking stopword, a pure number, or too short. Falls back to the whole
- * normalized string so the token is never empty for a non-empty description
- * (an empty `contains` would match everything).
+ * banking stopword, a pure number, a masked card/account number, or too
+ * short. Falls back to the whole normalized string so the token is never
+ * empty for a non-empty description (an empty `contains` would match
+ * everything).
  */
 export function suggestRuleToken(description: string): string {
   const normalized = normalizeDescription(description)
   const tokens = normalized.split(' ').filter(Boolean)
   const meaningful = tokens.find(
-    (t) => t.length >= MIN_TOKEN_LEN && !/^\d+$/.test(t) && !STOPWORDS.has(t)
+    (t) =>
+      t.length >= MIN_TOKEN_LEN &&
+      !/^\d+$/.test(t) &&
+      !MASKED_NUMBER.test(t) &&
+      !STOPWORDS.has(t)
   )
   return meaningful ?? normalized
 }

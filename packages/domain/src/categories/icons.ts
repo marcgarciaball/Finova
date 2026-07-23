@@ -41,6 +41,9 @@ export const ICON_NAMES = [
   'Wallet',
   'Gift',
   'HandCoins',
+  'ArrowLeftRight',
+  'Landmark',
+  'CreditCard',
   'CircleDashed',
 ] as const
 
@@ -77,10 +80,15 @@ const TOP_LEVEL_ICONS: Record<string, string> = {
   entertainment: 'Gamepad2',
   education: 'GraduationCap',
   travel: 'Plane',
+  bizum_expense: 'ArrowLeftRight',
+  transactions_expense: 'Landmark',
+  card_transaction: 'CreditCard',
   other_expense: FALLBACK_ICON_NAME,
   salary: 'Wallet',
   gifts: 'Gift',
   other_income: FALLBACK_ICON_NAME,
+  bizum_income: 'ArrowLeftRight',
+  transactions_income: 'Landmark',
 }
 
 /** Subcategories that diverge from their parent's icon (most don't). */

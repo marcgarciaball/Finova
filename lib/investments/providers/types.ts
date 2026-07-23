@@ -11,6 +11,7 @@ export interface Quote {
   currency: string // ISO 4217 — Finnhub /quote carries none; inherited from the asset
   fetchedAt: string // ISO timestamp
   priceCents: number // integer, converted at the boundary
+  provider: ProviderName
   quoteType: QuoteType // A3 emits 'live' only; A5 downgrades on staleness
 }
 
@@ -47,7 +48,12 @@ export interface PriceProvider {
   searchSymbol(query: string): Promise<SymbolResult[]>
 }
 
-export type ProviderName = 'finnhub' | 'coingecko' | 'frankfurter' | 'fmp'
+export type ProviderName =
+  | 'finnhub'
+  | 'coingecko'
+  | 'frankfurter'
+  | 'fmp'
+  | 'yahoo'
 export type ProviderErrorKind =
   | 'http'
   | 'malformed'

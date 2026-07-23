@@ -4,12 +4,25 @@ import { getCoinGeckoQuote, searchCoinGeckoSymbols } from './coingecko'
 export { getCoinGeckoDailyPrices } from './coingecko'
 
 import { getFinnhubQuote, searchFinnhubSymbols } from './finnhub'
-import type { Quote, QuoteTarget, SymbolResult } from './types'
+import {
+  ProviderError,
+  type Quote,
+  type QuoteTarget,
+  type SymbolResult,
+} from './types'
+import { getYahooQuote } from './yahoo'
+
+export { getYahooDividends, type YahooDividendEvent } from './yahoo'
 
 /**
  * Provider-agnostic entry point (Inversiones A3): stock | etf | fund →
  * Finnhub; crypto → CoinGecko. Fund coverage on Finnhub's free tier is thin —
  * a `not_found` ProviderError surfaces that honestly rather than guessing.
+ *
+ * Finnhub's free tier also rejects non-US exchanges outright (403), which
+ * matters for UCITS ETFs listed on LSE etc. (Inversiones A5): any Finnhub
+ * failure falls back to Yahoo's keyless chart endpoint, which covers those
+ * tickers under the same symbol (e.g. `VUSD.L`).
  */
 
 export interface RouterOpts {
@@ -17,13 +30,21 @@ export interface RouterOpts {
   fetchImpl?: typeof fetch
 }
 
-export function getQuote(
+export async function getQuote(
   target: QuoteTarget,
   opts: RouterOpts = {}
 ): Promise<Quote> {
-  return target.type === 'crypto'
-    ? getCoinGeckoQuote(target, opts)
-    : getFinnhubQuote(target, opts)
+  if (target.type === 'crypto') {
+    return getCoinGeckoQuote(target, opts)
+  }
+  try {
+    return await getFinnhubQuote(target, opts)
+  } catch (e) {
+    if (!(e instanceof ProviderError)) {
+      throw e
+    }
+    return getYahooQuote(target, opts)
+  }
 }
 
 export function searchSymbol(

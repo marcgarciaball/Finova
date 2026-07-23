@@ -3,12 +3,18 @@ import { requireUser } from '@/lib/auth/require-user'
 import { AddPropertyButton } from './AddPropertyButton'
 import { getRealEstateOverview } from './data'
 import { RealEstateOverviewSection } from './RealEstateOverview'
+import { parsePropertySort } from './sort'
 
-export default async function RealEstatePage() {
+export default async function RealEstatePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ sort?: string; dir?: string }>
+}) {
   await requireUser()
   const t = await getTranslations('realEstate')
   const todayIso = new Date().toISOString().slice(0, 10)
   const overview = await getRealEstateOverview()
+  const sort = parsePropertySort(await searchParams)
 
   return (
     <div className="flex w-full flex-1 flex-col gap-6">
@@ -20,7 +26,7 @@ export default async function RealEstatePage() {
         <AddPropertyButton todayIso={todayIso} />
       </div>
 
-      <RealEstateOverviewSection overview={overview} />
+      <RealEstateOverviewSection overview={overview} sort={sort} />
     </div>
   )
 }

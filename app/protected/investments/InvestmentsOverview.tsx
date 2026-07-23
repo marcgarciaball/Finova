@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import { DonutChart } from '@/components/charts/DonutChart'
 import { KpiCard } from '@/components/dashboard/KpiCard'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { HoldingsTable } from './HoldingsTable'
 import { InvestmentsHistoryChart } from './InvestmentsHistoryChart'
 import type { InvestmentsOverview } from './overview-data'
 import { RefreshPricesButton } from './RefreshPricesButton'
@@ -113,75 +114,43 @@ export async function InvestmentsOverviewSection({
 
       <GlassCard className="flex flex-col gap-3 overflow-x-auto">
         <p className="text-ink-soft text-sm">{t('overview.holdings')}</p>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-ink-soft">
-              <th className="py-2 pr-4 font-medium">{t('list.asset')}</th>
-              <th className="py-2 pr-4 text-right font-medium">
-                {t('list.quantity')}
-              </th>
-              <th className="py-2 pr-4 text-right font-medium">
-                {t('overview.avgCost')}
-              </th>
-              <th className="py-2 pr-4 text-right font-medium">
-                {t('overview.price')}
-              </th>
-              <th className="py-2 pr-4 text-right font-medium">
-                {t('overview.value')}
-              </th>
-              <th className="py-2 text-right font-medium">
-                {t('overview.pl')}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {holdings.map((h) => (
-              <tr key={h.assetId} className="border-glass-line border-t">
-                <td className="py-2 pr-4">
-                  <span className="font-medium text-ink">
-                    {h.ticker || h.name}
-                  </span>
-                  {h.ticker ? (
-                    <span className="text-ink-soft"> · {h.name}</span>
-                  ) : null}
-                </td>
-                <td className="py-2 pr-4 text-right text-ink">{h.quantity}</td>
-                <td className="py-2 pr-4 text-right text-ink">
-                  {fmt(h.avgCostCents, h.currency)}
-                </td>
-                <td className="py-2 pr-4 text-right text-ink">
-                  {h.currentPriceCents === null ? (
-                    <span className="text-ink-soft">
-                      {t('overview.unpriced')}
-                    </span>
-                  ) : (
-                    <>
-                      {fmt(h.currentPriceCents, h.currency)}
-                      {h.stale ? (
-                        <span className="text-warn" title={t('overview.stale')}>
-                          {' '}
-                          •
-                        </span>
-                      ) : null}
-                    </>
-                  )}
-                </td>
-                <td className="py-2 pr-4 text-right text-ink">
-                  {h.currentValueCents === null
-                    ? '—'
-                    : fmt(h.currentValueCents, h.currency)}
-                </td>
-                <td
-                  className={`py-2 text-right ${plClass(h.unrealizedPlCents)}`}
-                >
-                  {h.unrealizedPlCents === null
-                    ? '—'
-                    : `${fmt(h.unrealizedPlCents, h.currency)} (${pct(h.unrealizedPlPct)})`}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <HoldingsTable
+          rows={holdings.map((h) => ({
+            assetId: h.assetId,
+            avgCostCents: h.avgCostCents,
+            avgCostDisplay: fmt(h.avgCostCents, h.currency),
+            currentPriceCents: h.currentPriceCents,
+            currentValueCents: h.currentValueCents,
+            name: h.name,
+            plDisplay:
+              h.unrealizedPlCents === null
+                ? null
+                : `${fmt(h.unrealizedPlCents, h.currency)} (${pct(h.unrealizedPlPct)})`,
+            priceDisplay:
+              h.currentPriceCents === null
+                ? null
+                : fmt(h.currentPriceCents, h.currency),
+            quantity: h.quantity,
+            stale: h.stale,
+            staleLabel: t('overview.stale'),
+            ticker: h.ticker,
+            unpricedLabel: t('overview.unpriced'),
+            unrealizedPlCents: h.unrealizedPlCents,
+            valueDisplay:
+              h.currentValueCents === null
+                ? null
+                : fmt(h.currentValueCents, h.currency),
+          }))}
+          labels={{
+            asset: t('list.asset'),
+            avgCost: t('overview.avgCost'),
+            pl: t('overview.pl'),
+            price: t('overview.price'),
+            quantity: t('list.quantity'),
+            value: t('overview.value'),
+          }}
+          plClassName={plClass}
+        />
         <p className="text-ink-soft text-xs">
           {overview.latestFetchedAt
             ? t('overview.updated', {

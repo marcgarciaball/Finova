@@ -1,13 +1,16 @@
 import { FALLBACK_ICON_NAME } from '@finova/domain/categories/icons'
 import {
+  ArrowLeftRight,
   Car,
   CircleDashed,
+  CreditCard,
   Gamepad2,
   Gift,
   GraduationCap,
   HandCoins,
   HeartPulse,
   Home,
+  Landmark,
   type LucideIcon,
   Plane,
   ShoppingBag,
@@ -39,6 +42,9 @@ const ICONS: Record<string, LucideIcon> = {
   Wallet,
   Gift,
   HandCoins,
+  ArrowLeftRight,
+  Landmark,
+  CreditCard,
   CircleDashed,
 }
 

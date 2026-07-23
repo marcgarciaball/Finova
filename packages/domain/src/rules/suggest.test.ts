@@ -27,6 +27,12 @@ describe('suggestRuleToken', () => {
   it('never returns an empty token for a blank description', () => {
     expect(suggestRuleToken('   ')).toBe('')
   })
+
+  it('skips the "tarj" card abbreviation and masked card numbers', () => {
+    expect(
+      suggestRuleToken('COMPRA TARJ. 5402XXXXXXXX7019 MY MERCAT JALON-XALO')
+    ).toBe('mercat')
+  })
 })
 
 describe('suggestRuleFromCorrection', () => {

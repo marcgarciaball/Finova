@@ -67,6 +67,7 @@ export async function getFinnhubQuote(
     currency: target.currency,
     fetchedAt: new Date(t * 1000).toISOString(),
     priceCents: Math.round(c * 100),
+    provider: 'finnhub',
     quoteType: 'live',
   }
 }

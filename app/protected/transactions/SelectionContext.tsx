@@ -22,8 +22,11 @@ import {
 } from 'react'
 
 interface SelectionContextValue {
+  activate: () => void
+  active: boolean
   clear: () => void
   count: number
+  deactivate: () => void
   filters: TransactionFilters
   headerState: HeaderCheckboxState
   isSelected: (id: string) => boolean
@@ -48,11 +51,18 @@ export function SelectionProvider({
   filters: TransactionFilters
   children: ReactNode
 }) {
+  const [active, setActive] = useState(false)
   const [state, setState] = useState<SelectionState>(EMPTY_SELECTION)
 
   const value = useMemo<SelectionContextValue>(() => {
     const header = headerCheckboxState(state, pageIds)
     return {
+      active,
+      activate: () => setActive(true),
+      deactivate: () => {
+        setActive(false)
+        setState(clearSelection())
+      },
       state,
       pageIds,
       totalFiltered,
@@ -68,7 +78,7 @@ export function SelectionProvider({
       count: selectionCount(state, totalFiltered),
       headerState: header,
     }
-  }, [state, pageIds, totalFiltered, filters])
+  }, [active, state, pageIds, totalFiltered, filters])
 
   return (
     <SelectionContext.Provider value={value}>

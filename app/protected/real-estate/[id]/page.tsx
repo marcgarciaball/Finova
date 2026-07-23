@@ -9,16 +9,18 @@ import { GlassCard } from '@/components/ui/GlassCard'
 import { requireUser } from '@/lib/auth/require-user'
 import { deleteExpense, deleteRentalIncome, deleteValuation } from '../actions'
 import { getPropertyDetail } from '../data'
-import { DeleteRowButton } from './DeleteRowButton'
 import {
   AddExpenseButton,
   AddIncomeButton,
   AddLoanButton,
   AddValuationButton,
 } from './EntryForms'
-import { LoanRowActions } from './LoanRowActions'
+import { ExpensesTable } from './ExpensesTable'
+import { IncomeTable } from './IncomeTable'
+import { LoansTable } from './LoansTable'
 import { PropertyActions } from './PropertyActions'
 import { ValuationChart } from './ValuationChart'
+import { ValuationsTable } from './ValuationsTable'
 
 function pct(v: number | null): string {
   return v === null ? '—' : `${v.toFixed(1)}%`
@@ -51,6 +53,51 @@ export default async function PropertyDetailPage({
   const chartPoints = [...valuations]
     .sort((a, b) => a.valuation_date.localeCompare(b.valuation_date))
     .map((v) => ({ date: v.valuation_date, valueCents: v.value_cents }))
+
+  const valuationRows = valuations.map((v) => ({
+    id: v.id,
+    valuationDate: v.valuation_date,
+    dateLabel: fmtDate(v.valuation_date),
+    valueCents: v.value_cents,
+    valueLabel: fmt(v.value_cents),
+    sourceLabel: t(`valuationForm.sources.${v.source ?? 'manual'}`),
+  }))
+
+  const loanRows = loans.map((loan) => ({
+    loan,
+    lenderName: loan.lender_name,
+    typeLabel: t(`loanForm.loanTypes.${loan.loan_type}`),
+    outstandingCents: loan.outstanding_cents,
+    outstandingLabel: fmt(loan.outstanding_cents),
+    ratePct: loan.interest_rate_pct,
+    rateLabel: `${loan.interest_rate_pct.toFixed(2)}%`,
+    rateTypeLabel: t(`loanForm.rateTypes.${loan.rate_type}`),
+    paymentCents: loan.monthly_payment_cents,
+    paymentLabel: fmt(loan.monthly_payment_cents),
+    paidOffLabel: t('tables.paidOff'),
+  }))
+
+  const incomeRows = incomes.map((income) => ({
+    id: income.id,
+    periodStart: income.period_start,
+    periodLabel: `${fmtDate(income.period_start)} – ${fmtDate(income.period_end)}`,
+    tenantSortKey: income.tenant_name ?? '',
+    tenantLabel: income.tenant_name ?? '—',
+    amountCents: income.amount_cents,
+    amountLabel: fmt(income.amount_cents),
+    isPaid: income.is_paid,
+    pendingLabel: t('tables.pending'),
+  }))
+
+  const expenseRows = expenses.map((expense) => ({
+    id: expense.id,
+    expenseDate: expense.expense_date,
+    dateLabel: fmtDate(expense.expense_date),
+    categoryLabel: t(`expenseForm.categories.${expense.category}`),
+    description: expense.description,
+    amountCents: expense.amount_cents,
+    amountLabel: fmt(expense.amount_cents),
+  }))
 
   return (
     <div className="flex w-full flex-1 flex-col gap-6">
@@ -160,36 +207,15 @@ export default async function PropertyDetailPage({
             <p className="text-ink-soft text-sm">{t('detail.empty')}</p>
           )}
           {valuations.length > 0 ? (
-            <table className="mt-4 w-full text-sm">
-              <thead>
-                <tr className="text-left text-ink-soft">
-                  <th className="py-2 pr-4 font-medium">{t('tables.date')}</th>
-                  <th className="py-2 pr-4 text-right font-medium">
-                    {t('tables.value')}
-                  </th>
-                  <th className="py-2 pr-4 font-medium">
-                    {t('tables.source')}
-                  </th>
-                  <th className="py-2" />
-                </tr>
-              </thead>
-              <tbody>
-                {valuations.map((v) => (
-                  <tr key={v.id} className="border-glass-line border-t">
-                    <td className="py-2 pr-4">{fmtDate(v.valuation_date)}</td>
-                    <td className="py-2 pr-4 text-right">
-                      {fmt(v.value_cents)}
-                    </td>
-                    <td className="py-2 pr-4 text-ink-soft">
-                      {t(`valuationForm.sources.${v.source ?? 'manual'}`)}
-                    </td>
-                    <td className="py-2 text-right">
-                      <DeleteRowButton action={deleteValuation} id={v.id} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <ValuationsTable
+              rows={valuationRows}
+              labels={{
+                date: t('tables.date'),
+                value: t('tables.value'),
+                source: t('tables.source'),
+              }}
+              deleteAction={deleteValuation}
+            />
           ) : null}
         </GlassCard>
       </section>
@@ -203,58 +229,16 @@ export default async function PropertyDetailPage({
           {loans.length === 0 ? (
             <p className="text-ink-soft text-sm">{t('detail.empty')}</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-ink-soft">
-                  <th className="py-2 pr-4 font-medium">
-                    {t('tables.lender')}
-                  </th>
-                  <th className="py-2 pr-4 font-medium">{t('tables.type')}</th>
-                  <th className="py-2 pr-4 text-right font-medium">
-                    {t('tables.outstanding')}
-                  </th>
-                  <th className="py-2 pr-4 text-right font-medium">
-                    {t('tables.rate')}
-                  </th>
-                  <th className="py-2 pr-4 text-right font-medium">
-                    {t('tables.payment')}
-                  </th>
-                  <th className="py-2" />
-                </tr>
-              </thead>
-              <tbody>
-                {loans.map((loan) => (
-                  <tr key={loan.id} className="border-glass-line border-t">
-                    <td className="py-2 pr-4 font-medium text-ink">
-                      {loan.lender_name}
-                      {loan.is_paid_off ? (
-                        <Badge variant="neutral" className="ml-2">
-                          {t('tables.paidOff')}
-                        </Badge>
-                      ) : null}
-                    </td>
-                    <td className="py-2 pr-4 text-ink-soft">
-                      {t(`loanForm.loanTypes.${loan.loan_type}`)}
-                    </td>
-                    <td className="py-2 pr-4 text-right">
-                      {fmt(loan.outstanding_cents)}
-                    </td>
-                    <td className="py-2 pr-4 text-right">
-                      {loan.interest_rate_pct.toFixed(2)}%{' '}
-                      <span className="text-ink-soft text-xs">
-                        {t(`loanForm.rateTypes.${loan.rate_type}`)}
-                      </span>
-                    </td>
-                    <td className="py-2 pr-4 text-right">
-                      {fmt(loan.monthly_payment_cents)}
-                    </td>
-                    <td className="py-2 text-right">
-                      <LoanRowActions loan={loan} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <LoansTable
+              rows={loanRows}
+              labels={{
+                lender: t('tables.lender'),
+                type: t('tables.type'),
+                outstanding: t('tables.outstanding'),
+                rate: t('tables.rate'),
+                payment: t('tables.payment'),
+              }}
+            />
           )}
         </GlassCard>
       </section>
@@ -272,49 +256,15 @@ export default async function PropertyDetailPage({
           {incomes.length === 0 ? (
             <p className="text-ink-soft text-sm">{t('detail.empty')}</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-ink-soft">
-                  <th className="py-2 pr-4 font-medium">
-                    {t('tables.period')}
-                  </th>
-                  <th className="py-2 pr-4 font-medium">
-                    {t('tables.tenant')}
-                  </th>
-                  <th className="py-2 pr-4 text-right font-medium">
-                    {t('tables.amount')}
-                  </th>
-                  <th className="py-2" />
-                </tr>
-              </thead>
-              <tbody>
-                {incomes.map((income) => (
-                  <tr key={income.id} className="border-glass-line border-t">
-                    <td className="py-2 pr-4">
-                      {fmtDate(income.period_start)} –{' '}
-                      {fmtDate(income.period_end)}
-                      {income.is_paid ? null : (
-                        <Badge variant="neutral" className="ml-2">
-                          {t('tables.pending')}
-                        </Badge>
-                      )}
-                    </td>
-                    <td className="py-2 pr-4 text-ink-soft">
-                      {income.tenant_name ?? '—'}
-                    </td>
-                    <td className="py-2 pr-4 text-right text-pos">
-                      {fmt(income.amount_cents)}
-                    </td>
-                    <td className="py-2 text-right">
-                      <DeleteRowButton
-                        action={deleteRentalIncome}
-                        id={income.id}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <IncomeTable
+              rows={incomeRows}
+              labels={{
+                period: t('tables.period'),
+                tenant: t('tables.tenant'),
+                amount: t('tables.amount'),
+              }}
+              deleteAction={deleteRentalIncome}
+            />
           )}
         </GlassCard>
       </section>
@@ -328,42 +278,16 @@ export default async function PropertyDetailPage({
           {expenses.length === 0 ? (
             <p className="text-ink-soft text-sm">{t('detail.empty')}</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-ink-soft">
-                  <th className="py-2 pr-4 font-medium">{t('tables.date')}</th>
-                  <th className="py-2 pr-4 font-medium">
-                    {t('tables.category')}
-                  </th>
-                  <th className="py-2 pr-4 font-medium">
-                    {t('tables.description')}
-                  </th>
-                  <th className="py-2 pr-4 text-right font-medium">
-                    {t('tables.amount')}
-                  </th>
-                  <th className="py-2" />
-                </tr>
-              </thead>
-              <tbody>
-                {expenses.map((expense) => (
-                  <tr key={expense.id} className="border-glass-line border-t">
-                    <td className="py-2 pr-4">
-                      {fmtDate(expense.expense_date)}
-                    </td>
-                    <td className="py-2 pr-4 text-ink-soft">
-                      {t(`expenseForm.categories.${expense.category}`)}
-                    </td>
-                    <td className="py-2 pr-4">{expense.description}</td>
-                    <td className="py-2 pr-4 text-right text-neg">
-                      {fmt(expense.amount_cents)}
-                    </td>
-                    <td className="py-2 text-right">
-                      <DeleteRowButton action={deleteExpense} id={expense.id} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <ExpensesTable
+              rows={expenseRows}
+              labels={{
+                date: t('tables.date'),
+                category: t('tables.category'),
+                description: t('tables.description'),
+                amount: t('tables.amount'),
+              }}
+              deleteAction={deleteExpense}
+            />
           )}
         </GlassCard>
       </section>

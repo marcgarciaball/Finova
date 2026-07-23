@@ -54,6 +54,7 @@ export async function getCoinGeckoQuote(
     currency: target.currency,
     fetchedAt: new Date().toISOString(),
     priceCents: Math.round(price * 100),
+    provider: 'coingecko',
     quoteType: 'live', // 24/7 market
   }
 }

@@ -19,12 +19,14 @@ export async function WealthAllocation({
   cashCents,
   investedByType,
   realEstateCents = 0,
+  manualAssetsCents = 0,
   currency,
   className,
 }: {
   cashCents: number
   investedByType: Partial<Record<AssetType, number>>
   realEstateCents?: number
+  manualAssetsCents?: number
   currency: string
   className?: string
 }) {
@@ -42,6 +44,11 @@ export async function WealthAllocation({
       })
     ),
     { key: 'realEstate', label: t('realEstate'), cents: realEstateCents },
+    {
+      key: 'manualAssets',
+      label: t('manualAssets'),
+      cents: manualAssetsCents,
+    },
   ].filter((r) => r.cents > 0)
 
   const total = rows.reduce((sum, r) => sum + r.cents, 0)

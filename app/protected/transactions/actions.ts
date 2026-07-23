@@ -1,10 +1,20 @@
 'use server'
 
 import { selectCategory } from '@finova/domain/rules/match'
+import { applyFilters } from '@finova/domain/transactions/apply-filters'
+import {
+  TRANSACTION_TYPES,
+  type TransactionFilters,
+} from '@finova/domain/transactions/filters'
 import {
   composeSignedAmount,
   parseTagsInput,
 } from '@finova/domain/transactions/form'
+import { PAGE_SIZE } from '@finova/domain/transactions/pagination'
+import {
+  DEFAULT_TRANSACTION_SORT,
+  type TransactionSort,
+} from '@finova/domain/transactions/sort'
 import { buildTransferLegs } from '@finova/domain/transactions/transfer'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -17,6 +27,7 @@ import {
   parseAmountToCents,
   updateTransactionSchema,
 } from '@/lib/validation/transaction'
+import { listTransactions, type TransactionPage } from './data'
 
 /**
  * CRUD + recategorize Server Actions for transactions (P1-05).
@@ -330,6 +341,21 @@ export async function recategorizeTransaction(
   return { ok: true }
 }
 
+/**
+ * Fetch the next batch of transactions for the "load more" control. The
+ * client already holds `loaded` rows (the count so far); this returns the
+ * next {@link PAGE_SIZE} rows after that, plus the current total so the
+ * client knows whether to keep showing "load more".
+ */
+export async function loadMoreTransactions(
+  filters: TransactionFilters,
+  loaded: number,
+  sort: TransactionSort = DEFAULT_TRANSACTION_SORT
+): Promise<TransactionPage> {
+  await requireUser()
+  return listTransactions(filters, loaded, loaded + PAGE_SIZE - 1, sort)
+}
+
 export async function deleteTransaction(id: string): Promise<ActionResult> {
   await requireUser()
   if (!z.string().uuid().safeParse(id).success) {
@@ -467,4 +493,76 @@ export async function recategorizeUncategorized(): Promise<RecategorizeResult> {
 
   revalidatePath(TX_PATH)
   return { ok: true, updated, scanned: rows.length }
+}
+
+const uuidArray = z.array(z.string().uuid())
+
+const bulkDeleteFiltersSchema = z.object({
+  accountId: z.string().uuid().nullable(),
+  categoryId: z.string().min(1).nullable(),
+  type: z.enum(TRANSACTION_TYPES).nullable(),
+  from: z.string().nullable(),
+  to: z.string().nullable(),
+  q: z.string().nullable(),
+}) satisfies z.ZodType<TransactionFilters>
+
+const bulkDeleteInputSchema = z.discriminatedUnion('mode', [
+  z.object({ mode: z.literal('ids'), ids: uuidArray.min(1) }),
+  z.object({
+    mode: z.literal('filtered'),
+    filters: bulkDeleteFiltersSchema,
+    excludeIds: uuidArray,
+  }),
+])
+
+export type BulkDeleteResult =
+  | { ok: true; deleted: number }
+  | { ok: false; error: string }
+
+/**
+ * Delete many transactions in one statement: either an explicit id list, or
+ * every row matching `filters` minus `excludeIds` (the "select all matching
+ * filter, then un-check a few" case). RLS scopes both to the caller's own
+ * rows regardless of what `filters`/`ids` claim, so a tampered client input
+ * can only narrow the set further, never widen it to another user's rows.
+ */
+export async function bulkDeleteTransactions(
+  input: unknown
+): Promise<BulkDeleteResult> {
+  await requireUser()
+  const parsed = bulkDeleteInputSchema.safeParse(input)
+  if (!parsed.success) {
+    return { ok: false, error: UNEXPECTED }
+  }
+
+  const supabase = await createClient()
+  try {
+    if (parsed.data.mode === 'ids') {
+      const { error, count } = await supabase
+        .from('transactions')
+        .delete({ count: 'exact' })
+        .in('id', parsed.data.ids)
+      if (error) {
+        return { ok: false, error: UNEXPECTED }
+      }
+      revalidatePath(TX_PATH)
+      return { ok: true, deleted: count ?? 0 }
+    }
+
+    let query = applyFilters(
+      supabase.from('transactions').delete({ count: 'exact' }),
+      parsed.data.filters
+    )
+    if (parsed.data.excludeIds.length > 0) {
+      query = query.not('id', 'in', `(${parsed.data.excludeIds.join(',')})`)
+    }
+    const { error, count } = await query
+    if (error) {
+      return { ok: false, error: UNEXPECTED }
+    }
+    revalidatePath(TX_PATH)
+    return { ok: true, deleted: count ?? 0 }
+  } catch {
+    return { ok: false, error: UNEXPECTED }
+  }
 }

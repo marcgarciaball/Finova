@@ -18,8 +18,6 @@ import {
 } from '@/lib/validation/form'
 import { listTxnsForPreview } from './data'
 
-export type { ActionResult }
-
 const RULES_PATH = '/protected/settings/rules'
 
 /** Parse a JSON string field (conditions) without throwing. */
@@ -45,7 +43,9 @@ export async function createRule(
     conditions: parseJson(formData.get('conditions')),
     categoryId: formData.get('categoryId'),
     priority: Number(formData.get('priority') ?? 0),
-    enabled: formData.get('enabled') === 'on',
+    // The create form has no enabled toggle — new rules always start active;
+    // disabling happens later via the separate toggle in RuleManager.
+    enabled: true,
   })
   if (!parsed.success) {
     return {

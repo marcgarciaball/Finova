@@ -1,7 +1,11 @@
 import 'server-only'
 import { applyFilters } from '@finova/domain/transactions/apply-filters'
 import type { TransactionFilters } from '@finova/domain/transactions/filters'
-import { pageRange } from '@finova/domain/transactions/pagination'
+import {
+  DEFAULT_TRANSACTION_SORT,
+  type TransactionSort,
+  transactionSortColumn,
+} from '@finova/domain/transactions/sort'
 import { requireUser } from '@/lib/auth/require-user'
 import { createClient } from '@/lib/supabase/server'
 import { type AccountRow, accountRowSchema } from '@/lib/validation/account'
@@ -25,25 +29,27 @@ export interface TransactionPage {
 }
 
 /**
- * One page of the current user's transactions, filtered, newest first. Uses a
- * PostgREST `.range()` + `count: 'exact'` so only `PAGE_SIZE` rows are fetched
- * and rendered even for a multi-year ledger, while the UI still knows the total
- * page count. `page` is 1-based; an out-of-range page yields an empty `rows`.
+ * A `[from, to]` (inclusive, 0-based) slice of the current user's
+ * transactions, filtered, newest first. Uses a PostgREST `.range()` +
+ * `count: 'exact'` so only the requested slice is fetched, while the UI still
+ * knows the total matching count (to decide whether "load more" should show).
  */
 export async function listTransactions(
   filters: TransactionFilters,
-  page = 1
+  from: number,
+  to: number,
+  sort: TransactionSort = DEFAULT_TRANSACTION_SORT
 ): Promise<TransactionPage> {
   await requireUser()
   const supabase = await createClient()
 
-  const { from, to } = pageRange(page)
+  const { column, ascending } = transactionSortColumn(sort)
   const query = applyFilters(
     supabase.from('transactions').select('*', { count: 'exact' }),
     filters
   )
-    .order('occurred_at', { ascending: false })
-    .order('id', { ascending: false })
+    .order(column, { ascending })
+    .order('id', { ascending })
     .range(from, to)
 
   const { data, error, count } = await query
