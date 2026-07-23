@@ -146,41 +146,43 @@ export function EarningsCard({
         <h3 className="font-medium text-ink-soft text-xs uppercase tracking-wide">
           {t('title')}
         </h3>
+        <div className="flex items-center gap-2">
+          {view === 'month' ? (
+            <select
+              aria-label={t('nav.selectMonth')}
+              className={SELECT_CLASS}
+              value={periodMonth ?? ''}
+              onChange={(e) => onMonthSelect(e.target.value)}
+            >
+              {monthOptions.map((m) => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          ) : null}
+          <select
+            aria-label={t('nav.selectYear')}
+            className={SELECT_CLASS}
+            value={periodYear}
+            onChange={(e) => onYearSelect(e.target.value)}
+          >
+            {yearOptions.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-center">
         <SegmentedControl
           aria-label={t('title')}
           value={unit}
           onValueChange={onUnitChange}
           options={UNITS.map((u) => ({ label: t(`units.${u}`), value: u }))}
         />
-      </div>
-
-      <div className="flex items-center justify-center gap-2">
-        {view === 'month' ? (
-          <select
-            aria-label={t('nav.selectMonth')}
-            className={SELECT_CLASS}
-            value={periodMonth ?? ''}
-            onChange={(e) => onMonthSelect(e.target.value)}
-          >
-            {monthOptions.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
-          </select>
-        ) : null}
-        <select
-          aria-label={t('nav.selectYear')}
-          className={SELECT_CLASS}
-          value={periodYear}
-          onChange={(e) => onYearSelect(e.target.value)}
-        >
-          {yearOptions.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </select>
       </div>
 
       <div className="flex items-baseline gap-2">
