@@ -1,9 +1,9 @@
 'use server'
 
+import { previewRuleMatches } from '@finova/domain/rules/preview'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { requireUser } from '@/lib/auth/require-user'
-import { previewRuleMatches } from '@/lib/domain/rules/preview'
 import { createClient } from '@/lib/supabase/server'
 import {
   conditionsSchema,
@@ -17,8 +17,6 @@ import {
   VALIDATION_FAILED,
 } from '@/lib/validation/form'
 import { listTxnsForPreview } from './data'
-
-export type { ActionResult }
 
 const RULES_PATH = '/protected/settings/rules'
 
@@ -45,7 +43,9 @@ export async function createRule(
     conditions: parseJson(formData.get('conditions')),
     categoryId: formData.get('categoryId'),
     priority: Number(formData.get('priority') ?? 0),
-    enabled: formData.get('enabled') === 'on',
+    // The create form has no enabled toggle — new rules always start active;
+    // disabling happens later via the separate toggle in RuleManager.
+    enabled: true,
   })
   if (!parsed.success) {
     return {

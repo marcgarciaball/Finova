@@ -1,12 +1,12 @@
 'use client'
 
+import { ASSET_TYPES, type AssetType } from '@finova/domain/investments/types'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState, useTransition } from 'react'
 import { Button } from '@/components/ui/Button'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
-import { ASSET_TYPES, type AssetType } from '@/lib/domain/investments/types'
 import type { AssetOption, ResolvedAsset } from '@/lib/investments/asset-option'
 import type { ActionResult, ResolveResult, SearchResult } from './actions'
 import { InvestmentTransactionForm } from './InvestmentTransactionForm'

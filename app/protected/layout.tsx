@@ -7,6 +7,7 @@ import {
   listCategoriesForPicker,
 } from '@/app/protected/transactions/data'
 import { AvatarMenu } from '@/components/nav/AvatarMenu'
+import { PrimaryNav, type PrimaryNavEntry } from '@/components/nav/PrimaryNav'
 import { SiteFooter } from '@/components/SiteFooter'
 import { QuickAddTransaction } from '@/components/transactions/QuickAddTransaction'
 import { Button } from '@/components/ui/Button'
@@ -27,14 +28,26 @@ export default async function ProtectedLayout({
   const todayIso = new Date().toISOString().slice(0, 10)
   const email = typeof claims.email === 'string' ? claims.email : ''
 
-  const navLinks = [
-    { href: '/protected', label: t('dashboard.nav') },
-    { href: '/protected/transactions', label: t('transactions.nav') },
-    { href: '/protected/expenses', label: t('expenses.nav') },
-    { href: '/protected/accounts', label: t('accounts.nav') },
-    { href: '/protected/investments', label: t('investments.nav') },
-    { href: '/protected/real-estate', label: t('realEstate.nav') },
-    { href: '/protected/data', label: t('data.nav') },
+  const navEntries: PrimaryNavEntry[] = [
+    { type: 'link', href: '/protected', label: t('dashboard.nav') },
+    {
+      type: 'group',
+      label: t('nav.movements'),
+      children: [
+        { href: '/protected/transactions', label: t('transactions.nav') },
+        { href: '/protected/expenses', label: t('expenses.nav') },
+        { href: '/protected/accounts', label: t('accounts.nav') },
+      ],
+    },
+    {
+      type: 'group',
+      label: t('nav.wealth'),
+      children: [
+        { href: '/protected/investments', label: t('investments.nav') },
+        { href: '/protected/real-estate', label: t('realEstate.nav') },
+        { href: '/protected/manual-assets', label: t('manualAssets.nav') },
+      ],
+    },
   ]
 
   return (
@@ -47,22 +60,12 @@ export default async function ProtectedLayout({
       </a>
       <div className="flex w-full flex-1 flex-col items-center gap-20">
         <nav className="flex h-16 w-full justify-center border-b border-b-foreground/10">
-          <div className="flex w-full max-w-5xl items-center justify-between p-3 px-5 text-sm">
+          <div className="flex w-full max-w-7xl items-center justify-between p-3 px-5 text-sm">
+            <Link href="/protected" className="font-semibold text-lg">
+              {t('app.name')}
+            </Link>
             <div className="flex items-center gap-6">
-              <Link href="/protected" className="font-semibold text-lg">
-                {t('app.name')}
-              </Link>
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-ink-soft text-sm hover:text-ink"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-            <div className="flex items-center gap-2">
+              <PrimaryNav entries={navEntries} />
               <QuickAddTransaction
                 accounts={accounts}
                 categories={categories}
@@ -85,7 +88,7 @@ export default async function ProtectedLayout({
         </nav>
         <main
           id="main-content"
-          className="flex w-full max-w-5xl flex-1 flex-col gap-20 p-5"
+          className="flex w-full max-w-7xl flex-1 flex-col gap-20 p-5"
         >
           {children}
         </main>

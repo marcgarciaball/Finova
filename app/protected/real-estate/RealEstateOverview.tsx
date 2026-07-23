@@ -1,3 +1,5 @@
+import { format, money } from '@finova/domain/money'
+import type { PropertyType } from '@finova/domain/real-estate/types'
 import {
   Building,
   Building2,
@@ -12,10 +14,10 @@ import { HeroCard } from '@/components/dashboard/HeroCard'
 import { KpiCard } from '@/components/dashboard/KpiCard'
 import { Badge } from '@/components/ui/Badge'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { format, money } from '@/lib/domain/money'
-import type { PropertyType } from '@/lib/domain/real-estate/types'
 import type { PropertyOverview, RealEstateOverview } from './data'
 import { rentBreakdown } from './data'
+import { RealEstateSortBar } from './RealEstateSortBar'
+import type { PropertySort } from './sort'
 
 const TYPE_ICONS: Record<PropertyType, typeof Home> = {
   commercial: Store,
@@ -36,14 +38,17 @@ function pct(v: number | null): string {
  */
 export async function RealEstateOverviewSection({
   overview,
+  sort,
 }: {
   overview: RealEstateOverview
+  sort: PropertySort | null
 }) {
   const [t, locale] = await Promise.all([
     getTranslations('realEstate'),
     getLocale(),
   ])
-  const { properties, totals } = overview
+  const { totals } = overview
+  const properties = sortProperties(overview.properties, sort)
 
   if (properties.length === 0) {
     return (
@@ -143,9 +148,12 @@ export async function RealEstateOverviewSection({
       })}
 
       <section className="flex flex-col gap-4">
-        <h2 className="font-semibold text-lg">
-          {t('overview.propertiesTitle')}
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-semibold text-lg">
+            {t('overview.propertiesTitle')}
+          </h2>
+          <RealEstateSortBar sort={sort} />
+        </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {properties.map((p) => (
             <PropertyCard
@@ -170,6 +178,33 @@ export async function RealEstateOverviewSection({
       </section>
     </div>
   )
+}
+
+function sortProperties(
+  properties: PropertyOverview[],
+  sort: PropertySort | null
+): PropertyOverview[] {
+  if (!sort) {
+    return properties
+  }
+  const value = (p: PropertyOverview) => {
+    switch (sort.field) {
+      case 'name':
+        return p.property.name
+      case 'value':
+        return p.property.current_value_cents
+      case 'equity':
+        return p.metrics.equityCents
+    }
+  }
+  const sorted = [...properties].sort((a, b) => {
+    const av = value(a)
+    const bv = value(b)
+    return typeof av === 'string' && typeof bv === 'string'
+      ? av.localeCompare(bv)
+      : (av as number) - (bv as number)
+  })
+  return sort.dir === 'asc' ? sorted : sorted.reverse()
 }
 
 function PropertyCard({

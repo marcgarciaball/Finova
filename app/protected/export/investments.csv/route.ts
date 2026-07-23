@@ -1,4 +1,4 @@
-import { investmentTransactionsCsv } from '@/lib/domain/export/bundle'
+import { investmentTransactionsCsv } from '@finova/domain/export/bundle'
 import { getInvestmentsExportData } from '../data'
 
 /**

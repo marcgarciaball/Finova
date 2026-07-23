@@ -1,5 +1,14 @@
 'use client'
 
+import { format, money } from '@finova/domain/money'
+import { totalFromMonthlyRentCents } from '@finova/domain/real-estate/metrics'
+import {
+  EXPENSE_CATEGORIES,
+  LOAN_TYPES,
+  RATE_TYPES,
+  RECURRENCES,
+  VALUATION_SOURCES,
+} from '@finova/domain/real-estate/types'
 import { Pencil } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { type ReactNode, useActionState, useEffect, useState } from 'react'
@@ -13,15 +22,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
-import { format, money } from '@/lib/domain/money'
-import { totalFromMonthlyRentCents } from '@/lib/domain/real-estate/metrics'
-import {
-  EXPENSE_CATEGORIES,
-  LOAN_TYPES,
-  RATE_TYPES,
-  RECURRENCES,
-  VALUATION_SOURCES,
-} from '@/lib/domain/real-estate/types'
 import type { PropertyLoanRow } from '@/lib/validation/real-estate'
 import type { ActionResult } from '../actions'
 import {

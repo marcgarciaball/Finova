@@ -1,8 +1,8 @@
+import { projectedAnnualInterestCents } from '@finova/domain/accounts/interest'
+import type { AccountBalance } from '@finova/domain/dashboard'
+import { format, money } from '@finova/domain/money'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { projectedAnnualInterestCents } from '@/lib/domain/accounts/interest'
-import type { AccountBalance } from '@/lib/domain/dashboard'
-import { format, money } from '@/lib/domain/money'
 import { cn } from '@/lib/utils'
 import type { AccountRow } from '@/lib/validation/account'
 

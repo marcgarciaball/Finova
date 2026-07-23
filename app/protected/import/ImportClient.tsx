@@ -1,19 +1,19 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { useActionState, useEffect, useMemo, useState } from 'react'
-import { Button } from '@/components/ui/Button'
-import { Card, CardContent } from '@/components/ui/Card'
-import { Input } from '@/components/ui/Input'
-import { Label } from '@/components/ui/Label'
 import {
   buildColumnMapping,
   emptyFormState,
   formStateFromMapping,
   type MappingFormState,
   suggestMapping,
-} from '@/lib/domain/import/mapping-form'
-import type { ParseUploadData } from '@/lib/domain/import/parse-upload'
+} from '@finova/domain/import/mapping-form'
+import type { ParseUploadData } from '@finova/domain/import/parse-upload'
+import { useTranslations } from 'next-intl'
+import { useActionState, useEffect, useMemo, useState } from 'react'
+import { Button } from '@/components/ui/Button'
+import { Card, CardContent } from '@/components/ui/Card'
+import { Input } from '@/components/ui/Input'
+import { Label } from '@/components/ui/Label'
 import type { AccountRow } from '@/lib/validation/account'
 import { type ParseResult, saveTemplate, uploadImport } from './actions'
 import { ColumnMappingForm } from './ColumnMappingForm'

@@ -1,10 +1,10 @@
+import { categoryLabel } from '@finova/domain/categories/label'
+import { format, money } from '@finova/domain/money'
 import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { CategoryIcon } from '@/components/dashboard/CategoryIcon'
 import { ListRow } from '@/components/dashboard/ListRow'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { categoryLabel } from '@/lib/domain/categories/label'
-import { format, money } from '@/lib/domain/money'
 import type { CategoryRow } from '@/lib/validation/category'
 import type { DashboardTxn } from './data'
 

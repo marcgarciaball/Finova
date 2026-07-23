@@ -21,7 +21,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@finova/domain": ["./packages/domain/src/index.ts"],
+      "@finova/domain/*": ["./packages/domain/src/*"]
     }
   },
   "include": [
@@ -33,6 +35,7 @@
   ],
   "exclude": [
     "node_modules",
+    "mobile",
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.spec.ts",

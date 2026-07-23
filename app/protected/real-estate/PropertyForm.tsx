@@ -1,12 +1,12 @@
 'use client'
 
+import { PROPERTY_TYPES } from '@finova/domain/real-estate/types'
 import { useTranslations } from 'next-intl'
 import { useActionState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
-import { PROPERTY_TYPES } from '@/lib/domain/real-estate/types'
 import type { ActionResult } from './actions'
 
 const KNOWN_ERROR_KEYS = new Set([

@@ -1,5 +1,5 @@
+import type { AssetType } from '@finova/domain/investments/types'
 import { z } from 'zod'
-import type { AssetType } from '@/lib/domain/investments/types'
 import {
   type AssetProfile,
   ProviderError,
@@ -67,6 +67,7 @@ export async function getFinnhubQuote(
     currency: target.currency,
     fetchedAt: new Date(t * 1000).toISOString(),
     priceCents: Math.round(c * 100),
+    provider: 'finnhub',
     quoteType: 'live',
   }
 }

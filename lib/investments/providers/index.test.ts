@@ -39,6 +39,37 @@ describe('getQuote routing', () => {
       .calls[0]?.[0] as string
     expect(url).toContain('coingecko.com')
   })
+
+  it('falls back to yahoo when finnhub rejects the exchange', async () => {
+    const fetchImpl = vi.fn(async (url: string) => {
+      if (url.includes('finnhub.io')) {
+        return { ok: false, status: 403, json: async () => ({}) } as Response
+      }
+      return jsonRes({
+        chart: {
+          result: [
+            {
+              meta: {
+                currency: 'USD',
+                regularMarketPrice: 75.42,
+                regularMarketTime: 1750000000,
+              },
+            },
+          ],
+        },
+      })
+    }) as unknown as typeof fetch
+    const target: QuoteTarget = {
+      coingeckoId: null,
+      currency: 'USD',
+      ticker: 'VUSD.L',
+      type: 'etf',
+    }
+    const q = await getQuote(target, { apiKey: 'k', fetchImpl })
+    expect(q.provider).toBe('yahoo')
+    expect(q.priceCents).toBe(7542)
+    expect(fetchImpl).toHaveBeenCalledTimes(2)
+  })
 })
 
 describe('searchSymbol routing', () => {

@@ -1,5 +1,6 @@
 'use client'
 
+import { format, money } from '@finova/domain/money'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import {
@@ -14,7 +15,6 @@ import {
 } from 'recharts'
 import { seriesColor } from '@/components/charts/chartTheme'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
-import { format, money } from '@/lib/domain/money'
 import type { HistoryPoint, TradeMarker } from './overview-data'
 
 type Range = '1w' | '1m' | '3m' | 'ytd' | '1y' | 'all'

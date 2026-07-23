@@ -1,5 +1,5 @@
+import { fromDecimal } from '@finova/domain/money'
 import { z } from 'zod'
-import { fromDecimal } from '@/lib/domain/money'
 import { currencySchema } from '@/lib/validation/account'
 
 /**

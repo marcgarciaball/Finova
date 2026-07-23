@@ -1,11 +1,11 @@
 'use client'
 
+import { format, money } from '@finova/domain/money'
 import { AlertTriangle, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState, useTransition } from 'react'
 import { Button } from '@/components/ui/Button'
-import { format, money } from '@/lib/domain/money'
 import { recategorizeUncategorized } from './transactions/actions'
 
 const DISMISS_KEY = 'finova:dataHealthDismissed'

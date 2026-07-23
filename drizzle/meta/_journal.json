@@ -148,6 +148,48 @@
       "when": 1784554127391,
       "tag": "0020_loud_scorpion",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1784725373161,
+      "tag": "0021_solid_exodus",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1784727099400,
+      "tag": "0022_large_jasper_sitwell",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1784727100000,
+      "tag": "0023_more_bank_pattern_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1784727100001,
+      "tag": "0024_bar_pattern_rule",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1784727100002,
+      "tag": "0025_bizum_income_category",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1784727100003,
+      "tag": "0026_bizum_transactions_card_categories",
+      "breakpoints": true
     }
   ]
 }

@@ -1,9 +1,9 @@
 'use client'
+import { PERIODS } from '@finova/domain/dashboard'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useTransition } from 'react'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
-import { PERIODS } from '@/lib/domain/dashboard'
 
 /**
  * URL-driven dashboard period control (P4-04). Mirrors `TransactionFilters`:

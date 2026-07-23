@@ -1,13 +1,13 @@
 import 'server-only'
-import { requireUser } from '@/lib/auth/require-user'
 import {
   expenseFingerprint,
   incomeFingerprint,
   loanFingerprint,
   propertyFingerprint,
   valuationFingerprint,
-} from '@/lib/domain/import/backup/fingerprint'
-import type { ExistingRealEstate } from '@/lib/domain/import/backup/plan'
+} from '@finova/domain/import/backup/fingerprint'
+import type { ExistingRealEstate } from '@finova/domain/import/backup/plan'
+import { requireUser } from '@/lib/auth/require-user'
 import { createClient } from '@/lib/supabase/server'
 
 /**

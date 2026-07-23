@@ -23,7 +23,9 @@
   "nav": {
     "menu": "Menú de cuenta",
     "data": "Datos",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "movements": "Movimientos",
+    "wealth": "Patrimonio"
   },
   "protected": {
     "title": "Tu cuenta",
@@ -111,6 +113,17 @@
       "none": "Nada que categorizar — ninguna transacción sin categoría coincidió con una regla.",
       "error": "No se pudo categorizar. Inténtalo de nuevo."
     },
+    "selection": {
+      "enable": "Seleccionar transacciones",
+      "selectPage": "Seleccionar todo en esta página",
+      "selectRow": "Seleccionar transacción",
+      "count": "{count} seleccionadas",
+      "selectAllFiltered": "Seleccionar las {count} que coinciden con el filtro",
+      "clear": "Borrar selección",
+      "deleteButton": "Eliminar seleccionadas",
+      "confirmTitle": "¿Eliminar {count} transacciones?",
+      "confirmBody": "No se puede deshacer."
+    },
     "fields": {
       "account": "Cuenta",
       "category": "Categoría",
@@ -151,10 +164,7 @@
     },
     "makeRule": "Crear regla",
     "pagination": {
-      "label": "Paginación",
-      "previous": "Anterior",
-      "next": "Siguiente",
-      "pageOf": "Página {page} de {total}"
+      "loadMore": "Cargar más"
     },
     "duplicate": "Duplicar",
     "transfer": {
@@ -164,6 +174,12 @@
       "submit": "Transferir",
       "sameAccount": "La cuenta de origen y destino deben ser distintas.",
       "defaultDescription": "Transferencia"
+    },
+    "sort": {
+      "label": "Ordenar por",
+      "date": "Fecha",
+      "description": "Descripción",
+      "amount": "Importe"
     }
   },
   "import": {
@@ -417,10 +433,15 @@
       "entertainment": "Ocio",
       "education": "Educación",
       "travel": "Viajes",
+      "bizum_expense": "Bizum enviado",
+      "transactions_expense": "Transacciones",
+      "card_transaction": "Transacción con tarjeta",
       "other_expense": "Otros gastos",
       "salary": "Salario",
       "gifts": "Regalos",
-      "other_income": "Otros ingresos"
+      "other_income": "Otros ingresos",
+      "bizum_income": "Bizum recibido",
+      "transactions_income": "Transacciones"
     }
   },
   "rules": {
@@ -580,7 +601,20 @@
       "coffee": "Cafetería (coffee)",
       "restaurant": "Restaurante (restaurant)",
       "gym": "Gimnasio (gym)",
-      "electricity": "Electricidad (electricity)"
+      "electricity": "Electricidad (electricity)",
+      "plenergy": "Plenergy",
+      "cortefiel": "Cortefiel",
+      "paypal": "PayPal",
+      "irpf": "IRPF",
+      "itv": "ITV",
+      "impuestos": "Impuestos",
+      "abono_bizum": "Bizum recibido",
+      "pago_bizum": "Bizum enviado",
+      "transferencia_a": "Transferencia enviada",
+      "abono_transferencia": "Transferencia recibida",
+      "adeudo_recibo": "Adeudo de recibo",
+      "bar": "Bar",
+      "card_transaction_fallback": "Transacción con tarjeta"
     }
   },
   "dashboard": {
@@ -628,7 +662,8 @@
     "wealthAllocation": {
       "title": "¿Dónde está mi dinero?",
       "cash": "Efectivo",
-      "realEstate": "Inmuebles"
+      "realEstate": "Inmuebles",
+      "manualAssets": "Activos manuales"
     },
     "donutEmpty": {
       "title": "Aún no hay nada categorizado",
@@ -664,6 +699,8 @@
       "byAccount": "Gasto entre cuentas",
       "incomeSources": "De dónde viene tu ingreso",
       "dividends": "Dividendos",
+      "rent": "Alquiler",
+      "manualAssetsIncome": "Bonos y otros activos",
       "empty": "No hay gastos en este periodo."
     },
     "granularity": {
@@ -706,8 +743,14 @@
         "month": "/ mes",
         "year": "/ año"
       },
+      "nav": {
+        "selectMonth": "Mes",
+        "selectYear": "Año"
+      },
       "empty": "Aún no hay ingresos registrados.",
-      "basedOn": "Basado en tus ingresos de {month}. Por día lo divide entre los días del mes; por año lo multiplica por 12."
+      "basedOn": "Basado en tus ingresos de {month}. Por día lo divide entre los días del mes.",
+      "basedOnYear": "Basado en tus ingresos de {year}.",
+      "basedOnYearSoFar": "Basado en tus ingresos de lo que va de {year} — el año todavía no ha terminado."
     }
   },
   "export": {
@@ -1120,6 +1163,104 @@
       "endBeforeStart": "La fecha de fin es anterior al inicio",
       "invalid": "Valor no válido",
       "unexpected": "Algo ha ido mal. Inténtalo de nuevo."
+    },
+    "sort": {
+      "label": "Ordenar por",
+      "name": "Nombre"
+    }
+  },
+  "manualAssets": {
+    "nav": "Activos manuales",
+    "title": "Activos manuales",
+    "subtitle": "Bonos, capital privado, préstamos P2P, coleccionables… cualquier cosa sin cotización de mercado.",
+    "addTitle": "Añadir activo",
+    "empty": {
+      "title": "Aún no hay activos manuales",
+      "body": "Registra un bono, participación de capital privado, préstamo P2P o coleccionable introduciendo tú mismo su valor."
+    },
+    "types": {
+      "bond": "Bono",
+      "private_equity": "Capital privado",
+      "p2p_lending": "Préstamo P2P",
+      "collectible": "Coleccionable",
+      "other": "Otro"
+    },
+    "overview": {
+      "totalsTitle": "Cartera · {currency}",
+      "value": "Valor total",
+      "assetCount": "{count, plural, =1 {1 activo} other {# activos}}",
+      "assetsTitle": "Activos"
+    },
+    "card": {
+      "value": "Valor",
+      "gainLoss": "Ganancia/pérdida",
+      "closed": "Cerrado"
+    },
+    "form": {
+      "name": "Nombre",
+      "namePlaceholder": "p. ej. Bono corporativo 2030",
+      "type": "Tipo de activo",
+      "currency": "Divisa",
+      "acquisitionDate": "Fecha de adquisición",
+      "costBasis": "Coste de adquisición",
+      "currentValue": "Valor estimado actual",
+      "notes": "Notas",
+      "isClosed": "Cerrado (vendido / reembolsado / vencido)",
+      "submit": "Guardar activo",
+      "update": "Actualizar activo"
+    },
+    "detail": {
+      "back": "Volver a activos manuales",
+      "acquiredOn": "Adquirido el {date}",
+      "currentValue": "Valor actual",
+      "costBasis": "Coste de adquisición",
+      "gainLoss": "Ganancia/pérdida",
+      "valuationsTitle": "Valor en el tiempo",
+      "empty": "Aún no hay nada aquí.",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar esta entrada? Esta acción no se puede deshacer.",
+      "confirmDeleteAsset": "¿Eliminar este activo y todo lo asociado a él? Esta acción no se puede deshacer.",
+      "edit": "Editar",
+      "addValuation": "Añadir valoración",
+      "incomeTitle": "Ingresos recibidos",
+      "incomeEmpty": "Aún no hay ingresos registrados.",
+      "addIncome": "Añadir ingreso"
+    },
+    "valuationForm": {
+      "valuationDate": "Fecha de valoración",
+      "value": "Valor estimado",
+      "source": "Origen",
+      "sources": {
+        "manual": "Estimación propia",
+        "other": "Otro"
+      },
+      "notes": "Notas",
+      "submit": "Guardar valoración"
+    },
+    "incomeForm": {
+      "receivedDate": "Fecha de cobro",
+      "amount": "Importe",
+      "notes": "Notas",
+      "submit": "Guardar ingreso"
+    },
+    "tables": {
+      "date": "Fecha",
+      "value": "Valor",
+      "source": "Origen",
+      "amount": "Importe"
+    },
+    "errors": {
+      "invalidAmount": "Introduce un importe válido",
+      "invalidDate": "Introduce una fecha válida",
+      "required": "Este campo es obligatorio",
+      "tooLong": "Demasiado largo",
+      "invalid": "Valor no válido",
+      "validationFailed": "Corrige los campos marcados",
+      "unexpected": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "sort": {
+      "label": "Ordenar por",
+      "name": "Nombre"
     }
   },
   "settings": {

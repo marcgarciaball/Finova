@@ -1,6 +1,6 @@
+import { INVESTMENT_TXN_TYPES } from '@finova/domain/investments/types'
+import { fromDecimal } from '@finova/domain/money'
 import { z } from 'zod'
-import { INVESTMENT_TXN_TYPES } from '@/lib/domain/investments/types'
-import { fromDecimal } from '@/lib/domain/money'
 import { currencySchema } from '@/lib/validation/account'
 
 /**

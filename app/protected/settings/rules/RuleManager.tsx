@@ -1,12 +1,12 @@
 'use client'
 
+import { categoryLabel } from '@finova/domain/categories/label'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { categoryLabel } from '@/lib/domain/categories/label'
 import type { AccountRow } from '@/lib/validation/account'
 import type { CategorizationRuleRow } from '@/lib/validation/categorization-rule'
 import type { CategoryRow } from '@/lib/validation/category'
@@ -28,12 +28,13 @@ export function RuleManager({
 }) {
   const t = useTranslations('settings.rules')
   const tDefaults = useTranslations('categories.defaults')
+  const tRuleDefaults = useTranslations('rules.defaults')
   const [creating, setCreating] = useState(Boolean(initialDraft))
   const [editingId, setEditingId] = useState<string | null>(null)
 
   const categoryById = new Map(categories.map((c) => [c.id, c] as const))
   const ruleName = (r: CategorizationRuleRow): string =>
-    r.name_key ? t(`defaults.${r.name_key}`) : r.name
+    r.name_key ? tRuleDefaults(r.name_key) : r.name
   const targetLabel = (r: CategorizationRuleRow): string => {
     const c = categoryById.get(r.category_id)
     return c ? categoryLabel(c, tDefaults) : '—'

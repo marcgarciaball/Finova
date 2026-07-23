@@ -1,5 +1,5 @@
+import { format, money } from '@finova/domain/money'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { format, money } from '@/lib/domain/money'
 import { cn } from '@/lib/utils'
 
 /**

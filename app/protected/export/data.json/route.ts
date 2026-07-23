@@ -1,9 +1,9 @@
-import { buildJsonBundle } from '@/lib/domain/export/bundle'
+import { buildJsonBundle } from '@finova/domain/export/bundle'
 import {
   filtersToSearchParams,
   hasActiveFilters,
   parseFilters,
-} from '@/lib/domain/transactions/filters'
+} from '@finova/domain/transactions/filters'
 import { getExportData } from '../data'
 
 const BUNDLE_VERSION = '1'

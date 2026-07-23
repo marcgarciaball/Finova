@@ -1,9 +1,9 @@
-import { z } from 'zod'
 import {
   ASSET_TYPES,
   INVESTMENT_TXN_TYPES,
   QUOTE_TYPES,
-} from '@/lib/domain/investments/types'
+} from '@finova/domain/investments/types'
+import { z } from 'zod'
 import { currencySchema } from '@/lib/validation/account'
 
 /**

@@ -1,6 +1,6 @@
+import { accountBalances } from '@finova/domain/dashboard'
 import { getTranslations } from 'next-intl/server'
 import { requireUser } from '@/lib/auth/require-user'
-import { accountBalances } from '@/lib/domain/dashboard'
 import { AccountList } from './account-list'
 import { CreateAccountPanel } from './CreateAccountPanel'
 import {

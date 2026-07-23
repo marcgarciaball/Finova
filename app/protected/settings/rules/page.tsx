@@ -1,5 +1,5 @@
+import { suggestRuleFromCorrection } from '@finova/domain/rules/suggest'
 import { requireUser } from '@/lib/auth/require-user'
-import { suggestRuleFromCorrection } from '@/lib/domain/rules/suggest'
 import { listAccounts, listCategories, listRules } from './data'
 import type { RuleFormInitial } from './RuleForm'
 import { RuleManager } from './RuleManager'

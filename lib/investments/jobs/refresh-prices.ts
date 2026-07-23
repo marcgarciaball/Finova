@@ -1,10 +1,10 @@
 import 'server-only'
-import { fxKey } from '@/lib/domain/investments/portfolio'
+import { fxKey } from '@finova/domain/investments/portfolio'
 import {
   buildHoldingRows,
   type QuoteForRebuild,
   type RebuildTxn,
-} from '@/lib/domain/investments/rebuild'
+} from '@finova/domain/investments/rebuild'
 import {
   fetchDailyRates,
   fetchRateHistory,
@@ -12,6 +12,8 @@ import {
   getFmpDailyPrices,
   getFmpDividends,
   getQuote,
+  getYahooDividends,
+  ProviderError,
 } from '@/lib/investments/providers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { assetRowSchema } from '@/lib/validation/investments'
@@ -88,9 +90,32 @@ export async function refreshPrices(): Promise<RefreshSummary> {
   const heldAssetIds = [...new Set(txns.map((t) => t.assetId))]
 
   // 2. Refresh quotes (bounded concurrency; failures keep stale cache).
+  // Providers now sometimes report the instrument's real trading currency
+  // (e.g. Yahoo for LSE-listed ETFs), which can differ from the asset's
+  // stored currency — convert via the daily FX rate so the holding still
+  // prices, rather than discarding a perfectly good quote.
+  const fxRateCache = new Map<string, Promise<number | null>>()
+  const getFxRate = (from: string, to: string): Promise<number | null> => {
+    if (from === to) {
+      return Promise.resolve(1)
+    }
+    const key = fxKey(from, to)
+    let pending = fxRateCache.get(key)
+    if (!pending) {
+      pending = fetchDailyRates(from, [to])
+        .then((d) => d.rates.find((r) => r.toCcy === to)?.rate ?? null)
+        .catch(() => null)
+      fxRateCache.set(key, pending)
+    }
+    return pending
+  }
+
   let quotesRefreshed = 0
   let quotesFailed = 0
   const quotes = new Map<string, QuoteForRebuild>()
+  // Native trading currency per asset (pre-FX-conversion) — 2b reuses this to
+  // convert dividend amounts, which come from the same instrument/currency.
+  const nativeCurrency = new Map<string, string>()
   if (heldAssetIds.length > 0) {
     const { data: assetData, error: assetError } = await admin
       .from('assets')
@@ -109,13 +134,22 @@ export async function refreshPrices(): Promise<RefreshSummary> {
           ticker: asset.ticker,
           type: asset.type,
         })
+        nativeCurrency.set(asset.id, quote.currency)
+        let priceCents = quote.priceCents
+        if (quote.currency !== asset.currency) {
+          const rate = await getFxRate(quote.currency, asset.currency)
+          if (rate === null) {
+            throw new Error(`no fx rate ${quote.currency}->${asset.currency}`)
+          }
+          priceCents = Math.round(quote.priceCents * rate)
+        }
         const { error } = await admin.from('cached_quotes').upsert(
           {
             asset_id: asset.id,
-            currency: quote.currency,
+            currency: asset.currency,
             fetched_at: quote.fetchedAt,
-            price_cents: quote.priceCents,
-            provider: asset.type === 'crypto' ? 'coingecko' : 'finnhub',
+            price_cents: priceCents,
+            provider: quote.provider,
             quote_type: quote.quoteType,
             stale: false,
           },
@@ -125,8 +159,8 @@ export async function refreshPrices(): Promise<RefreshSummary> {
           throw new Error(error.message)
         }
         quotes.set(asset.id, {
-          currency: quote.currency,
-          priceCents: quote.priceCents,
+          currency: asset.currency,
+          priceCents,
         })
         quotesRefreshed += 1
       } catch (e) {
@@ -196,9 +230,39 @@ export async function refreshPrices(): Promise<RefreshSummary> {
     const listed = (listedData ?? []).filter((a) => a.ticker)
     await mapLimit(listed, 2, async (asset) => {
       try {
-        const events = await getFmpDividends(String(asset.ticker))
+        // FMP's free tier is US-listed only (same gap as Finnhub) — Yahoo
+        // covers the rest, but reports amounts in the real trading currency,
+        // so those need the same FX conversion as the quote did in step 2.
+        let provider: 'fmp' | 'yahoo' = 'fmp'
+        let events: {
+          amountPerShare: number
+          exDate: string
+          payDate: string | null
+        }[]
+        try {
+          events = await getFmpDividends(String(asset.ticker))
+        } catch (e) {
+          if (!(e instanceof ProviderError)) {
+            throw e
+          }
+          events = await getYahooDividends(String(asset.ticker))
+          provider = 'yahoo'
+        }
         if (events.length === 0) {
           return
+        }
+        if (provider === 'yahoo') {
+          const native = nativeCurrency.get(asset.id) ?? asset.currency
+          if (native !== asset.currency) {
+            const rate = await getFxRate(native, asset.currency)
+            if (rate === null) {
+              throw new Error(`no fx rate ${native}->${asset.currency}`)
+            }
+            events = events.map((e) => ({
+              ...e,
+              amountPerShare: e.amountPerShare * rate,
+            }))
+          }
         }
         const { error } = await admin.from('dividend_events').upsert(
           events.map((e) => ({
@@ -207,7 +271,7 @@ export async function refreshPrices(): Promise<RefreshSummary> {
             currency: asset.currency,
             ex_date: e.exDate,
             pay_date: e.payDate,
-            provider: 'fmp',
+            provider,
           })),
           { onConflict: 'asset_id,ex_date' }
         )

@@ -1,7 +1,7 @@
 import 'server-only'
+import { transactionFingerprint } from '@finova/domain/import/fingerprint'
+import type { Rule } from '@finova/domain/rules/types'
 import { requireUser } from '@/lib/auth/require-user'
-import { transactionFingerprint } from '@/lib/domain/import/fingerprint'
-import type { Rule } from '@/lib/domain/rules/types'
 import { createClient } from '@/lib/supabase/server'
 import {
   categorizationRuleRowSchema,

@@ -1,9 +1,9 @@
+import type { AssetType } from '@finova/domain/investments/types'
+import { format, money } from '@finova/domain/money'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { seriesColor } from '@/components/charts/chartTheme'
 import { DonutChart } from '@/components/charts/DonutChart'
 import { GlassCard } from '@/components/ui/GlassCard'
-import type { AssetType } from '@/lib/domain/investments/types'
-import { format, money } from '@/lib/domain/money'
 import { cn } from '@/lib/utils'
 
 const ASSET_TYPE_ORDER: AssetType[] = ['stock', 'etf', 'fund', 'crypto']
@@ -19,12 +19,14 @@ export async function WealthAllocation({
   cashCents,
   investedByType,
   realEstateCents = 0,
+  manualAssetsCents = 0,
   currency,
   className,
 }: {
   cashCents: number
   investedByType: Partial<Record<AssetType, number>>
   realEstateCents?: number
+  manualAssetsCents?: number
   currency: string
   className?: string
 }) {
@@ -42,6 +44,11 @@ export async function WealthAllocation({
       })
     ),
     { key: 'realEstate', label: t('realEstate'), cents: realEstateCents },
+    {
+      key: 'manualAssets',
+      label: t('manualAssets'),
+      cents: manualAssetsCents,
+    },
   ].filter((r) => r.cents > 0)
 
   const total = rows.reduce((sum, r) => sum + r.cents, 0)

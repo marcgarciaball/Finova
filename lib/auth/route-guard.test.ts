@@ -69,4 +69,11 @@ describe('resolveAuthRedirect', () => {
       expect(resolveAuthRedirect(path, false)).toEqual({ type: 'allow' })
     }
   })
+
+  it('allows API routes regardless of auth state (they own their auth)', () => {
+    for (const path of ['/api/investments/refresh', '/api/log-error']) {
+      expect(resolveAuthRedirect(path, true)).toEqual({ type: 'allow' })
+      expect(resolveAuthRedirect(path, false)).toEqual({ type: 'allow' })
+    }
+  })
 })

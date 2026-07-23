@@ -1,15 +1,15 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { Input } from '@/components/ui/Input'
-import { Label } from '@/components/ui/Label'
-import type { DateFormat } from '@/lib/domain/import/mapping'
+import type { DateFormat } from '@finova/domain/import/mapping'
 import type {
   AmountKind,
   CurrencyMode,
   DecimalChoice,
   MappingFormState,
-} from '@/lib/domain/import/mapping-form'
+} from '@finova/domain/import/mapping-form'
+import { useTranslations } from 'next-intl'
+import { Input } from '@/components/ui/Input'
+import { Label } from '@/components/ui/Label'
 
 const SELECT_CLASS =
   'h-11 w-full rounded-2xl border border-glass-line bg-glass px-4 py-2 text-ink text-sm shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'

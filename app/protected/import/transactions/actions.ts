@@ -1,14 +1,14 @@
 'use server'
 
 import { randomUUID } from 'node:crypto'
-import { requireUser } from '@/lib/auth/require-user'
-import { parseBackup } from '@/lib/domain/import/backup/parse'
-import { transactionFingerprint } from '@/lib/domain/import/backup/transactions-fingerprint'
+import { parseBackup } from '@finova/domain/import/backup/parse'
+import { transactionFingerprint } from '@finova/domain/import/backup/transactions-fingerprint'
 import {
   planTransactionsImport,
   type TransactionsImportPlan,
   type TransactionsTable,
-} from '@/lib/domain/import/backup/transactions-plan'
+} from '@finova/domain/import/backup/transactions-plan'
+import { requireUser } from '@/lib/auth/require-user'
 import { createClient } from '@/lib/supabase/server'
 import { getTransactionsFingerprints } from './data'
 
