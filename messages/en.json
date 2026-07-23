@@ -741,8 +741,16 @@
         "month": "/ month",
         "year": "/ year"
       },
+      "nav": {
+        "prevMonth": "Previous month",
+        "nextMonth": "Next month",
+        "prevYear": "Previous year",
+        "nextYear": "Next year"
+      },
       "empty": "No income recorded yet.",
-      "basedOn": "Based on your income in {month}. Per day divides it by the days in the month; per year multiplies it by 12."
+      "basedOn": "Based on your income in {month}. Per day divides it by the days in the month.",
+      "basedOnYear": "Based on your income in {year}.",
+      "basedOnYearSoFar": "Based on your income so far in {year} — the year isn't over yet."
     }
   },
   "export": {

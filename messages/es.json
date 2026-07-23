@@ -741,8 +741,16 @@
         "month": "/ mes",
         "year": "/ año"
       },
+      "nav": {
+        "prevMonth": "Mes anterior",
+        "nextMonth": "Mes siguiente",
+        "prevYear": "Año anterior",
+        "nextYear": "Año siguiente"
+      },
       "empty": "Aún no hay ingresos registrados.",
-      "basedOn": "Basado en tus ingresos de {month}. Por día lo divide entre los días del mes; por año lo multiplica por 12."
+      "basedOn": "Basado en tus ingresos de {month}. Por día lo divide entre los días del mes.",
+      "basedOnYear": "Basado en tus ingresos de {year}.",
+      "basedOnYearSoFar": "Basado en tus ingresos de lo que va de {year} — el año todavía no ha terminado."
     }
   },
   "export": {
