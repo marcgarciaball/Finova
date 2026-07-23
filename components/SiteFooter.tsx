@@ -10,7 +10,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="w-full border-glass-line border-t">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 p-5 text-ink-soft text-xs sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 p-5 text-ink-soft text-xs sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-prose">{t('disclaimer')}</p>
         <nav className="flex shrink-0 gap-4" aria-label={t('footerPrivacy')}>
           <Link href="/privacy" className="hover:text-ink">

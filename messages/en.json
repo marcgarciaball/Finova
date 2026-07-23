@@ -23,7 +23,9 @@
   "nav": {
     "menu": "Account menu",
     "data": "Data",
-    "settings": "Settings"
+    "settings": "Settings",
+    "movements": "Movements",
+    "wealth": "Wealth"
   },
   "protected": {
     "title": "Your account",

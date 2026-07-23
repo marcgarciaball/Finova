@@ -10,6 +10,7 @@ export interface HoldingRow {
   currentPriceCents: number | null
   currentValueCents: number | null
   name: string
+  plClassName: string
   plDisplay: string | null
   priceDisplay: string | null
   quantity: number
@@ -26,7 +27,6 @@ type SortKey = 'asset' | 'quantity' | 'avgCost' | 'price' | 'value' | 'pl'
 export function HoldingsTable({
   rows,
   labels,
-  plClassName,
 }: {
   rows: HoldingRow[]
   labels: {
@@ -37,7 +37,6 @@ export function HoldingsTable({
     value: string
     pl: string
   }
-  plClassName: (cents: number | null) => string
 }) {
   const { sort, sorted, toggleSort } = useClientSort<HoldingRow, SortKey>(
     rows,
@@ -135,9 +134,7 @@ export function HoldingsTable({
             <td className="py-2 pr-4 text-right text-ink">
               {h.currentValueCents === null ? '—' : h.valueDisplay}
             </td>
-            <td
-              className={`py-2 text-right ${plClassName(h.unrealizedPlCents)}`}
-            >
+            <td className={`py-2 text-right ${h.plClassName}`}>
               {h.unrealizedPlCents === null ? '—' : h.plDisplay}
             </td>
           </tr>

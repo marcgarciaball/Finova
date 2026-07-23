@@ -122,6 +122,7 @@ export async function InvestmentsOverviewSection({
             currentPriceCents: h.currentPriceCents,
             currentValueCents: h.currentValueCents,
             name: h.name,
+            plClassName: plClass(h.unrealizedPlCents),
             plDisplay:
               h.unrealizedPlCents === null
                 ? null
@@ -149,7 +150,6 @@ export async function InvestmentsOverviewSection({
             quantity: t('list.quantity'),
             value: t('overview.value'),
           }}
-          plClassName={plClass}
         />
         <p className="text-ink-soft text-xs">
           {overview.latestFetchedAt
