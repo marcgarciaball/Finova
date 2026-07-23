@@ -3,14 +3,24 @@ import {
   accountBalances,
   balanceTrend,
   balanceTrendToArea,
+  clampPeriod,
+  currentPeriod,
+  dayBeforeIso,
+  type EarningsView,
+  earliestIso,
   filterByPeriod,
   incomeByCategory,
   incomeExpenseSeries,
+  isEarningCategory,
   keyStats,
   monthlySeriesToBars,
+  parseEarningsPeriod,
+  parseEarningsView,
   parseGranularity,
   parsePeriod,
   pctChange,
+  periodEndIso,
+  periodRangeIso,
   periodStartIso,
   pickDisplayCurrency,
   previousPeriodRange,
@@ -20,6 +30,7 @@ import {
   spendingByCategory,
   spendingToDonut,
   totalBalanceByCurrency,
+  trailingYearStartIso,
   trendOf,
 } from '@finova/domain/dashboard'
 import { incomeInRangeCents as manualAssetIncomeInRangeCents } from '@finova/domain/manual-assets/income'
@@ -74,7 +85,12 @@ const UNCATEGORIZED_THRESHOLD = 0.4
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ granularity?: string; period?: string }>
+  searchParams: Promise<{
+    granularity?: string
+    period?: string
+    earningsView?: string
+    earningsPeriod?: string
+  }>
 }) {
   const t = await getTranslations('dashboard')
   const tDefaults = await getTranslations('categories.defaults')
@@ -155,10 +171,6 @@ export default async function DashboardPage({
   const propertyLoanSnapshots = (await getPropertyLoanSnapshots()).filter(
     (l) => l.currency === currency
   )
-  const dayBeforeIso = (iso: string): string => {
-    const [y, m, d] = iso.split('-').map(Number) as [number, number, number]
-    return new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10)
-  }
   const EARLIEST_ISO = '1900-01-01'
   const rentIn = (start: string | null, endExclusive: string | null): number =>
     incomeInRangeCents(
@@ -329,169 +341,132 @@ export default async function DashboardPage({
     }
   })
 
-  // Earnings card: one concrete reference month (e.g. "salary in June"),
-  // independent of the period selector. Prefer the current month; if it has
-  // no income yet (salary not arrived), fall back to the latest earning month.
-  const currentMonth = todayIso.slice(0, 7)
-  const monthRange = (
-    month: string
-  ): { start: string; endExclusive: string } => {
-    const [y, m] = month.split('-').map(Number) as [number, number]
-    return {
-      endExclusive: new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 10),
-      start: `${month}-01`,
-    }
-  }
-  // Dividends/coupons/interest are point-in-time payments (quarterly, annual,
-  // …), not recurring monthly cash — matching them to one exact calendar
-  // month would show €0 most months even for an active holding. Instead,
-  // average the trailing 12 months' total, ending at that month, the same
-  // "typical monthly amount" idea as the Investments page's forward-annual
-  // estimate. Rent uses the same trailing-12-month average (of net cash flow,
-  // via cashFlowCents) so this card's rent figure matches the Real Estate
-  // page's own "monthly cash flow" figure instead of a specific month's
-  // partial/day-prorated amount.
-  const trailingYearStartIso = (asOfIso: string): string => {
-    const [y, m, d] = asOfIso.split('-').map(Number) as [number, number, number]
-    return new Date(Date.UTC(y - 1, m - 1, d + 1)).toISOString().slice(0, 10)
-  }
-  const monthAsOfIso = (month: string): string => {
-    const { endExclusive } = monthRange(month)
-    const monthEndInclusive = dayBeforeIso(endExclusive)
-    return monthEndInclusive < todayIso ? monthEndInclusive : todayIso
-  }
-  const dividendMonthCents = (month: string): number => {
+  // Earnings card: browsable by month or year via ?earningsView=/
+  // ?earningsPeriod= (mirrors the ?period=/?granularity= pattern above),
+  // instead of pinning to one "reference month". A transaction's earnings
+  // category is looked up in whichever period is actually selected, so a
+  // salary payment from a past month is never silently skipped just because
+  // the current month happens to have other income.
+  const earningsView: EarningsView = parseEarningsView(params.earningsView)
+  const earningsCurrentPeriod = currentPeriod(earningsView, todayIso)
+  const earningsEarliestIso = earliestIso([
+    ...txns.map((x) => x.occurred_at.slice(0, 10)),
+    ...rentEvents.map((e) => e.periodStart),
+    ...(invIncome.baseCurrency === currency
+      ? invIncome.receivedEventsBase.map((e) => e.date)
+      : []),
+    ...manualAssetIncomeEvents.map((e) => e.receivedDate),
+  ])
+  const earningsEarliestPeriod = earningsEarliestIso
+    ? earningsEarliestIso.slice(0, earningsView === 'month' ? 7 : 4)
+    : earningsCurrentPeriod
+  const earningsPeriod = clampPeriod(
+    parseEarningsPeriod(params.earningsPeriod, earningsView, todayIso),
+    earningsEarliestPeriod,
+    earningsCurrentPeriod
+  )
+  const earningsCanGoPrev = earningsPeriod > earningsEarliestPeriod
+  const earningsCanGoNext = earningsPeriod < earningsCurrentPeriod
+  const earningsIsPartialYear =
+    earningsView === 'year' && earningsPeriod === earningsCurrentPeriod
+
+  const { start: earningsPeriodStart } = periodRangeIso(
+    earningsView,
+    earningsPeriod
+  )
+  const earningsPeriodEnd = periodEndIso(earningsView, earningsPeriod, todayIso)
+
+  const earningsPeriodTxns = txns.filter(
+    (x) =>
+      x.occurred_at.slice(0, 10) >= earningsPeriodStart &&
+      x.occurred_at.slice(0, 10) <= earningsPeriodEnd
+  )
+  const earningTxns = earningsPeriodTxns.filter((x) =>
+    isEarningCategory(x.category_id, byId.get(x.category_id ?? '')?.name_key)
+  )
+
+  // Dividends/coupons/interest and rent are lumpy/prorated, not naturally
+  // monthly — in month view, average the trailing 12 months ending at the
+  // selected month (the same "typical monthly amount" idea as the
+  // Investments page's forward-annual estimate, and matching the Real
+  // Estate page's own "monthly cash flow" figure for rent); in year view,
+  // use the real total received/earned in that calendar year, since a full
+  // year isn't lumpy the way one month can be.
+  const earningsTrailingStart =
+    earningsView === 'month'
+      ? trailingYearStartIso(earningsPeriodEnd)
+      : earningsPeriodStart
+
+  const earningsDividendCents = ((): number => {
     if (invIncome.baseCurrency !== currency) {
       return 0
     }
-    const asOf = monthAsOfIso(month)
     const total = invIncome.receivedEventsBase
-      .filter((e) => e.date >= trailingYearStartIso(asOf) && e.date <= asOf)
+      .filter(
+        (e) => e.date >= earningsTrailingStart && e.date <= earningsPeriodEnd
+      )
       .reduce((sum, e) => sum + e.cents, 0)
-    return Math.round(total / 12)
-  }
-  const rentMonthCents = (month: string): number => {
-    const asOf = monthAsOfIso(month)
+    return earningsView === 'month' ? Math.round(total / 12) : total
+  })()
+
+  const earningsRentCents = ((): number => {
     const total = cashFlowCents(
       rentEvents,
       propertyExpenseEvents,
       propertyLoanSnapshots,
-      trailingYearStartIso(asOf),
-      asOf
+      earningsTrailingStart,
+      earningsPeriodEnd
     )
-    return Math.round(total / 12)
-  }
-  const manualAssetIncomeMonthCents = (month: string): number => {
-    const asOf = monthAsOfIso(month)
+    return earningsView === 'month' ? Math.round(total / 12) : total
+  })()
+
+  const earningsManualAssetIncomeCents = ((): number => {
     const total = manualAssetIncomeInRangeCents(
       manualAssetIncomeEvents,
-      trailingYearStartIso(asOf),
-      asOf
+      earningsTrailingStart,
+      earningsPeriodEnd
     )
-    return Math.round(total / 12)
-  }
-  // A rent row's period can span several calendar months (e.g. rent entered
-  // as one lump sum for a multi-month lease) — list every month it touches,
-  // not just the one its periodStart falls in.
-  const monthsInRange = (startIso: string, endIso: string): string[] => {
-    const [sy, sm] = startIso.split('-').map(Number) as [number, number]
-    const [ey, em] = endIso.split('-').map(Number) as [number, number]
-    const months: string[] = []
-    let y = sy
-    let m = sm
-    while (y < ey || (y === ey && m <= em)) {
-      months.push(`${y}-${String(m).padStart(2, '0')}`)
-      m += 1
-      if (m > 12) {
-        m = 1
-        y += 1
-      }
-    }
-    return months
-  }
-  const earningMonths = new Set<string>([
-    ...(incomeExpenseSeries(txns, 'month')[currency] ?? [])
-      .filter((b) => b.income > 0)
-      .map((b) => b.period),
-    ...(invIncome.baseCurrency === currency
-      ? invIncome.receivedEventsBase
-          .filter((e) => e.date <= todayIso)
-          .map((e) => e.date.slice(0, 7))
-      : []),
-    ...rentEvents
-      .filter((e) => e.periodStart <= todayIso)
-      .flatMap((e) =>
-        monthsInRange(
-          e.periodStart,
-          e.periodEnd <= todayIso ? e.periodEnd : todayIso
-        )
-      ),
-    ...manualAssetIncomeEvents
-      .filter((e) => e.receivedDate <= todayIso)
-      .map((e) => e.receivedDate.slice(0, 7)),
-  ])
-  const earningsMonth = earningMonths.has(currentMonth)
-    ? currentMonth
-    : ([...earningMonths].sort().at(-1) ?? currentMonth)
-  const monthTxns = txns.filter(
-    (x) => x.occurred_at.slice(0, 7) === earningsMonth
-  )
-  // Bizum reimbursements and the uncategorized-transfer catch-all are both
-  // ambiguous incoming money (could be a repayment or a debt, not earnings) —
-  // excluded from "how much do I earn" only, not from income elsewhere.
-  const EARNINGS_EXCLUDED_CATEGORIES = new Set([
-    'bizum_income',
-    'transactions_income',
-  ])
-  const monthEarningTxns = monthTxns.filter(
-    (x) =>
-      !EARNINGS_EXCLUDED_CATEGORIES.has(
-        byId.get(x.category_id ?? '')?.name_key ?? ''
-      )
-  )
-  const monthDividends = dividendMonthCents(earningsMonth)
-  const monthRent = rentMonthCents(earningsMonth)
-  const monthManualAssetIncome = manualAssetIncomeMonthCents(earningsMonth)
+    return earningsView === 'month' ? Math.round(total / 12) : total
+  })()
+
   const earningsRows = [
-    ...(incomeByCategory(monthEarningTxns)[currency] ?? []).map((s) => ({
+    ...(incomeByCategory(earningTxns)[currency] ?? []).map((s) => ({
       key: s.categoryId ?? '__uncategorized__',
       label: labelFor(s.categoryId),
       icon: iconFor(s.categoryId),
       cents: s.total,
     })),
-    ...(monthDividends > 0
+    ...(earningsDividendCents > 0
       ? [
           {
             key: '__dividends__',
             label: t('ranking.dividends'),
             icon: <CategoryIcon iconName="HandCoins" />,
-            cents: monthDividends,
+            cents: earningsDividendCents,
           },
         ]
       : []),
-    ...(monthRent > 0
+    ...(earningsRentCents > 0
       ? [
           {
             key: '__rent__',
             label: t('ranking.rent'),
             icon: <CategoryIcon iconName="Home" />,
-            cents: monthRent,
+            cents: earningsRentCents,
           },
         ]
       : []),
-    ...(monthManualAssetIncome > 0
+    ...(earningsManualAssetIncomeCents > 0
       ? [
           {
             key: '__manual_assets_income__',
             label: t('ranking.manualAssetsIncome'),
             icon: <CategoryIcon iconName="Landmark" />,
-            cents: monthManualAssetIncome,
+            cents: earningsManualAssetIncomeCents,
           },
         ]
       : []),
   ].sort((a, b) => b.cents - a.cents)
-  const [ey, em] = earningsMonth.split('-').map(Number) as [number, number]
-  const earningsDaysInMonth = new Date(Date.UTC(ey, em, 0)).getUTCDate()
 
   const accountById = new Map(accounts.map((a) => [a.id, a] as const))
   const accountRanking: RankRow[] = (
@@ -635,8 +610,11 @@ export default async function DashboardPage({
         <EarningsCard
           className="col-span-12"
           rows={earningsRows}
-          monthIso={earningsMonth}
-          daysInMonth={earningsDaysInMonth}
+          view={earningsView}
+          period={earningsPeriod}
+          canGoPrev={earningsCanGoPrev}
+          canGoNext={earningsCanGoNext}
+          isPartialYear={earningsIsPartialYear}
           currency={currency}
         />
       </BandSection>
