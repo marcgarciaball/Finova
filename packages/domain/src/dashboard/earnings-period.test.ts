@@ -134,6 +134,15 @@ describe('parseEarningsPeriod', () => {
     )
     expect(parseEarningsPeriod('2026-03', 'year', '2026-07-23')).toBe('2026')
   })
+
+  it('falls back to the current period for an out-of-range month', () => {
+    expect(parseEarningsPeriod('2026-00', 'month', '2026-07-23')).toBe(
+      '2026-07'
+    )
+    expect(parseEarningsPeriod('2026-13', 'month', '2026-07-23')).toBe(
+      '2026-07'
+    )
+  })
 })
 
 describe('clampPeriod', () => {

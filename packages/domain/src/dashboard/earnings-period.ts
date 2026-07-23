@@ -6,7 +6,7 @@
 
 export type EarningsView = 'month' | 'year'
 
-const MONTH_PATTERN = /^\d{4}-\d{2}$/
+const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/
 const YEAR_PATTERN = /^\d{4}$/
 
 /** `iso` minus one day, UTC-safe (correctly crosses month/year boundaries). */
