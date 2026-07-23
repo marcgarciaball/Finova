@@ -1,5 +1,6 @@
 'use client'
 
+import { shiftPeriod } from '@finova/domain/dashboard'
 import { format, money } from '@finova/domain/money'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -87,15 +88,7 @@ export function EarningsCard({
   }
 
   const shift = (delta: number) => {
-    if (view === 'year') {
-      navigate('year', String(Number(period) + delta))
-      return
-    }
-    const [y, m] = period.split('-').map(Number) as [number, number]
-    const total = y * 12 + (m - 1) + delta
-    const nextYear = Math.floor(total / 12)
-    const nextMonth = ((total % 12) + 12) % 12
-    navigate('month', `${nextYear}-${String(nextMonth + 1).padStart(2, '0')}`)
+    navigate(view, shiftPeriod(view, period, delta))
   }
 
   const daysInMonth =
