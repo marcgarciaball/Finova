@@ -34,6 +34,10 @@ export {
 } from './compare'
 export { pickDisplayCurrency } from './display-currency'
 export {
+  EARNINGS_EXCLUDED_CATEGORY_NAME_KEYS,
+  isEarningCategory,
+} from './earnings'
+export {
   type BiggestExpense,
   type BusiestDay,
   type KeyStats,
