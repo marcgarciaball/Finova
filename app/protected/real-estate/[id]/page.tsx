@@ -119,6 +119,11 @@ export default async function PropertyDetailPage({
             {property.is_rented && !property.is_sold ? (
               <Badge variant="pos">{t('card.rented')}</Badge>
             ) : null}
+            {property.ownership_pct < 100 ? (
+              <Badge variant="neutral">
+                {t('detail.yourShare', { pct: property.ownership_pct })}
+              </Badge>
+            ) : null}
           </div>
           <p className="text-ink-soft text-sm">
             {t(`types.${property.type}`)}
@@ -135,6 +140,18 @@ export default async function PropertyDetailPage({
           propertyId={property.id}
           isSold={property.is_sold}
           todayIso={todayIso}
+          initial={{
+            id: property.id,
+            name: property.name,
+            type: property.type,
+            address: property.address,
+            city: property.city,
+            ownershipPct: property.ownership_pct,
+            isRented: property.is_rented,
+            rentalStartDate: property.rental_start_date,
+            rentalEndDate: property.rental_end_date,
+            notes: property.notes,
+          }}
         />
       </div>
 
@@ -151,6 +168,11 @@ export default async function PropertyDetailPage({
           value={metrics.equityCents}
           currency={ccy}
           locale={locale}
+          footnote={
+            property.ownership_pct < 100
+              ? t('detail.equityShareNote', { pct: property.ownership_pct })
+              : undefined
+          }
         />
         <KpiCard
           label={t('detail.debt')}

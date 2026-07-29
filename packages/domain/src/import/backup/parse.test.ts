@@ -16,6 +16,7 @@ const property = () => ({
   purchase_fees_cents: 0,
   current_value_cents: 15_000_000,
   last_valued_at: '2026-01-01',
+  ownership_pct: 100,
   is_rented: false,
   rental_start_date: null,
   rental_end_date: null,

@@ -1,6 +1,6 @@
 'use client'
 
-import { Trash2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useActionState, useEffect, useState, useTransition } from 'react'
@@ -14,18 +14,21 @@ import {
 } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import type { ActionResult } from '../actions'
-import { deleteProperty, sellProperty } from '../actions'
+import { deleteProperty, sellProperty, updateProperty } from '../actions'
+import { PropertyForm, type PropertyFormInitial } from '../PropertyForm'
 import { Field } from './FormBits'
 
-/** Header actions on the detail page: mark as sold, delete the property. */
+/** Header actions on the detail page: edit, mark as sold, delete the property. */
 export function PropertyActions({
   propertyId,
   isSold,
   todayIso,
+  initial,
 }: {
   propertyId: string
   isSold: boolean
   todayIso: string
+  initial: PropertyFormInitial
 }) {
   const t = useTranslations('realEstate')
   const router = useRouter()
@@ -33,6 +36,7 @@ export function PropertyActions({
 
   return (
     <div className="flex items-center gap-2">
+      <EditDialog initial={initial} todayIso={todayIso} />
       {isSold ? null : (
         <SellDialog propertyId={propertyId} todayIso={todayIso} />
       )}
@@ -56,6 +60,40 @@ export function PropertyActions({
         {t('detail.delete')}
       </Button>
     </div>
+  )
+}
+
+function EditDialog({
+  initial,
+  todayIso,
+}: {
+  initial: PropertyFormInitial
+  todayIso: string
+}) {
+  const t = useTranslations('realEstate')
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button type="button" variant="outline" size="sm">
+          <Pencil className="size-4" aria-hidden="true" />
+          {t('detail.editProperty')}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{t('detail.editProperty')}</DialogTitle>
+        </DialogHeader>
+        <PropertyForm
+          action={updateProperty}
+          todayIso={todayIso}
+          mode="edit"
+          initial={initial}
+          onDone={() => setOpen(false)}
+        />
+      </DialogContent>
+    </Dialog>
   )
 }
 
