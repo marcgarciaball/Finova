@@ -37,6 +37,7 @@ export const propertyRowSchema = z.object({
   is_rented: z.boolean(),
   rental_start_date: isoDateSchema.nullable(),
   rental_end_date: isoDateSchema.nullable(),
+  current_rent_cents: centsSchema.nonnegative().nullable(),
   is_sold: z.boolean(),
   sold_date: isoDateSchema.nullable(),
   sold_price_cents: centsSchema.nullable(),
@@ -165,6 +166,7 @@ export const createPropertySchema = z
     isRented: z.boolean().default(false),
     rentalStartDate: isoDateSchema.optional(),
     rentalEndDate: isoDateSchema.optional(),
+    currentRent: decimalString.optional(),
     notes: optionalText(500),
   })
   .refine(
@@ -185,6 +187,7 @@ export const updatePropertySchema = z.object({
   isRented: z.boolean(),
   rentalStartDate: isoDateSchema.optional(),
   rentalEndDate: isoDateSchema.optional(),
+  currentRent: decimalString.optional(),
   notes: optionalText(500),
 })
 export type UpdatePropertyInput = z.infer<typeof updatePropertySchema>

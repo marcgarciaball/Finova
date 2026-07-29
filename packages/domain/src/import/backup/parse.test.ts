@@ -20,6 +20,7 @@ const property = () => ({
   is_rented: false,
   rental_start_date: null,
   rental_end_date: null,
+  current_rent_cents: null,
   is_sold: false,
   sold_date: null,
   sold_price_cents: null,

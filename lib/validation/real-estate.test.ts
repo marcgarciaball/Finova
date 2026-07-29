@@ -176,6 +176,7 @@ describe('propertyRowSchema', () => {
       is_rented: true,
       rental_start_date: '2024-01-01',
       rental_end_date: null,
+      current_rent_cents: null,
       is_sold: false,
       sold_date: null,
       sold_price_cents: null,
