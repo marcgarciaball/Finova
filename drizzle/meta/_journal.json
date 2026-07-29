@@ -197,6 +197,13 @@
       "when": 1785314588531,
       "tag": "0027_add_property_ownership_pct",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1785320509134,
+      "tag": "0028_add_property_current_rent",
+      "breakpoints": true
     }
   ]
 }

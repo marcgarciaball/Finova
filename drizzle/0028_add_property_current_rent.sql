@@ -1,0 +1,2 @@
+ALTER TABLE "properties" ADD COLUMN "current_rent_cents" bigint;--> statement-breakpoint
+ALTER TABLE "properties" ADD CONSTRAINT "properties_current_rent_check" CHECK ("properties"."current_rent_cents" is null or "properties"."current_rent_cents" >= 0);

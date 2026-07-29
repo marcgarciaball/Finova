@@ -52,6 +52,7 @@ export const properties = pgTable(
     isRented: boolean('is_rented').notNull().default(false),
     rentalStartDate: date('rental_start_date'),
     rentalEndDate: date('rental_end_date'),
+    currentRentCents: bigint('current_rent_cents', { mode: 'number' }),
     isSold: boolean('is_sold').notNull().default(false),
     soldDate: date('sold_date'),
     soldPriceCents: bigint('sold_price_cents', { mode: 'number' }),
@@ -89,6 +90,10 @@ export const properties = pgTable(
     check(
       'properties_ownership_pct_check',
       sql`${table.ownershipPct} > 0 and ${table.ownershipPct} <= 100`
+    ),
+    check(
+      'properties_current_rent_check',
+      sql`${table.currentRentCents} is null or ${table.currentRentCents} >= 0`
     ),
     index('properties_user_id_idx').on(table.userId),
     pgPolicy('properties_select_own', {
