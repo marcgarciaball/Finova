@@ -53,29 +53,6 @@ export const propertyRowSchema = z.object({
 })
 export type PropertyRow = z.infer<typeof propertyRowSchema>
 
-export const propertyLoanRowSchema = z.object({
-  id: idSchema,
-  user_id: idSchema,
-  property_id: idSchema,
-  lender_name: z.string(),
-  loan_type: z.enum(LOAN_TYPES),
-  currency: currencySchema,
-  original_amount_cents: centsSchema.nonnegative(),
-  outstanding_cents: centsSchema.nonnegative(),
-  interest_rate_pct: z.coerce.number(),
-  rate_type: z.enum(RATE_TYPES),
-  start_date: isoDateSchema,
-  end_date: isoDateSchema.nullable(),
-  monthly_payment_cents: centsSchema.nonnegative(),
-  euribor_spread_pct: z.coerce.number().nullable(),
-  last_review_date: isoDateSchema.nullable(),
-  notes: z.string().nullable(),
-  is_paid_off: z.boolean(),
-  created_at: z.string(),
-  updated_at: z.string(),
-})
-export type PropertyLoanRow = z.infer<typeof propertyLoanRowSchema>
-
 export const rentalIncomeRowSchema = z.object({
   id: idSchema,
   user_id: idSchema,
@@ -210,6 +187,8 @@ export const sellPropertySchema = z.object({
 })
 export type SellPropertyInput = z.infer<typeof sellPropertySchema>
 
+const termMonthsSchema = z.coerce.number().int().positive()
+
 export const createLoanSchema = z.object({
   propertyId: z.string().uuid(),
   lenderName: z.string().trim().min(1, 'required').max(120, 'tooLong'),
@@ -220,6 +199,7 @@ export const createLoanSchema = z.object({
   rateType: z.enum(RATE_TYPES),
   startDate: isoDateSchema,
   endDate: isoDateSchema.optional(),
+  termMonths: termMonthsSchema,
   monthlyPayment: decimalString,
   euriborSpreadPct: percentString.optional(),
   notes: optionalText(500),

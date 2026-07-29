@@ -60,6 +60,13 @@ export async function InvestmentsOverviewSection({
           value={totals.totalInvestedCents}
           currency={baseCurrency}
           locale={locale}
+          footnote={
+            overview.creditFundedCents > 0
+              ? t('overview.creditFunded', {
+                  amount: fmt(overview.creditFundedCents),
+                })
+              : undefined
+          }
         />
         <KpiCard
           label={t('overview.unrealized')}

@@ -1,11 +1,11 @@
 'use client'
 
-import type { PropertyLoanRow } from '@/lib/validation/real-estate'
+import type { DebtRow } from '@/lib/validation/debts'
 import { deleteLoan } from '../actions'
 import { DeleteRowButton } from './DeleteRowButton'
 import { EditLoanButton } from './EntryForms'
 
-export function LoanRowActions({ loan }: { loan: PropertyLoanRow }) {
+export function LoanRowActions({ loan }: { loan: DebtRow }) {
   return (
     <span className="inline-flex items-center gap-3">
       <EditLoanButton loan={loan} />

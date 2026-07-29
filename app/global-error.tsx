@@ -15,6 +15,7 @@ export default function GlobalError({
   reset: () => void
 }) {
   useEffect(() => {
+    const controller = new AbortController()
     fetch('/api/log-error', {
       body: JSON.stringify({
         digest: error.digest,
@@ -24,7 +25,9 @@ export default function GlobalError({
       }),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
+      signal: controller.signal,
     }).catch(() => {})
+    return () => controller.abort()
   }, [error])
 
   return (

@@ -18,13 +18,12 @@ import {
 } from '@finova/domain/real-estate/metrics'
 import { requireUser } from '@/lib/auth/require-user'
 import { createClient } from '@/lib/supabase/server'
+import { type DebtRow, debtRowSchema } from '@/lib/validation/debts'
 import {
   type PropertyExpenseRow,
-  type PropertyLoanRow,
   type PropertyRow,
   type PropertyValuationRow,
   propertyExpenseRowSchema,
-  propertyLoanRowSchema,
   propertyRowSchema,
   propertyValuationRowSchema,
   type RentalIncomeRow,
@@ -57,7 +56,7 @@ export interface PropertyMetrics {
 }
 
 export interface PropertyOverview {
-  loans: PropertyLoanRow[]
+  loans: DebtRow[]
   metrics: PropertyMetrics
   property: PropertyRow
 }
@@ -105,7 +104,7 @@ function isoDaysAgo(days: number, todayIso: string): string {
 
 function computeMetrics(
   property: PropertyRow,
-  loans: PropertyLoanRow[],
+  loans: DebtRow[],
   incomes: RentalIncomeRow[],
   expenses: PropertyExpenseRow[],
   todayIso: string
@@ -127,8 +126,8 @@ function computeMetrics(
   }
   const loanSnapshots = loans.map((l) => ({
     currency: l.currency,
-    isPaidOff: l.is_paid_off,
-    monthlyPaymentCents: l.monthly_payment_cents,
+    isPaidOff: l.status === 'paid_off',
+    monthlyPaymentCents: l.payment_cents,
     outstandingCents: l.outstanding_cents,
   }))
   const incomeEvents = incomes.map((i) => ({
@@ -207,6 +206,20 @@ async function fetchAll(table: string, orderBy: string) {
   return data ?? []
 }
 
+/** Every mortgage debt row, across all properties. */
+async function fetchAllMortgages(orderBy: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('debts')
+    .select('*')
+    .eq('type', 'mortgage')
+    .order(orderBy, { ascending: false })
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data ?? []
+}
+
 /** Every property with its loans and computed metrics, plus currency totals. */
 export async function getRealEstateOverview(): Promise<RealEstateOverview> {
   await requireUser()
@@ -214,12 +227,12 @@ export async function getRealEstateOverview(): Promise<RealEstateOverview> {
 
   const [propertyRows, loanRows, incomeRows, expenseRows] = await Promise.all([
     fetchAll('properties', 'purchase_date'),
-    fetchAll('property_loans', 'start_date'),
+    fetchAllMortgages('start_date'),
     fetchAll('rental_income', 'period_start'),
     fetchAll('property_expenses', 'expense_date'),
   ])
   const properties = propertyRowSchema.array().parse(propertyRows)
-  const loans = propertyLoanRowSchema.array().parse(loanRows)
+  const loans = debtRowSchema.array().parse(loanRows)
   const incomes = rentalIncomeRowSchema.array().parse(incomeRows)
   const expenses = propertyExpenseRowSchema.array().parse(expenseRows)
 
@@ -239,8 +252,8 @@ export async function getRealEstateOverview(): Promise<RealEstateOverview> {
     overviews.map(({ property, loans: propertyLoans, metrics }) => ({
       loans: propertyLoans.map((l) => ({
         currency: l.currency,
-        isPaidOff: l.is_paid_off,
-        monthlyPaymentCents: l.monthly_payment_cents,
+        isPaidOff: l.status === 'paid_off',
+        monthlyPaymentCents: l.payment_cents,
         outstandingCents: l.outstanding_cents,
       })),
       property: {
@@ -298,13 +311,25 @@ export async function getPropertyDetail(
     }
     return data ?? []
   }
+  async function mortgages(orderBy: string) {
+    const { data, error: childError } = await supabase
+      .from('debts')
+      .select('*')
+      .eq('property_id', id)
+      .eq('type', 'mortgage')
+      .order(orderBy, { ascending: false })
+    if (childError) {
+      throw new Error(childError.message)
+    }
+    return data ?? []
+  }
   const [loanRows, incomeRows, expenseRows, valuationRows] = await Promise.all([
-    children('property_loans', 'start_date'),
+    mortgages('start_date'),
     children('rental_income', 'period_start'),
     children('property_expenses', 'expense_date'),
     children('property_valuations', 'valuation_date'),
   ])
-  const loans = propertyLoanRowSchema.array().parse(loanRows)
+  const loans = debtRowSchema.array().parse(loanRows)
   const incomes = rentalIncomeRowSchema.array().parse(incomeRows)
   const expenses = propertyExpenseRowSchema.array().parse(expenseRows)
   const valuations = propertyValuationRowSchema.array().parse(valuationRows)
@@ -334,8 +359,9 @@ export async function getRealEstateEquityByCurrency(): Promise<
         .from('properties')
         .select('id, currency, current_value_cents, ownership_pct, is_sold'),
       supabase
-        .from('property_loans')
-        .select('property_id, currency, outstanding_cents, is_paid_off'),
+        .from('debts')
+        .select('property_id, currency, outstanding_cents, status')
+        .eq('type', 'mortgage'),
     ])
   if (pErr) {
     throw new Error(pErr.message)
@@ -360,7 +386,7 @@ export async function getRealEstateEquityByCurrency(): Promise<
   }
   for (const l of loans ?? []) {
     const pct = pctById.get(String(l.property_id))
-    if (l.is_paid_off || pct === undefined) {
+    if (l.status === 'paid_off' || pct === undefined) {
       continue
     }
     const ccy = String(l.currency)
@@ -451,10 +477,9 @@ export async function getPropertyLoanSnapshots(): Promise<
   const supabase = await createClient()
   const [{ data, error }, pctById] = await Promise.all([
     supabase
-      .from('property_loans')
-      .select(
-        'currency, is_paid_off, monthly_payment_cents, outstanding_cents, property_id'
-      ),
+      .from('debts')
+      .select('currency, status, payment_cents, outstanding_cents, property_id')
+      .eq('type', 'mortgage'),
     getOwnershipPctById(),
   ])
   if (error) {
@@ -464,8 +489,8 @@ export async function getPropertyLoanSnapshots(): Promise<
     const share = shareOf(pctById, r.property_id)
     return {
       currency: String(r.currency),
-      isPaidOff: Boolean(r.is_paid_off),
-      monthlyPaymentCents: Math.round(Number(r.monthly_payment_cents) * share),
+      isPaidOff: r.status === 'paid_off',
+      monthlyPaymentCents: Math.round(Number(r.payment_cents) * share),
       outstandingCents: Math.round(Number(r.outstanding_cents) * share),
       propertyId: String(r.property_id),
     }
@@ -509,6 +534,22 @@ export async function getRentedPropertyIds(): Promise<Set<string>> {
   return new Set(
     (data ?? []).filter((p) => p.is_rented).map((p) => String(p.id))
   )
+}
+
+/** Lightweight `{id, name}` list for a property picker (e.g. the debts form's mortgage select). */
+export async function getPropertiesForPicker(): Promise<
+  { id: string; name: string }[]
+> {
+  await requireUser()
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('properties')
+    .select('id, name')
+    .order('name', { ascending: true })
+  if (error) {
+    throw new Error(error.message)
+  }
+  return (data ?? []).map((p) => ({ id: String(p.id), name: String(p.name) }))
 }
 
 /** Rough day/month figures derived from an annual amount. */

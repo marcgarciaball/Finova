@@ -47,6 +47,8 @@ export const investmentTransactions = pgTable(
     feesCents: bigint('fees_cents', { mode: 'number' }).notNull().default(0),
     tradedAt: date('traded_at').notNull(),
     notes: text('notes'),
+    fundingSource: text('funding_source').notNull().default('own_funds'),
+    fundingNote: text('funding_note'),
     importFingerprint: text('import_fingerprint'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
@@ -71,6 +73,10 @@ export const investmentTransactions = pgTable(
     check(
       'investment_transactions_currency_check',
       sql`${table.currency} ~ '^[A-Z]{3}$'`
+    ),
+    check(
+      'investment_transactions_funding_source_check',
+      sql`${table.fundingSource} in ('own_funds', 'credit')`
     ),
     index('investment_transactions_user_id_idx').on(table.userId),
     index('investment_transactions_portfolio_asset_idx').on(

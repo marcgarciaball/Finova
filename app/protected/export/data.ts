@@ -14,6 +14,7 @@ import { createClient } from '@/lib/supabase/server'
 import { accountRowSchema } from '@/lib/validation/account'
 import { categorizationRuleRowSchema } from '@/lib/validation/categorization-rule'
 import { categoryRowSchema } from '@/lib/validation/category'
+import { debtRowSchema } from '@/lib/validation/debts'
 import { importTemplateRowSchema } from '@/lib/validation/import-template'
 import {
   assetRowSchema,
@@ -23,7 +24,6 @@ import {
 } from '@/lib/validation/investments'
 import {
   propertyExpenseRowSchema,
-  propertyLoanRowSchema,
   propertyRowSchema,
   propertyValuationRowSchema,
   rentalIncomeRowSchema,
@@ -163,8 +163,9 @@ export async function getRealEstateExportData(): Promise<RealEstateExportInput> 
         .select('*')
         .order('purchase_date', { ascending: true }),
       supabase
-        .from('property_loans')
+        .from('debts')
         .select('*')
+        .eq('type', 'mortgage')
         .order('start_date', { ascending: true }),
       supabase
         .from('property_valuations')
@@ -187,7 +188,7 @@ export async function getRealEstateExportData(): Promise<RealEstateExportInput> 
 
   return {
     properties: propertyRowSchema.array().parse(propsRes.data),
-    loans: propertyLoanRowSchema.array().parse(loansRes.data),
+    loans: debtRowSchema.array().parse(loansRes.data),
     valuations: propertyValuationRowSchema.array().parse(valsRes.data),
     income: rentalIncomeRowSchema.array().parse(incomeRes.data),
     expenses: propertyExpenseRowSchema.array().parse(expensesRes.data),

@@ -7,3 +7,6 @@ export type QuoteType = (typeof QUOTE_TYPES)[number]
 
 export const INVESTMENT_TXN_TYPES = ['buy', 'sell'] as const
 export type InvestmentTxnType = (typeof INVESTMENT_TXN_TYPES)[number]
+
+export const FUNDING_SOURCES = ['own_funds', 'credit'] as const
+export type FundingSource = (typeof FUNDING_SOURCES)[number]

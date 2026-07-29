@@ -27,8 +27,9 @@ export async function getRealEstateFingerprints(): Promise<ExistingRealEstate> {
       .from('properties')
       .select('id, name, type, purchase_date, purchase_price_cents, currency'),
     supabase
-      .from('property_loans')
-      .select('property_id, lender_name, start_date, original_amount_cents'),
+      .from('debts')
+      .select('property_id, lender, start_date, principal_cents')
+      .eq('type', 'mortgage'),
     supabase
       .from('property_valuations')
       .select('property_id, valuation_date, value_cents'),
@@ -63,9 +64,9 @@ export async function getRealEstateFingerprints(): Promise<ExistingRealEstate> {
     if (!parentFp) continue
     childFps.add(
       loanFingerprint(parentFp, {
-        lender_name: String(l.lender_name),
+        lender: String(l.lender),
         start_date: String(l.start_date),
-        original_amount_cents: Number(l.original_amount_cents),
+        principal_cents: Number(l.principal_cents),
       })
     )
   }

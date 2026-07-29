@@ -284,6 +284,7 @@ export async function createLoan(
     propertyId: formData.get('propertyId'),
     rateType: formData.get('rateType'),
     startDate: formData.get('startDate'),
+    termMonths: formData.get('termMonths'),
   })
   if (!parsed.success) {
     return {
@@ -299,23 +300,20 @@ export async function createLoan(
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()
-  const { error } = await supabase.from('property_loans').insert({
+  const { error } = await supabase.from('debts').insert({
     currency: property.currency,
-    end_date: input.endDate ?? null,
-    euribor_spread_pct:
-      input.euriborSpreadPct != null
-        ? normalizeDecimal(input.euriborSpreadPct)
-        : null,
     interest_rate_pct: normalizeDecimal(input.interestRatePct),
-    lender_name: input.lenderName,
-    loan_type: input.loanType,
-    monthly_payment_cents: toCents(input.monthlyPayment, property.currency),
+    lender: input.lenderName,
     notes: input.notes ?? null,
-    original_amount_cents: toCents(input.originalAmount, property.currency),
     outstanding_cents: toCents(input.outstanding, property.currency),
+    payment_cents: toCents(input.monthlyPayment, property.currency),
+    principal_cents: toCents(input.originalAmount, property.currency),
     property_id: input.propertyId,
     rate_type: input.rateType,
     start_date: input.startDate,
+    status: 'active',
+    term_months: input.termMonths,
+    type: 'mortgage',
     user_id: claims.sub,
   })
   if (error) {
@@ -348,7 +346,7 @@ export async function updateLoan(
 
   const supabase = await createClient()
   const { data: loanRow } = await supabase
-    .from('property_loans')
+    .from('debts')
     .select('currency')
     .eq('id', input.id)
     .maybeSingle()
@@ -357,15 +355,14 @@ export async function updateLoan(
   }
   const currency = String(loanRow.currency)
   const { error } = await supabase
-    .from('property_loans')
+    .from('debts')
     .update({
       interest_rate_pct: normalizeDecimal(input.interestRatePct),
-      is_paid_off: input.isPaidOff,
-      last_review_date: new Date().toISOString().slice(0, 10),
-      monthly_payment_cents: toCents(input.monthlyPayment, currency),
       outstanding_cents: input.isPaidOff
         ? 0
         : toCents(input.outstanding, currency),
+      payment_cents: toCents(input.monthlyPayment, currency),
+      status: input.isPaidOff ? 'paid_off' : 'active',
       updated_at: new Date().toISOString(),
     })
     .eq('id', input.id)
@@ -377,7 +374,7 @@ export async function updateLoan(
 }
 
 export async function deleteLoan(id: string): Promise<ActionResult> {
-  return deleteChild('property_loans', id)
+  return deleteChild('debts', id)
 }
 
 export async function createRentalIncome(
@@ -663,7 +660,7 @@ async function syncCurrentValue(propertyId: string): Promise<string | null> {
 }
 
 async function deleteChild(
-  table: 'property_loans' | 'rental_income' | 'property_expenses',
+  table: 'debts' | 'rental_income' | 'property_expenses',
   id: string
 ): Promise<ActionResult> {
   await requireUser()

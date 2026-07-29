@@ -16,6 +16,7 @@ export default function ErrorBoundary({
   const t = useTranslations('errorBoundary')
 
   useEffect(() => {
+    const controller = new AbortController()
     fetch('/api/log-error', {
       body: JSON.stringify({
         digest: error.digest,
@@ -25,9 +26,11 @@ export default function ErrorBoundary({
       }),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
+      signal: controller.signal,
     }).catch(() => {
       // Already visible in the browser console via the thrown error itself.
     })
+    return () => controller.abort()
   }, [error])
 
   return (

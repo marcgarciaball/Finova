@@ -4,7 +4,6 @@ import { format, money } from '@finova/domain/money'
 import { totalFromMonthlyRentCents } from '@finova/domain/real-estate/metrics'
 import {
   EXPENSE_CATEGORIES,
-  LOAN_TYPES,
   RATE_TYPES,
   RECURRENCES,
   VALUATION_SOURCES,
@@ -22,10 +21,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
-import type {
-  PropertyLoanRow,
-  RentalIncomeRow,
-} from '@/lib/validation/real-estate'
+import type { DebtRow } from '@/lib/validation/debts'
+import type { RentalIncomeRow } from '@/lib/validation/real-estate'
 import type { ActionResult } from '../actions'
 import {
   createExpense,
@@ -141,6 +138,7 @@ function LoanForm({
       submitLabel={t('loanForm.submit')}
     >
       <input type="hidden" name="propertyId" value={propertyId} />
+      <input type="hidden" name="loanType" value="mortgage" />
       <Field
         id="loan-lender"
         label={t('loanForm.lenderName')}
@@ -149,15 +147,6 @@ function LoanForm({
         <Input id="loan-lender" name="lenderName" maxLength={120} required />
       </Field>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field id="loan-type" label={t('loanForm.loanType')}>
-          <select id="loan-type" name="loanType" className={SELECT_CLASS}>
-            {LOAN_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {t(`loanForm.loanTypes.${type}`)}
-              </option>
-            ))}
-          </select>
-        </Field>
         <Field id="loan-rate-type" label={t('loanForm.rateType')}>
           <select id="loan-rate-type" name="rateType" className={SELECT_CLASS}>
             {RATE_TYPES.map((type) => (
@@ -166,6 +155,20 @@ function LoanForm({
               </option>
             ))}
           </select>
+        </Field>
+        <Field
+          id="loan-term-months"
+          label={t('loanForm.termMonths')}
+          error={errorFor('termMonths')}
+        >
+          <Input
+            id="loan-term-months"
+            name="termMonths"
+            type="number"
+            min={1}
+            step={1}
+            required
+          />
         </Field>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -257,7 +260,7 @@ function LoanForm({
 }
 
 /** Balance/rate/payment update for one loan, in a pencil-icon dialog. */
-export function EditLoanButton({ loan }: { loan: PropertyLoanRow }) {
+export function EditLoanButton({ loan }: { loan: DebtRow }) {
   const t = useTranslations('realEstate')
   const [open, setOpen] = useState(false)
   return (
@@ -273,7 +276,7 @@ export function EditLoanButton({ loan }: { loan: PropertyLoanRow }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{loan.lender_name}</DialogTitle>
+          <DialogTitle>{loan.lender}</DialogTitle>
         </DialogHeader>
         <EditLoanForm loan={loan} onDone={() => setOpen(false)} />
       </DialogContent>
@@ -281,13 +284,7 @@ export function EditLoanButton({ loan }: { loan: PropertyLoanRow }) {
   )
 }
 
-function EditLoanForm({
-  loan,
-  onDone,
-}: {
-  loan: PropertyLoanRow
-  onDone: () => void
-}) {
+function EditLoanForm({ loan, onDone }: { loan: DebtRow; onDone: () => void }) {
   const t = useTranslations('realEstate')
   const { errorFor, formAction, formError, pending } = useEntryForm(
     updateLoan,
@@ -336,7 +333,7 @@ function EditLoanForm({
           id="edit-loan-payment"
           name="monthlyPayment"
           inputMode="decimal"
-          defaultValue={(loan.monthly_payment_cents / 100).toFixed(2)}
+          defaultValue={(loan.payment_cents / 100).toFixed(2)}
           required
         />
       </Field>
@@ -344,7 +341,7 @@ function EditLoanForm({
         <Checkbox
           id="edit-loan-paid-off"
           name="isPaidOff"
-          defaultChecked={loan.is_paid_off}
+          defaultChecked={loan.status === 'paid_off'}
         />
         <label htmlFor="edit-loan-paid-off" className="text-ink text-sm">
           {t('loanForm.isPaidOff')}

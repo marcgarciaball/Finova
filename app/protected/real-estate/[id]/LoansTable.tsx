@@ -3,12 +3,12 @@
 import { Badge } from '@/components/ui/Badge'
 import { SortButton } from '@/components/ui/table/SortButton'
 import { useClientSort } from '@/lib/hooks/useClientSort'
-import type { PropertyLoanRow } from '@/lib/validation/real-estate'
+import type { DebtRow } from '@/lib/validation/debts'
 import { LoanRowActions } from './LoanRowActions'
 
 export interface LoanRowView {
   lenderName: string
-  loan: PropertyLoanRow
+  loan: DebtRow
   outstandingCents: number
   outstandingLabel: string
   paidOffLabel: string
@@ -99,7 +99,7 @@ export function LoansTable({
           <tr key={row.loan.id} className="border-glass-line border-t">
             <td className="py-2 pr-4 font-medium text-ink">
               {row.lenderName}
-              {row.loan.is_paid_off ? (
+              {row.loan.status === 'paid_off' ? (
                 <Badge variant="neutral" className="ml-2">
                   {row.paidOffLabel}
                 </Badge>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -27,6 +27,8 @@ const SELECT_CLASS =
 export interface TxnDefaults {
   currency: string
   fees: string
+  fundingNote: string
+  fundingSource: 'own_funds' | 'credit'
   id: string
   notes: string
   price: string
@@ -59,6 +61,10 @@ export function InvestmentTransactionForm({
     ActionResult | undefined,
     FormData
   >(action, undefined)
+  const [type, setType] = useState<'buy' | 'sell'>(txn?.type ?? 'buy')
+  const [fundingSource, setFundingSource] = useState<'own_funds' | 'credit'>(
+    txn?.fundingSource ?? 'own_funds'
+  )
 
   const fieldErrors = state && !state.ok ? state.fieldErrors : undefined
   const errorFor = (field: string): string | undefined => {
@@ -81,13 +87,41 @@ export function InvestmentTransactionForm({
         <select
           id="inv-type"
           name="type"
-          defaultValue={txn?.type ?? 'buy'}
+          value={type}
+          onChange={(e) => setType(e.target.value as 'buy' | 'sell')}
           className={SELECT_CLASS}
         >
           <option value="buy">{t('form.buy')}</option>
           <option value="sell">{t('form.sell')}</option>
         </select>
       </div>
+
+      {type === 'buy' ? (
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="inv-funding-source">{t('form.fundingSource')}</Label>
+          <select
+            id="inv-funding-source"
+            name="fundingSource"
+            value={fundingSource}
+            onChange={(e) =>
+              setFundingSource(e.target.value as 'own_funds' | 'credit')
+            }
+            className={SELECT_CLASS}
+          >
+            <option value="own_funds">{t('form.ownFunds')}</option>
+            <option value="credit">{t('form.credit')}</option>
+          </select>
+          {fundingSource === 'credit' ? (
+            <Input
+              id="inv-funding-note"
+              name="fundingNote"
+              placeholder={t('form.fundingNotePlaceholder')}
+              maxLength={200}
+              defaultValue={txn?.fundingNote}
+            />
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="inv-traded-at">{t('form.date')}</Label>

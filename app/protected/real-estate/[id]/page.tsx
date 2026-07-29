@@ -65,15 +65,15 @@ export default async function PropertyDetailPage({
 
   const loanRows = loans.map((loan) => ({
     loan,
-    lenderName: loan.lender_name,
-    typeLabel: t(`loanForm.loanTypes.${loan.loan_type}`),
+    lenderName: loan.lender,
+    typeLabel: t('loanForm.loanTypes.mortgage'),
     outstandingCents: loan.outstanding_cents,
     outstandingLabel: fmt(loan.outstanding_cents),
     ratePct: loan.interest_rate_pct,
     rateLabel: `${loan.interest_rate_pct.toFixed(2)}%`,
     rateTypeLabel: t(`loanForm.rateTypes.${loan.rate_type}`),
-    paymentCents: loan.monthly_payment_cents,
-    paymentLabel: fmt(loan.monthly_payment_cents),
+    paymentCents: loan.payment_cents,
+    paymentLabel: fmt(loan.payment_cents),
     paidOffLabel: t('tables.paidOff'),
   }))
 

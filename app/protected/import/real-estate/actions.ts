@@ -172,22 +172,20 @@ export async function commitRealEstateBackup(input: {
         }))
 
     await insertChildren(
-      'property_loans',
+      'debts',
       childRows(plan.loans, (l) => ({
-        lender_name: l.lender_name,
-        loan_type: l.loan_type,
+        type: 'mortgage',
+        lender: l.lender,
         currency: l.currency,
-        original_amount_cents: l.original_amount_cents,
+        principal_cents: l.principal_cents,
         outstanding_cents: l.outstanding_cents,
         interest_rate_pct: l.interest_rate_pct,
         rate_type: l.rate_type,
+        term_months: l.term_months,
         start_date: l.start_date,
-        end_date: l.end_date,
-        monthly_payment_cents: l.monthly_payment_cents,
-        euribor_spread_pct: l.euribor_spread_pct,
-        last_review_date: l.last_review_date,
+        payment_cents: l.payment_cents,
+        status: l.status,
         notes: l.notes,
-        is_paid_off: l.is_paid_off,
       }))
     )
     await insertChildren(

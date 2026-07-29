@@ -125,12 +125,8 @@
           "tableFrom": "accounts",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -142,27 +138,21 @@
           "name": "accounts_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"accounts\".\"user_id\""
         },
         "accounts_insert_own": {
           "name": "accounts_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"accounts\".\"user_id\""
         },
         "accounts_update_own": {
           "name": "accounts_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"accounts\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"accounts\".\"user_id\""
         },
@@ -170,9 +160,7 @@
           "name": "accounts_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"accounts\".\"user_id\""
         }
       },
@@ -359,12 +347,8 @@
           "tableFrom": "categories",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -372,12 +356,8 @@
           "name": "categories_parent_id_categories_id_fk",
           "tableFrom": "categories",
           "tableTo": "categories",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -389,27 +369,21 @@
           "name": "categories_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"categories\".\"user_id\""
         },
         "categories_insert_own": {
           "name": "categories_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"categories\".\"user_id\""
         },
         "categories_update_own": {
           "name": "categories_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"categories\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"categories\".\"user_id\""
         },
@@ -417,9 +391,7 @@
           "name": "categories_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"categories\".\"user_id\""
         }
       },
@@ -584,12 +556,8 @@
           "tableFrom": "categorization_rules",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -597,12 +565,8 @@
           "name": "categorization_rules_category_id_categories_id_fk",
           "tableFrom": "categorization_rules",
           "tableTo": "categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -614,27 +578,21 @@
           "name": "categorization_rules_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"categorization_rules\".\"user_id\""
         },
         "categorization_rules_insert_own": {
           "name": "categorization_rules_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"categorization_rules\".\"user_id\""
         },
         "categorization_rules_update_own": {
           "name": "categorization_rules_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"categorization_rules\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"categorization_rules\".\"user_id\""
         },
@@ -642,9 +600,7 @@
           "name": "categorization_rules_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"categorization_rules\".\"user_id\""
         }
       },
@@ -870,12 +826,8 @@
           "tableFrom": "import_batches",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -883,12 +835,8 @@
           "name": "import_batches_account_id_accounts_id_fk",
           "tableFrom": "import_batches",
           "tableTo": "accounts",
-          "columnsFrom": [
-            "account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -898,9 +846,7 @@
         "import_batches_storage_path_unique": {
           "name": "import_batches_storage_path_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "storage_path"
-          ]
+          "columns": ["storage_path"]
         }
       },
       "policies": {
@@ -908,27 +854,21 @@
           "name": "import_batches_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"import_batches\".\"user_id\""
         },
         "import_batches_insert_own": {
           "name": "import_batches_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"import_batches\".\"user_id\""
         },
         "import_batches_update_own": {
           "name": "import_batches_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"import_batches\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"import_batches\".\"user_id\""
         },
@@ -936,9 +876,7 @@
           "name": "import_batches_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"import_batches\".\"user_id\""
         }
       },
@@ -1044,12 +982,8 @@
           "tableFrom": "import_templates",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1061,27 +995,21 @@
           "name": "import_templates_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"import_templates\".\"user_id\""
         },
         "import_templates_insert_own": {
           "name": "import_templates_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"import_templates\".\"user_id\""
         },
         "import_templates_update_own": {
           "name": "import_templates_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"import_templates\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"import_templates\".\"user_id\""
         },
@@ -1089,9 +1017,7 @@
           "name": "import_templates_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"import_templates\".\"user_id\""
         }
       },
@@ -1213,12 +1139,8 @@
           "tableFrom": "holdings",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1226,12 +1148,8 @@
           "name": "holdings_portfolio_id_portfolios_id_fk",
           "tableFrom": "holdings",
           "tableTo": "portfolios",
-          "columnsFrom": [
-            "portfolio_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["portfolio_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1239,12 +1157,8 @@
           "name": "holdings_asset_id_assets_id_fk",
           "tableFrom": "holdings",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1254,10 +1168,7 @@
         "holdings_portfolio_asset_unique": {
           "name": "holdings_portfolio_asset_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "portfolio_id",
-            "asset_id"
-          ]
+          "columns": ["portfolio_id", "asset_id"]
         }
       },
       "policies": {
@@ -1265,9 +1176,7 @@
           "name": "holdings_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"holdings\".\"user_id\""
         }
       },
@@ -1338,12 +1247,8 @@
           "name": "portfolio_snapshots_portfolio_id_portfolios_id_fk",
           "tableFrom": "portfolio_snapshots",
           "tableTo": "portfolios",
-          "columnsFrom": [
-            "portfolio_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["portfolio_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1352,12 +1257,8 @@
           "tableFrom": "portfolio_snapshots",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1367,10 +1268,7 @@
         "portfolio_snapshots_portfolio_date_unique": {
           "name": "portfolio_snapshots_portfolio_date_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "portfolio_id",
-            "snapshot_date"
-          ]
+          "columns": ["portfolio_id", "snapshot_date"]
         }
       },
       "policies": {
@@ -1378,9 +1276,7 @@
           "name": "portfolio_snapshots_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"portfolio_snapshots\".\"user_id\""
         }
       },
@@ -1501,12 +1397,8 @@
           "name": "investment_accounts_portfolio_id_portfolios_id_fk",
           "tableFrom": "investment_accounts",
           "tableTo": "portfolios",
-          "columnsFrom": [
-            "portfolio_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["portfolio_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1515,12 +1407,8 @@
           "tableFrom": "investment_accounts",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1532,27 +1420,21 @@
           "name": "investment_accounts_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"investment_accounts\".\"user_id\""
         },
         "investment_accounts_insert_own": {
           "name": "investment_accounts_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"investment_accounts\".\"user_id\""
         },
         "investment_accounts_update_own": {
           "name": "investment_accounts_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"investment_accounts\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"investment_accounts\".\"user_id\""
         },
@@ -1560,9 +1442,7 @@
           "name": "investment_accounts_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"investment_accounts\".\"user_id\""
         }
       },
@@ -1671,12 +1551,8 @@
           "tableFrom": "portfolios",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1688,27 +1564,21 @@
           "name": "portfolios_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"portfolios\".\"user_id\""
         },
         "portfolios_insert_own": {
           "name": "portfolios_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"portfolios\".\"user_id\""
         },
         "portfolios_update_own": {
           "name": "portfolios_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"portfolios\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"portfolios\".\"user_id\""
         },
@@ -1716,9 +1586,7 @@
           "name": "portfolios_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"portfolios\".\"user_id\""
         }
       },
@@ -1812,24 +1680,17 @@
         "assets_ticker_exchange_unique": {
           "name": "assets_ticker_exchange_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "ticker",
-            "exchange"
-          ]
+          "columns": ["ticker", "exchange"]
         },
         "assets_isin_unique": {
           "name": "assets_isin_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "isin"
-          ]
+          "columns": ["isin"]
         },
         "assets_coingecko_id_unique": {
           "name": "assets_coingecko_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "coingecko_id"
-          ]
+          "columns": ["coingecko_id"]
         }
       },
       "policies": {
@@ -1837,9 +1698,7 @@
           "name": "assets_select_authenticated",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         }
       },
@@ -1923,12 +1782,8 @@
           "name": "cached_quotes_asset_id_assets_id_fk",
           "tableFrom": "cached_quotes",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1938,9 +1793,7 @@
         "cached_quotes_asset_id_unique": {
           "name": "cached_quotes_asset_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "asset_id"
-          ]
+          "columns": ["asset_id"]
         }
       },
       "policies": {
@@ -1948,9 +1801,7 @@
           "name": "cached_quotes_select_authenticated",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         }
       },
@@ -2020,12 +1871,8 @@
           "name": "dividend_events_asset_id_assets_id_fk",
           "tableFrom": "dividend_events",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2035,10 +1882,7 @@
         "dividend_events_asset_ex_date_unique": {
           "name": "dividend_events_asset_ex_date_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "asset_id",
-            "ex_date"
-          ]
+          "columns": ["asset_id", "ex_date"]
         }
       },
       "policies": {
@@ -2046,9 +1890,7 @@
           "name": "dividend_events_select_authenticated",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         }
       },
@@ -2103,11 +1945,7 @@
         "fx_rates_pair_date_unique": {
           "name": "fx_rates_pair_date_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "from_ccy",
-            "to_ccy",
-            "rate_date"
-          ]
+          "columns": ["from_ccy", "to_ccy", "rate_date"]
         }
       },
       "policies": {
@@ -2115,9 +1953,7 @@
           "name": "fx_rates_select_authenticated",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         }
       },
@@ -2203,12 +2039,8 @@
           "name": "historical_prices_asset_id_assets_id_fk",
           "tableFrom": "historical_prices",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2218,10 +2050,7 @@
         "historical_prices_asset_date_unique": {
           "name": "historical_prices_asset_date_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "asset_id",
-            "date"
-          ]
+          "columns": ["asset_id", "date"]
         }
       },
       "policies": {
@@ -2229,9 +2058,7 @@
           "name": "historical_prices_select_authenticated",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         }
       },
@@ -2420,12 +2247,8 @@
           "tableFrom": "investment_transactions",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2433,12 +2256,8 @@
           "name": "investment_transactions_portfolio_id_portfolios_id_fk",
           "tableFrom": "investment_transactions",
           "tableTo": "portfolios",
-          "columnsFrom": [
-            "portfolio_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["portfolio_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2446,12 +2265,8 @@
           "name": "investment_transactions_account_id_investment_accounts_id_fk",
           "tableFrom": "investment_transactions",
           "tableTo": "investment_accounts",
-          "columnsFrom": [
-            "account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2459,12 +2274,8 @@
           "name": "investment_transactions_asset_id_assets_id_fk",
           "tableFrom": "investment_transactions",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2476,27 +2287,21 @@
           "name": "investment_transactions_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"investment_transactions\".\"user_id\""
         },
         "investment_transactions_insert_own": {
           "name": "investment_transactions_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"investment_transactions\".\"user_id\""
         },
         "investment_transactions_update_own": {
           "name": "investment_transactions_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"investment_transactions\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"investment_transactions\".\"user_id\""
         },
@@ -2504,9 +2309,7 @@
           "name": "investment_transactions_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"investment_transactions\".\"user_id\""
         }
       },
@@ -2649,12 +2452,8 @@
           "tableFrom": "manual_asset_income",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2662,12 +2461,8 @@
           "name": "manual_asset_income_manual_asset_id_manual_assets_id_fk",
           "tableFrom": "manual_asset_income",
           "tableTo": "manual_assets",
-          "columnsFrom": [
-            "manual_asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["manual_asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2679,27 +2474,21 @@
           "name": "manual_asset_income_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"manual_asset_income\".\"user_id\""
         },
         "manual_asset_income_insert_own": {
           "name": "manual_asset_income_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"manual_asset_income\".\"user_id\""
         },
         "manual_asset_income_update_own": {
           "name": "manual_asset_income_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"manual_asset_income\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"manual_asset_income\".\"user_id\""
         },
@@ -2707,9 +2496,7 @@
           "name": "manual_asset_income_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"manual_asset_income\".\"user_id\""
         }
       },
@@ -2843,12 +2630,8 @@
           "tableFrom": "manual_asset_valuations",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2856,12 +2639,8 @@
           "name": "manual_asset_valuations_manual_asset_id_manual_assets_id_fk",
           "tableFrom": "manual_asset_valuations",
           "tableTo": "manual_assets",
-          "columnsFrom": [
-            "manual_asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["manual_asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2871,10 +2650,7 @@
         "manual_asset_valuations_asset_date_unique": {
           "name": "manual_asset_valuations_asset_date_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "manual_asset_id",
-            "valuation_date"
-          ]
+          "columns": ["manual_asset_id", "valuation_date"]
         }
       },
       "policies": {
@@ -2882,27 +2658,21 @@
           "name": "manual_asset_valuations_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"manual_asset_valuations\".\"user_id\""
         },
         "manual_asset_valuations_insert_own": {
           "name": "manual_asset_valuations_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"manual_asset_valuations\".\"user_id\""
         },
         "manual_asset_valuations_update_own": {
           "name": "manual_asset_valuations_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"manual_asset_valuations\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"manual_asset_valuations\".\"user_id\""
         },
@@ -2910,9 +2680,7 @@
           "name": "manual_asset_valuations_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"manual_asset_valuations\".\"user_id\""
         }
       },
@@ -3067,12 +2835,8 @@
           "tableFrom": "manual_assets",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3084,27 +2848,21 @@
           "name": "manual_assets_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"manual_assets\".\"user_id\""
         },
         "manual_assets_insert_own": {
           "name": "manual_assets_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"manual_assets\".\"user_id\""
         },
         "manual_assets_update_own": {
           "name": "manual_assets_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"manual_assets\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"manual_assets\".\"user_id\""
         },
@@ -3112,9 +2870,7 @@
           "name": "manual_assets_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"manual_assets\".\"user_id\""
         }
       },
@@ -3191,12 +2947,8 @@
           "tableFrom": "profiles",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3208,27 +2960,21 @@
           "name": "profiles_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"profiles\".\"id\""
         },
         "profiles_insert_own": {
           "name": "profiles_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"profiles\".\"id\""
         },
         "profiles_update_own": {
           "name": "profiles_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"profiles\".\"id\"",
           "withCheck": "(select auth.uid()) = \"profiles\".\"id\""
         }
@@ -3500,12 +3246,8 @@
           "tableFrom": "properties",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3517,27 +3259,21 @@
           "name": "properties_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"properties\".\"user_id\""
         },
         "properties_insert_own": {
           "name": "properties_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"properties\".\"user_id\""
         },
         "properties_update_own": {
           "name": "properties_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"properties\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"properties\".\"user_id\""
         },
@@ -3545,9 +3281,7 @@
           "name": "properties_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"properties\".\"user_id\""
         }
       },
@@ -3750,12 +3484,8 @@
           "tableFrom": "property_expenses",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3763,12 +3493,8 @@
           "name": "property_expenses_property_id_properties_id_fk",
           "tableFrom": "property_expenses",
           "tableTo": "properties",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3780,27 +3506,21 @@
           "name": "property_expenses_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"property_expenses\".\"user_id\""
         },
         "property_expenses_insert_own": {
           "name": "property_expenses_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"property_expenses\".\"user_id\""
         },
         "property_expenses_update_own": {
           "name": "property_expenses_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"property_expenses\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"property_expenses\".\"user_id\""
         },
@@ -3808,9 +3528,7 @@
           "name": "property_expenses_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"property_expenses\".\"user_id\""
         }
       },
@@ -4024,12 +3742,8 @@
           "tableFrom": "property_loans",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4037,12 +3751,8 @@
           "name": "property_loans_property_id_properties_id_fk",
           "tableFrom": "property_loans",
           "tableTo": "properties",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4054,27 +3764,21 @@
           "name": "property_loans_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"property_loans\".\"user_id\""
         },
         "property_loans_insert_own": {
           "name": "property_loans_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"property_loans\".\"user_id\""
         },
         "property_loans_update_own": {
           "name": "property_loans_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"property_loans\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"property_loans\".\"user_id\""
         },
@@ -4082,9 +3786,7 @@
           "name": "property_loans_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"property_loans\".\"user_id\""
         }
       },
@@ -4238,12 +3940,8 @@
           "tableFrom": "property_valuations",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4251,12 +3949,8 @@
           "name": "property_valuations_property_id_properties_id_fk",
           "tableFrom": "property_valuations",
           "tableTo": "properties",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4266,10 +3960,7 @@
         "property_valuations_property_date_unique": {
           "name": "property_valuations_property_date_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "property_id",
-            "valuation_date"
-          ]
+          "columns": ["property_id", "valuation_date"]
         }
       },
       "policies": {
@@ -4277,27 +3968,21 @@
           "name": "property_valuations_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"property_valuations\".\"user_id\""
         },
         "property_valuations_insert_own": {
           "name": "property_valuations_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"property_valuations\".\"user_id\""
         },
         "property_valuations_update_own": {
           "name": "property_valuations_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"property_valuations\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"property_valuations\".\"user_id\""
         },
@@ -4305,9 +3990,7 @@
           "name": "property_valuations_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"property_valuations\".\"user_id\""
         }
       },
@@ -4464,12 +4147,8 @@
           "tableFrom": "rental_income",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4477,12 +4156,8 @@
           "name": "rental_income_property_id_properties_id_fk",
           "tableFrom": "rental_income",
           "tableTo": "properties",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4494,27 +4169,21 @@
           "name": "rental_income_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"rental_income\".\"user_id\""
         },
         "rental_income_insert_own": {
           "name": "rental_income_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"rental_income\".\"user_id\""
         },
         "rental_income_update_own": {
           "name": "rental_income_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"rental_income\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"rental_income\".\"user_id\""
         },
@@ -4522,9 +4191,7 @@
           "name": "rental_income_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"rental_income\".\"user_id\""
         }
       },
@@ -4788,12 +4455,8 @@
           "tableFrom": "transactions",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4801,12 +4464,8 @@
           "name": "transactions_account_id_accounts_id_fk",
           "tableFrom": "transactions",
           "tableTo": "accounts",
-          "columnsFrom": [
-            "account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -4814,12 +4473,8 @@
           "name": "transactions_category_id_categories_id_fk",
           "tableFrom": "transactions",
           "tableTo": "categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -4831,27 +4486,21 @@
           "name": "transactions_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"transactions\".\"user_id\""
         },
         "transactions_insert_own": {
           "name": "transactions_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "(select auth.uid()) = \"transactions\".\"user_id\""
         },
         "transactions_update_own": {
           "name": "transactions_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"transactions\".\"user_id\"",
           "withCheck": "(select auth.uid()) = \"transactions\".\"user_id\""
         },
@@ -4859,9 +4508,7 @@
           "name": "transactions_delete_own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "(select auth.uid()) = \"transactions\".\"user_id\""
         }
       },

@@ -7,9 +7,9 @@
  * existing-fingerprint snapshot and performs the inserts.
  */
 
+import type { DebtRow } from '@/lib/validation/debts'
 import type {
   PropertyExpenseRow,
-  PropertyLoanRow,
   PropertyRow,
   PropertyValuationRow,
   RentalIncomeRow,
@@ -55,7 +55,7 @@ export interface RealEstateImportPlan {
   expenses: PlannedChild<PropertyExpenseRow>[]
   income: PlannedChild<RentalIncomeRow>[]
   /** New children only, keyed to their parent by fingerprint. */
-  loans: PlannedChild<PropertyLoanRow>[]
+  loans: PlannedChild<DebtRow>[]
   /** All incoming properties (new inserts + duplicates carrying existingId). */
   properties: PlannedProperty[]
   valuations: PlannedChild<PropertyValuationRow>[]
@@ -130,9 +130,20 @@ export function planRealEstateImport(
     out.push({ parentFp, fp, row })
   }
 
-  const loans: PlannedChild<PropertyLoanRow>[] = []
+  const loans: PlannedChild<DebtRow>[] = []
   for (const row of parsed.loans) {
-    classifyChild('loans', row, loanFingerprint, loans)
+    // Mortgage debts always carry a property_id (DB check constraint); a null
+    // here means a malformed file — treat it the same as an orphaned child.
+    if (row.property_id === null) {
+      counts.loans.error++
+      continue
+    }
+    classifyChild(
+      'loans',
+      row as DebtRow & { property_id: string },
+      loanFingerprint,
+      loans
+    )
   }
   const valuations: PlannedChild<PropertyValuationRow>[] = []
   for (const row of parsed.valuations) {

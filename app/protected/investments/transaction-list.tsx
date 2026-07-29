@@ -35,6 +35,8 @@ export async function InvestmentTransactionList({
           fees: (txn.fees_cents / 100).toFixed(2),
           feesCents: txn.fees_cents,
           feesDisplay: format(money(txn.fees_cents, txn.currency), locale),
+          fundingNote: txn.funding_note ?? '',
+          fundingSource: txn.funding_source,
           id: txn.id,
           name: txn.assets.name,
           notes: txn.notes ?? '',
@@ -49,6 +51,7 @@ export async function InvestmentTransactionList({
         }))}
         labels={{
           asset: t('list.asset'),
+          credit: t('list.credit'),
           date: t('list.date'),
           fees: t('list.fees'),
           price: t('list.price'),

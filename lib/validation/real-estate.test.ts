@@ -78,6 +78,7 @@ describe('createLoanSchema', () => {
     interestRatePct: '3.250',
     rateType: 'fixed',
     startDate: '2020-01-15',
+    termMonths: '240',
     monthlyPayment: '800',
   }
 

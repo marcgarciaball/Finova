@@ -655,6 +655,13 @@
       "error": "Couldn't organize right now. Try again.",
       "dismiss": "Dismiss"
     },
+    "netWorth": {
+      "title": "Net worth",
+      "totalAssets": "Total assets",
+      "totalDebts": "Total debts",
+      "netWorth": "Net worth",
+      "debtToAssetRatio": "Debt / assets"
+    },
     "currencyBreakdown": {
       "title": "Net worth by currency",
       "base": "Base"
@@ -873,7 +880,11 @@
       "submit": "Add transaction",
       "saved": "Added",
       "save": "Save changes",
-      "editReason": "Reason for edit (optional)"
+      "editReason": "Reason for edit (optional)",
+      "fundingSource": "Funding source",
+      "ownFunds": "Own funds",
+      "credit": "Credit",
+      "fundingNotePlaceholder": "Credit source (optional): loan, broker margin…"
     },
     "list": {
       "title": "Transactions",
@@ -884,6 +895,7 @@
       "quantity": "Quantity",
       "price": "Price",
       "fees": "Fees",
+      "credit": "Credit",
       "edit": "Edit",
       "delete": "Delete",
       "confirmDelete": "Delete this transaction permanently? This cannot be undone."
@@ -908,6 +920,7 @@
       "title": "Overview",
       "value": "Portfolio value",
       "invested": "Invested",
+      "creditFunded": "of which {amount} on credit",
       "unrealized": "Unrealized P/L",
       "realized": "Realized P/L",
       "byType": "Allocation by type",
@@ -1089,6 +1102,7 @@
       },
       "startDate": "Start date",
       "endDate": "Maturity date (optional)",
+      "termMonths": "Term (months)",
       "monthlyPayment": "Monthly payment",
       "euriborSpreadPct": "Euribor spread % (optional)",
       "notes": "Notes",
@@ -1286,6 +1300,108 @@
     "sort": {
       "label": "Sort by",
       "name": "Name"
+    }
+  },
+  "debts": {
+    "nav": "Debts",
+    "title": "Debts",
+    "subtitle": "Mortgages, car loans, personal loans, credit cards — everything you owe.",
+    "addTitle": "Add debt",
+    "empty": {
+      "title": "No debts yet",
+      "body": "Track a mortgage, car loan, personal loan, credit card, or other debt."
+    },
+    "types": {
+      "mortgage": "Mortgage",
+      "car_loan": "Car loan",
+      "personal_loan": "Personal loan",
+      "credit_card": "Credit card",
+      "other": "Other"
+    },
+    "rateTypes": {
+      "fixed": "Fixed",
+      "variable": "Variable",
+      "mixed": "Mixed"
+    },
+    "statuses": {
+      "active": "Active",
+      "paid_off": "Paid off",
+      "defaulted": "Defaulted"
+    },
+    "overview": {
+      "totalsTitle": "Debt · {currency}",
+      "totalOutstanding": "Total outstanding",
+      "monthlyPayments": "Monthly payments",
+      "byType": "By type",
+      "debtCount": "{count, plural, =1 {1 debt} other {# debts}}",
+      "debtsTitle": "Debts"
+    },
+    "card": {
+      "outstanding": "Outstanding",
+      "payment": "Monthly payment"
+    },
+    "form": {
+      "type": "Debt type",
+      "property": "Property",
+      "propertyPlaceholder": "Select property",
+      "lender": "Lender",
+      "currency": "Currency",
+      "principal": "Principal amount",
+      "outstanding": "Outstanding balance",
+      "interestRatePct": "Interest rate (annual %)",
+      "rateType": "Rate type",
+      "termMonths": "Term (months)",
+      "startDate": "Start date",
+      "payment": "Monthly payment",
+      "status": "Status",
+      "notes": "Notes",
+      "submit": "Save debt",
+      "update": "Update debt"
+    },
+    "detail": {
+      "back": "Back to debts",
+      "outstanding": "Outstanding balance",
+      "payment": "Monthly payment",
+      "interestRate": "Interest rate",
+      "nextPaymentDate": "Next payment (projected)",
+      "payoffDate": "Payoff date (projected)",
+      "scheduleTitle": "Amortization schedule (projected)",
+      "scheduleNote": "Reference schedule only — real payments may drift (rate changes, extra payments).",
+      "empty": "Nothing here yet.",
+      "delete": "Delete",
+      "confirmDelete": "Delete this debt? This cannot be undone.",
+      "edit": "Edit"
+    },
+    "tables": {
+      "lender": "Lender",
+      "type": "Type",
+      "outstanding": "Outstanding",
+      "rate": "Rate",
+      "payment": "Payment",
+      "status": "Status",
+      "month": "Month",
+      "date": "Date",
+      "principal": "Principal",
+      "interest": "Interest",
+      "balance": "Balance"
+    },
+    "errors": {
+      "invalidAmount": "Enter a valid amount",
+      "invalidDate": "Enter a valid date",
+      "invalidPercent": "Enter a valid percentage",
+      "required": "This field is required",
+      "tooLong": "Too long",
+      "invalid": "Invalid value",
+      "validationFailed": "Please fix the highlighted fields",
+      "unexpected": "Something went wrong. Please try again."
+    },
+    "sort": {
+      "label": "Sort by",
+      "lender": "Lender",
+      "type": "Type",
+      "outstanding": "Outstanding",
+      "rate": "Rate",
+      "payment": "Payment"
     }
   },
   "settings": {

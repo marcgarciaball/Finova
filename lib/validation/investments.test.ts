@@ -40,6 +40,8 @@ const txn = {
   fees_cents: 100,
   traded_at: '2026-01-02',
   notes: null,
+  funding_source: 'own_funds',
+  funding_note: null,
   created_at: ts,
   updated_at: ts,
   edited_at: null,

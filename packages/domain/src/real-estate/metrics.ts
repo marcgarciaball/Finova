@@ -6,7 +6,7 @@
  * Conventions:
  * - Cost basis = purchase price + purchase fees; yields and ROI are computed
  *   against it (not current value).
- * - Cash flow deducts scheduled loan payments from `property_loans`;
+ * - Cash flow deducts scheduled loan payments from mortgage `debts` rows;
  *   `mortgage_payment` expense rows are excluded there to avoid double
  *   counting a mortgage the user also logged as an expense.
  */

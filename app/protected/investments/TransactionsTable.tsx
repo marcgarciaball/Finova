@@ -12,6 +12,8 @@ export interface TransactionRow {
   fees: string
   feesCents: number
   feesDisplay: string
+  fundingNote: string
+  fundingSource: 'own_funds' | 'credit'
   id: string
   name: string
   notes: string
@@ -40,6 +42,7 @@ export function TransactionsTable({
     quantity: string
     price: string
     fees: string
+    credit: string
   }
   todayIso: string
 }) {
@@ -112,6 +115,14 @@ export function TransactionsTable({
               <span className={txn.type === 'buy' ? 'text-pos' : 'text-neg'}>
                 {txn.typeLabel}
               </span>
+              {txn.fundingSource === 'credit' ? (
+                <span
+                  className="ml-2 rounded-full bg-brand-500/10 px-2 py-0.5 text-brand-600 text-xs"
+                  title={txn.fundingNote || undefined}
+                >
+                  {labels.credit}
+                </span>
+              ) : null}
             </td>
             <td className="py-2 pr-4 text-right text-ink">{txn.quantity}</td>
             <td className="py-2 pr-4 text-right text-ink">
@@ -131,6 +142,8 @@ export function TransactionsTable({
                 txn={{
                   currency: txn.currency,
                   fees: txn.fees,
+                  fundingNote: txn.fundingNote,
+                  fundingSource: txn.fundingSource,
                   id: txn.id,
                   notes: txn.notes,
                   price: txn.price,

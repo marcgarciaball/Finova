@@ -3,8 +3,10 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 /**
  * RLS isolation tests for the real-estate tables (`properties`,
- * `property_loans`, `rental_income`, `property_expenses`,
- * `property_valuations`), mirroring `accounts.rls.test.ts`.
+ * `rental_income`, `property_expenses`, `property_valuations`), mirroring
+ * `accounts.rls.test.ts`. Mortgage loans now live in the generic `debts`
+ * table (`type = 'mortgage'`) — see `debts.rls.test.ts` for the debts-table
+ * isolation tests, standalone and property-attached.
  *
  * Proves a user can only see and mutate their own rows. Requires a real
  * Postgres — SKIPPED unless TEST_DATABASE_URL points at a disposable database;
@@ -21,7 +23,6 @@ const USER_A = '00000000-0000-0000-0000-0000000000aa'
 const USER_B = '00000000-0000-0000-0000-0000000000ab'
 
 const CHILD_TABLES = [
-  'property_loans',
   'rental_income',
   'property_expenses',
   'property_valuations',
@@ -65,12 +66,12 @@ describe.skipIf(!url)('real estate RLS', () => {
     propertyA = await seedProperty(USER_A, 'A flat')
     propertyB = await seedProperty(USER_B, 'B flat')
     await sql`
-      insert into public.property_loans
-        (user_id, property_id, lender_name, loan_type, original_amount_cents,
-         outstanding_cents, interest_rate_pct, rate_type, start_date,
-         monthly_payment_cents)
-      values (${USER_B}, ${propertyB}, 'B Bank', 'mortgage', 16000000,
-              12000000, 3.250, 'fixed', '2020-01-15', 80000)`
+      insert into public.debts
+        (user_id, property_id, type, lender, currency, principal_cents,
+         outstanding_cents, interest_rate_pct, rate_type, term_months,
+         start_date, payment_cents)
+      values (${USER_B}, ${propertyB}, 'mortgage', 'B Bank', 'EUR', 16000000,
+              12000000, 3.250, 'fixed', 240, '2020-01-15', 80000)`
     await sql`
       insert into public.rental_income
         (user_id, property_id, period_start, period_end, amount_cents)
@@ -108,6 +109,14 @@ describe.skipIf(!url)('real estate RLS', () => {
     })
   }
 
+  it("A cannot read B's mortgage debt", async () => {
+    const rows = await asUser(
+      USER_A,
+      (tx) => tx`select id from public.debts where property_id = ${propertyB}`
+    )
+    expect(rows).toHaveLength(0)
+  })
+
   it("A cannot update B's property", async () => {
     const updated = await asUser(
       USER_A,
@@ -140,19 +149,19 @@ describe.skipIf(!url)('real estate RLS', () => {
     ).rejects.toThrow()
   })
 
-  it("A cannot attach a loan to B's property, even self-owned", async () => {
+  it("A cannot attach a mortgage debt to B's property, even self-owned", async () => {
     await expect(
       asUser(
         USER_A,
         (tx) => tx`
-          insert into public.property_loans
-            (user_id, property_id, lender_name, loan_type,
-             original_amount_cents, outstanding_cents, interest_rate_pct,
-             rate_type, start_date, monthly_payment_cents)
-          values (${USER_A}, ${propertyB}, 'Spoof Bank', 'mortgage', 1000,
-                  1000, 1.000, 'fixed', '2020-01-15', 100)`
+          insert into public.debts
+            (user_id, property_id, type, lender, currency, principal_cents,
+             outstanding_cents, interest_rate_pct, rate_type, term_months,
+             start_date, payment_cents)
+          values (${USER_A}, ${propertyB}, 'mortgage', 'Spoof Bank', 'EUR',
+                  1000, 1000, 1.000, 'fixed', 12, '2020-01-15', 100)`
       )
-      // Insert passes the loans policy (user_id = A) but the FK lookup on
+      // Insert passes the debts policy (user_id = A) but the FK lookup on
       // B's property fails under RLS, so the row is rejected.
     ).rejects.toThrow()
   })
@@ -160,12 +169,12 @@ describe.skipIf(!url)('real estate RLS', () => {
   it('A can insert, update and delete its own full property graph', async () => {
     await asUser(USER_A, async (tx) => {
       const [loan] = await tx`
-        insert into public.property_loans
-          (user_id, property_id, lender_name, loan_type,
-           original_amount_cents, outstanding_cents, interest_rate_pct,
-           rate_type, start_date, monthly_payment_cents)
-        values (${USER_A}, ${propertyA}, 'A Bank', 'mortgage', 16000000,
-                15000000, 2.500, 'variable', '2020-01-15', 70000)
+        insert into public.debts
+          (user_id, property_id, type, lender, currency, principal_cents,
+           outstanding_cents, interest_rate_pct, rate_type, term_months,
+           start_date, payment_cents)
+        values (${USER_A}, ${propertyA}, 'mortgage', 'A Bank', 'EUR', 16000000,
+                15000000, 2.500, 'variable', 240, '2020-01-15', 70000)
         returning id`
       expect(loan?.id).toBeTruthy()
 
@@ -191,7 +200,7 @@ describe.skipIf(!url)('real estate RLS', () => {
       expect(valuation?.id).toBeTruthy()
 
       const updated = await tx`
-        update public.property_loans set outstanding_cents = 14900000
+        update public.debts set outstanding_cents = 14900000
         where id = ${loan?.id} returning id`
       expect(updated).toHaveLength(1)
 

@@ -15,6 +15,7 @@
 import type { AccountRow } from '@/lib/validation/account'
 import type { CategorizationRuleRow } from '@/lib/validation/categorization-rule'
 import type { CategoryRow } from '@/lib/validation/category'
+import type { DebtRow } from '@/lib/validation/debts'
 import type { ImportTemplateRow } from '@/lib/validation/import-template'
 import type {
   InvestmentAccountRow,
@@ -23,7 +24,6 @@ import type {
 } from '@/lib/validation/investments'
 import type {
   PropertyExpenseRow,
-  PropertyLoanRow,
   PropertyRow,
   PropertyValuationRow,
   RentalIncomeRow,
@@ -116,8 +116,13 @@ export function buildJsonBundle(
 // user-owned rows travel; investment holdings/quotes/history and other derived
 // or shared data are recomputed/re-fetched on import, never carried in the file.
 
-/** The integer contract version stamped into every backup envelope. */
-export const BACKUP_SCHEMA_VERSION = 1
+/**
+ * The integer contract version stamped into every backup envelope. Bumped to
+ * 2 when `property_loans` was folded into the generic `debts` table — the
+ * loan row shape changed incompatibly (field renames + new required columns),
+ * so backups exported under version 1 are no longer parseable.
+ */
+export const BACKUP_SCHEMA_VERSION = 2
 
 /**
  * Minimal asset reference carried alongside investment transactions so import
@@ -144,7 +149,7 @@ export interface InvestmentsExportInput {
 export interface RealEstateExportInput {
   expenses: PropertyExpenseRow[]
   income: RentalIncomeRow[]
-  loans: PropertyLoanRow[]
+  loans: DebtRow[]
   properties: PropertyRow[]
   valuations: PropertyValuationRow[]
 }

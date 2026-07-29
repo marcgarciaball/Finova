@@ -32,6 +32,33 @@ describe('createInvestmentTransactionSchema', () => {
     expect(p.notes).toBeUndefined()
   })
 
+  it('defaults funding source to own_funds', () => {
+    const p = createInvestmentTransactionSchema.parse(valid)
+    expect(p.fundingSource).toBe('own_funds')
+    expect(p.fundingNote).toBeUndefined()
+  })
+
+  it('accepts a credit-funded buy with a note', () => {
+    const p = createInvestmentTransactionSchema.parse({
+      ...valid,
+      fundingNote: 'broker margin',
+      fundingSource: 'credit',
+    })
+    expect(p.fundingSource).toBe('credit')
+    expect(p.fundingNote).toBe('broker margin')
+  })
+
+  it('clears the funding source and note on a sell', () => {
+    const p = createInvestmentTransactionSchema.parse({
+      ...valid,
+      fundingNote: 'broker margin',
+      fundingSource: 'credit',
+      type: 'sell',
+    })
+    expect(p.fundingSource).toBe('own_funds')
+    expect(p.fundingNote).toBeUndefined()
+  })
+
   const reject = (over: Record<string, unknown>, msg: string) => {
     const r = createInvestmentTransactionSchema.safeParse({
       ...valid,

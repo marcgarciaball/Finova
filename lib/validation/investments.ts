@@ -1,5 +1,6 @@
 import {
   ASSET_TYPES,
+  FUNDING_SOURCES,
   INVESTMENT_TXN_TYPES,
   QUOTE_TYPES,
 } from '@finova/domain/investments/types'
@@ -81,6 +82,8 @@ export const investmentTransactionRowSchema = z.object({
   fees_cents: centsSchema.nonnegative(),
   traded_at: isoDateSchema,
   notes: z.string().nullable(),
+  funding_source: z.enum(FUNDING_SOURCES),
+  funding_note: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
   edited_at: z.string().nullable(),

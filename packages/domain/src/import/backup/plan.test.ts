@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type {
-  PropertyLoanRow,
-  PropertyRow,
-  RentalIncomeRow,
-} from '@/lib/validation/real-estate'
+import type { DebtRow } from '@/lib/validation/debts'
+import type { PropertyRow, RentalIncomeRow } from '@/lib/validation/real-estate'
 import type { RealEstateExportInput } from '../../export/bundle'
 import { loanFingerprint, propertyFingerprint } from './fingerprint'
 import { type ExistingRealEstate, planRealEstateImport } from './plan'
@@ -40,24 +37,22 @@ const property = (over: Partial<PropertyRow> = {}): PropertyRow => ({
   ...over,
 })
 
-const loan = (over: Partial<PropertyLoanRow> = {}): PropertyLoanRow => ({
+const loan = (over: Partial<DebtRow> = {}): DebtRow => ({
   id: 'export-l1',
   user_id: 'exporter',
+  type: 'mortgage',
   property_id: 'export-pr1',
-  lender_name: 'BBVA',
-  loan_type: 'mortgage',
+  lender: 'BBVA',
   currency: 'EUR',
-  original_amount_cents: 9_000_000,
+  principal_cents: 9_000_000,
   outstanding_cents: 6_000_000,
   interest_rate_pct: 2.5,
   rate_type: 'fixed',
+  term_months: 240,
   start_date: '2020-02-01',
-  end_date: null,
-  monthly_payment_cents: 45_000,
-  euribor_spread_pct: null,
-  last_review_date: null,
+  payment_cents: 45_000,
+  status: 'active',
   notes: null,
-  is_paid_off: false,
   created_at: '2020-02-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
   ...over,
@@ -137,13 +132,13 @@ describe('planRealEstateImport', () => {
       childFps: new Set([loanFingerprint(pFp, loan())]),
     }
     // A second, new loan on the same property.
-    const newLoan = loan({ id: 'export-l2', lender_name: 'ING' })
+    const newLoan = loan({ id: 'export-l2', lender: 'ING' })
     const plan = planRealEstateImport(
       input({ loans: [loan(), newLoan], income: [] }),
       existing
     )
     expect(plan.counts.loans).toEqual({ new: 1, duplicate: 1, error: 0 })
-    expect(plan.loans[0].row.lender_name).toBe('ING')
+    expect(plan.loans[0].row.lender).toBe('ING')
     expect(plan.loans[0].parentFp).toBe(pFp)
   })
 

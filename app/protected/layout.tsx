@@ -46,6 +46,7 @@ export default async function ProtectedLayout({
         { href: '/protected/investments', label: t('investments.nav') },
         { href: '/protected/real-estate', label: t('realEstate.nav') },
         { href: '/protected/manual-assets', label: t('manualAssets.nav') },
+        { href: '/protected/debts', label: t('debts.nav') },
       ],
     },
   ]

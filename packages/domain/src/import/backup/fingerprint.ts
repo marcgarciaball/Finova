@@ -6,9 +6,9 @@
  * than its id, so they survive the id remap that import performs on every row.
  */
 
+import type { DebtRow } from '@/lib/validation/debts'
 import type {
   PropertyExpenseRow,
-  PropertyLoanRow,
   PropertyValuationRow,
   RentalIncomeRow,
 } from '@/lib/validation/real-estate'
@@ -30,14 +30,9 @@ export function propertyFingerprint(p: {
 
 export function loanFingerprint(
   parentFp: string,
-  l: Pick<
-    PropertyLoanRow,
-    'lender_name' | 'start_date' | 'original_amount_cents'
-  >
+  l: Pick<DebtRow, 'lender' | 'start_date' | 'principal_cents'>
 ): string {
-  return fnv1a(
-    [parentFp, l.lender_name, l.start_date, l.original_amount_cents].join('|')
-  )
+  return fnv1a([parentFp, l.lender, l.start_date, l.principal_cents].join('|'))
 }
 
 export function valuationFingerprint(

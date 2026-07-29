@@ -47,6 +47,7 @@ import { DonutChart } from '@/components/charts/DonutChart'
 import { CategoryIcon } from '@/components/dashboard/CategoryIcon'
 import { HeroCard } from '@/components/dashboard/HeroCard'
 import { KpiCard } from '@/components/dashboard/KpiCard'
+import { NetWorthCard } from '@/components/dashboard/NetWorthCard'
 import { QuickAddTransaction } from '@/components/transactions/QuickAddTransaction'
 import { Button } from '@/components/ui/Button'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -58,6 +59,7 @@ import { CurrencyBreakdown } from './CurrencyBreakdown'
 import { DashboardEmptyState } from './DashboardEmptyState'
 import { DataHealthBanner } from './DataHealthBanner'
 import { getDashboardData } from './data'
+import { getDebtsSummary } from './debts/data'
 import { EarningsCard } from './EarningsCard'
 import { GranularitySelector } from './GranularitySelector'
 import { InsightsPlaceholder } from './InsightsPlaceholder'
@@ -285,6 +287,22 @@ export default async function DashboardPage({
   const manualAssetsCents =
     manualAssetsValue.find((ma) => ma.currency === currency)?.valueCents ?? 0
   const totalBalance = totalByCurrency[currency] ?? 0
+
+  // Assets/debts/net-worth breakdown (display currency only). `totalBalance`
+  // above already is cash + investments + real-estate EQUITY + manual assets
+  // (never subtracting standalone debt), so adding back the mortgage slice
+  // of `debtsSummary` recovers real estate's GROSS value without a second
+  // real-estate query; subtracting ALL debt (mortgage + other) then gives a
+  // net worth that — unlike the headline figure above — correctly accounts
+  // for car loans, personal loans, and credit cards too.
+  const debtsSummary = await getDebtsSummary()
+  const currencyDebtTotals = debtsSummary.find((d) => d.currency === currency)
+  const totalDebtsCents = currencyDebtTotals?.totalOutstandingCents ?? 0
+  const mortgageDebtCents = currencyDebtTotals?.outstandingByType.mortgage ?? 0
+  const totalAssetsCents = totalBalance + mortgageDebtCents
+  const netWorthCents = totalAssetsCents - totalDebtsCents
+  const debtToAssetRatioPct =
+    totalAssetsCents > 0 ? (totalDebtsCents / totalAssetsCents) * 100 : null
   // Investment amounts only line up with cash when the portfolio's base
   // currency matches the dashboard's display currency. allocationByType is
   // a fraction of total value (0..1) — convert to cents for the card.
@@ -539,6 +557,15 @@ export default async function DashboardPage({
           currency={currency}
           locale={locale}
           trend={balanceSparkline}
+        />
+        <NetWorthCard
+          className="col-span-12 lg:col-span-4"
+          totalAssetsCents={totalAssetsCents}
+          totalDebtsCents={totalDebtsCents}
+          netWorthCents={netWorthCents}
+          currency={currency}
+          locale={locale}
+          debtToAssetRatioPct={debtToAssetRatioPct}
         />
         <CurrencyBreakdown
           className="col-span-12 lg:col-span-4"

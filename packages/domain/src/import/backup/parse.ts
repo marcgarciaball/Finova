@@ -12,6 +12,7 @@
 import { z } from 'zod'
 import { accountRowSchema } from '@/lib/validation/account'
 import { categoryRowSchema } from '@/lib/validation/category'
+import { debtRowSchema } from '@/lib/validation/debts'
 import {
   investmentAccountRowSchema,
   investmentTransactionRowSchema,
@@ -19,7 +20,6 @@ import {
 } from '@/lib/validation/investments'
 import {
   propertyExpenseRowSchema,
-  propertyLoanRowSchema,
   propertyRowSchema,
   propertyValuationRowSchema,
   rentalIncomeRowSchema,
@@ -55,9 +55,17 @@ const metaSchema = z.object({
   domains: z.array(z.string()).optional(),
 })
 
+// This backup format is real-estate-scoped, so an incoming loan row must be a
+// mortgage debt (standalone car loans/personal loans/credit cards are out of
+// scope for the real-estate bundle and never travel here).
+const mortgageDebtRowSchema = debtRowSchema.refine(
+  (row) => row.type === 'mortgage',
+  { message: 'notMortgage' }
+)
+
 const realEstateSchema = z.object({
   properties: propertyRowSchema.array(),
-  loans: propertyLoanRowSchema.array(),
+  loans: mortgageDebtRowSchema.array(),
   valuations: propertyValuationRowSchema.array(),
   income: rentalIncomeRowSchema.array(),
   expenses: propertyExpenseRowSchema.array(),

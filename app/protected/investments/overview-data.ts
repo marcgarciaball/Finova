@@ -58,6 +58,7 @@ export interface TradeMarker {
 
 export interface InvestmentsOverview {
   baseCurrency: string
+  creditFundedCents: number
   hasTransactions: boolean
   history: HistoryPoint[]
   holdings: HoldingView[] // open positions only (quantity > 0)
@@ -90,7 +91,7 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
   const { data: txnData, error: txnError } = await supabase
     .from('investment_transactions')
     .select(
-      'user_id, portfolio_id, asset_id, type, quantity, price_cents, fees_cents, currency, traded_at'
+      'user_id, portfolio_id, asset_id, type, quantity, price_cents, fees_cents, currency, traded_at, funding_source'
     )
   if (txnError) {
     throw new Error(txnError.message)
@@ -106,9 +107,13 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
     type: r.type === 'sell' ? 'sell' : 'buy',
     userId: String(r.user_id),
   }))
+  const creditFundedTxns = (txnData ?? []).filter(
+    (r) => r.type === 'buy' && r.funding_source === 'credit'
+  )
   if (txns.length === 0) {
     return {
       baseCurrency: base,
+      creditFundedCents: 0,
       hasTransactions: false,
       history: [],
       trades: [],
@@ -294,6 +299,16 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
     }
   })
 
+  let creditFundedCents = 0
+  for (const r of creditFundedTxns) {
+    const currency = String(r.currency)
+    const gross = Math.round(Number(r.quantity) * Number(r.price_cents))
+    const delta = gross + Number(r.fees_cents)
+    if (currency === base || rates.has(fxKey(currency, base))) {
+      creditFundedCents += convertCents(delta, currency, base, rates)
+    }
+  }
+
   const totals = computePortfolioTotals(valued, base, rates)
   if (totals.totalValueCents > 0) {
     const last = history.at(-1)
@@ -319,6 +334,7 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
 
   return {
     baseCurrency: base,
+    creditFundedCents,
     hasTransactions: true,
     history,
     holdings,

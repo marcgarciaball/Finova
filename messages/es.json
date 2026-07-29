@@ -655,6 +655,13 @@
       "error": "No se pudo organizar ahora. Inténtalo de nuevo.",
       "dismiss": "Descartar"
     },
+    "netWorth": {
+      "title": "Patrimonio neto",
+      "totalAssets": "Activos totales",
+      "totalDebts": "Deudas totales",
+      "netWorth": "Patrimonio neto",
+      "debtToAssetRatio": "Deuda / activos"
+    },
     "currencyBreakdown": {
       "title": "Patrimonio por moneda",
       "base": "Base"
@@ -873,7 +880,11 @@
       "submit": "Añadir operación",
       "saved": "Añadida",
       "save": "Guardar cambios",
-      "editReason": "Motivo del cambio (opcional)"
+      "editReason": "Motivo del cambio (opcional)",
+      "fundingSource": "Origen de los fondos",
+      "ownFunds": "Fondos propios",
+      "credit": "Crédito",
+      "fundingNotePlaceholder": "Origen del crédito (opcional): préstamo, margen del broker…"
     },
     "list": {
       "title": "Operaciones",
@@ -884,6 +895,7 @@
       "quantity": "Cantidad",
       "price": "Precio",
       "fees": "Comisiones",
+      "credit": "Crédito",
       "edit": "Editar",
       "delete": "Eliminar",
       "confirmDelete": "¿Eliminar esta operación de forma permanente? No se puede deshacer."
@@ -908,6 +920,7 @@
       "title": "Resumen",
       "value": "Valor de la cartera",
       "invested": "Invertido",
+      "creditFunded": "de los cuales {amount} a crédito",
       "unrealized": "P/G latente",
       "realized": "P/G realizada",
       "byType": "Distribución por tipo",
@@ -1089,6 +1102,7 @@
       },
       "startDate": "Fecha de inicio",
       "endDate": "Vencimiento (opcional)",
+      "termMonths": "Plazo (meses)",
       "monthlyPayment": "Cuota mensual",
       "euriborSpreadPct": "Diferencial Euríbor % (opcional)",
       "notes": "Notas",
@@ -1286,6 +1300,108 @@
     "sort": {
       "label": "Ordenar por",
       "name": "Nombre"
+    }
+  },
+  "debts": {
+    "nav": "Deudas",
+    "title": "Deudas",
+    "subtitle": "Hipotecas, préstamos de coche, préstamos personales, tarjetas de crédito… todo lo que debes.",
+    "addTitle": "Añadir deuda",
+    "empty": {
+      "title": "Aún no hay deudas",
+      "body": "Registra una hipoteca, préstamo de coche, préstamo personal, tarjeta de crédito u otra deuda."
+    },
+    "types": {
+      "mortgage": "Hipoteca",
+      "car_loan": "Préstamo de coche",
+      "personal_loan": "Préstamo personal",
+      "credit_card": "Tarjeta de crédito",
+      "other": "Otro"
+    },
+    "rateTypes": {
+      "fixed": "Fijo",
+      "variable": "Variable",
+      "mixed": "Mixto"
+    },
+    "statuses": {
+      "active": "Activa",
+      "paid_off": "Amortizada",
+      "defaulted": "En impago"
+    },
+    "overview": {
+      "totalsTitle": "Deuda · {currency}",
+      "totalOutstanding": "Saldo pendiente total",
+      "monthlyPayments": "Cuotas mensuales",
+      "byType": "Por tipo",
+      "debtCount": "{count, plural, =1 {1 deuda} other {# deudas}}",
+      "debtsTitle": "Deudas"
+    },
+    "card": {
+      "outstanding": "Pendiente",
+      "payment": "Cuota mensual"
+    },
+    "form": {
+      "type": "Tipo de deuda",
+      "property": "Propiedad",
+      "propertyPlaceholder": "Selecciona una propiedad",
+      "lender": "Entidad",
+      "currency": "Divisa",
+      "principal": "Importe inicial",
+      "outstanding": "Saldo pendiente",
+      "interestRatePct": "Tipo de interés (% anual)",
+      "rateType": "Tipo de tasa",
+      "termMonths": "Plazo (meses)",
+      "startDate": "Fecha de inicio",
+      "payment": "Cuota mensual",
+      "status": "Estado",
+      "notes": "Notas",
+      "submit": "Guardar deuda",
+      "update": "Actualizar deuda"
+    },
+    "detail": {
+      "back": "Volver a deudas",
+      "outstanding": "Saldo pendiente",
+      "payment": "Cuota mensual",
+      "interestRate": "Tipo de interés",
+      "nextPaymentDate": "Próximo pago (proyectado)",
+      "payoffDate": "Fecha de amortización (proyectada)",
+      "scheduleTitle": "Cuadro de amortización (proyectado)",
+      "scheduleNote": "Cuadro de referencia únicamente — los pagos reales pueden variar (cambios de tipo, pagos extra).",
+      "empty": "Aún no hay nada aquí.",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar esta deuda? Esta acción no se puede deshacer.",
+      "edit": "Editar"
+    },
+    "tables": {
+      "lender": "Entidad",
+      "type": "Tipo",
+      "outstanding": "Pendiente",
+      "rate": "Tipo",
+      "payment": "Cuota",
+      "status": "Estado",
+      "month": "Mes",
+      "date": "Fecha",
+      "principal": "Principal",
+      "interest": "Interés",
+      "balance": "Saldo"
+    },
+    "errors": {
+      "invalidAmount": "Introduce un importe válido",
+      "invalidDate": "Introduce una fecha válida",
+      "invalidPercent": "Introduce un porcentaje válido",
+      "required": "Este campo es obligatorio",
+      "tooLong": "Demasiado largo",
+      "invalid": "Valor no válido",
+      "validationFailed": "Corrige los campos marcados",
+      "unexpected": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "sort": {
+      "label": "Ordenar por",
+      "lender": "Entidad",
+      "type": "Tipo",
+      "outstanding": "Pendiente",
+      "rate": "Tipo",
+      "payment": "Cuota"
     }
   },
   "settings": {
