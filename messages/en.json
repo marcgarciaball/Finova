@@ -1000,6 +1000,7 @@
       "name": "Name",
       "namePlaceholder": "e.g. Eixample apartment",
       "type": "Property type",
+      "ownershipPct": "Your ownership share (%)",
       "address": "Address",
       "city": "City",
       "country": "Country code",
@@ -1012,12 +1013,15 @@
       "rentalStartDate": "Rental start",
       "rentalEndDate": "Rental end (optional)",
       "notes": "Notes",
-      "submit": "Save property"
+      "submit": "Save property",
+      "submitEdit": "Save changes"
     },
     "detail": {
       "back": "Back to portfolio",
       "purchasedOn": "Purchased {date}",
       "soldOn": "Sold {date}",
+      "yourShare": "Your share: {pct}%",
+      "equityShareNote": "Reflects your {pct}% share",
       "costBasis": "Cost basis",
       "currentValue": "Current value",
       "equity": "Equity",
@@ -1039,6 +1043,7 @@
       "confirmDelete": "Delete this entry? This cannot be undone.",
       "confirmDeleteProperty": "Delete this property and everything attached to it? This cannot be undone.",
       "edit": "Edit",
+      "editProperty": "Edit property",
       "sell": "Mark as sold",
       "addLoan": "Add loan",
       "addIncome": "Add income",

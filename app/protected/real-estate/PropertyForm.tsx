@@ -1,6 +1,9 @@
 'use client'
 
-import { PROPERTY_TYPES } from '@finova/domain/real-estate/types'
+import {
+  PROPERTY_TYPES,
+  type PropertyType,
+} from '@finova/domain/real-estate/types'
 import { useTranslations } from 'next-intl'
 import { useActionState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
@@ -24,14 +27,33 @@ const SELECT_CLASS =
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF'] as const
 
+export interface PropertyFormInitial {
+  address: string | null
+  city: string | null
+  id: string
+  isRented: boolean
+  name: string
+  notes: string | null
+  ownershipPct: number
+  rentalEndDate: string | null
+  rentalStartDate: string | null
+  type: PropertyType
+}
+
 /**
- * Create-property form (InvestmentTransactionForm pattern: action injected so
- * the form stays jsdom-testable, zod error keys mapped to i18n).
+ * Create/edit property form (InvestmentTransactionForm pattern: action
+ * injected so the form stays jsdom-testable, zod error keys mapped to i18n).
+ * In edit mode, purchase price/fees/current value/currency/country/purchase
+ * date are omitted: current value has its own "add valuation" flow, and the
+ * others reflect the original transaction and aren't meant to change after
+ * the fact.
  */
 export function PropertyForm({
   action,
   todayIso,
   onDone,
+  mode = 'create',
+  initial,
 }: {
   action: (
     prev: ActionResult | undefined,
@@ -39,6 +61,8 @@ export function PropertyForm({
   ) => Promise<ActionResult>
   todayIso: string
   onDone?: () => void
+  mode?: 'create' | 'edit'
+  initial?: PropertyFormInitial
 }) {
   const t = useTranslations('realEstate')
   const [state, formAction, pending] = useActionState<
@@ -62,15 +86,21 @@ export function PropertyForm({
   }
   const formError =
     state && !state.ok && !fieldErrors ? t('errors.unexpected') : undefined
+  const isEdit = mode === 'edit'
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      {isEdit && initial ? (
+        <input type="hidden" name="id" value={initial.id} />
+      ) : null}
+
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="re-name">{t('form.name')}</Label>
         <Input
           id="re-name"
           name="name"
           placeholder={t('form.namePlaceholder')}
+          defaultValue={initial?.name}
           maxLength={120}
           required
         />
@@ -82,7 +112,12 @@ export function PropertyForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="re-type">{t('form.type')}</Label>
-          <select id="re-type" name="type" className={SELECT_CLASS}>
+          <select
+            id="re-type"
+            name="type"
+            className={SELECT_CLASS}
+            defaultValue={initial?.type}
+          >
             {PROPERTY_TYPES.map((type) => (
               <option key={type} value={type}>
                 {t(`types.${type}`)}
@@ -91,109 +126,155 @@ export function PropertyForm({
           </select>
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="re-currency">{t('form.currency')}</Label>
-          <select id="re-currency" name="currency" className={SELECT_CLASS}>
-            {CURRENCIES.map((ccy) => (
-              <option key={ccy} value={ccy}>
-                {ccy}
-              </option>
-            ))}
-          </select>
+          <Label htmlFor="re-ownership-pct">{t('form.ownershipPct')}</Label>
+          <Input
+            id="re-ownership-pct"
+            name="ownershipPct"
+            inputMode="decimal"
+            defaultValue={initial?.ownershipPct ?? 100}
+            required
+          />
+          {errorFor('ownershipPct') ? (
+            <p className="text-neg text-xs">{errorFor('ownershipPct')}</p>
+          ) : null}
         </div>
       </div>
+
+      {isEdit ? null : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="re-currency">{t('form.currency')}</Label>
+            <select id="re-currency" name="currency" className={SELECT_CLASS}>
+              {CURRENCIES.map((ccy) => (
+                <option key={ccy} value={ccy}>
+                  {ccy}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="re-purchase-date">{t('form.purchaseDate')}</Label>
+            <Input
+              id="re-purchase-date"
+              name="purchaseDate"
+              type="date"
+              max={todayIso}
+              required
+            />
+            {errorFor('purchaseDate') ? (
+              <p className="text-neg text-xs">{errorFor('purchaseDate')}</p>
+            ) : null}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="re-address">{t('form.address')}</Label>
-          <Input id="re-address" name="address" maxLength={200} />
+          <Input
+            id="re-address"
+            name="address"
+            defaultValue={initial?.address ?? undefined}
+            maxLength={200}
+          />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="re-city">{t('form.city')}</Label>
-          <Input id="re-city" name="city" maxLength={80} />
+          <Input
+            id="re-city"
+            name="city"
+            defaultValue={initial?.city ?? undefined}
+            maxLength={80}
+          />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="re-purchase-date">{t('form.purchaseDate')}</Label>
-          <Input
-            id="re-purchase-date"
-            name="purchaseDate"
-            type="date"
-            max={todayIso}
-            required
-          />
-          {errorFor('purchaseDate') ? (
-            <p className="text-neg text-xs">{errorFor('purchaseDate')}</p>
-          ) : null}
+      {isEdit ? null : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="re-country">{t('form.country')}</Label>
+            <Input
+              id="re-country"
+              name="country"
+              defaultValue="ES"
+              maxLength={2}
+              className="uppercase"
+            />
+            {errorFor('country') ? (
+              <p className="text-neg text-xs">{errorFor('country')}</p>
+            ) : null}
+          </div>
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="re-country">{t('form.country')}</Label>
-          <Input
-            id="re-country"
-            name="country"
-            defaultValue="ES"
-            maxLength={2}
-            className="uppercase"
-          />
-          {errorFor('country') ? (
-            <p className="text-neg text-xs">{errorFor('country')}</p>
-          ) : null}
-        </div>
-      </div>
+      )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="re-purchase-price">{t('form.purchasePrice')}</Label>
-          <Input
-            id="re-purchase-price"
-            name="purchasePrice"
-            inputMode="decimal"
-            required
-          />
-          {errorFor('purchasePrice') ? (
-            <p className="text-neg text-xs">{errorFor('purchasePrice')}</p>
-          ) : null}
+      {isEdit ? null : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="re-purchase-price">{t('form.purchasePrice')}</Label>
+            <Input
+              id="re-purchase-price"
+              name="purchasePrice"
+              inputMode="decimal"
+              required
+            />
+            {errorFor('purchasePrice') ? (
+              <p className="text-neg text-xs">{errorFor('purchasePrice')}</p>
+            ) : null}
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="re-purchase-fees">{t('form.purchaseFees')}</Label>
+            <Input
+              id="re-purchase-fees"
+              name="purchaseFees"
+              inputMode="decimal"
+              placeholder="0"
+            />
+            {errorFor('purchaseFees') ? (
+              <p className="text-neg text-xs">{errorFor('purchaseFees')}</p>
+            ) : null}
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="re-current-value">{t('form.currentValue')}</Label>
+            <Input
+              id="re-current-value"
+              name="currentValue"
+              inputMode="decimal"
+              required
+            />
+            {errorFor('currentValue') ? (
+              <p className="text-neg text-xs">{errorFor('currentValue')}</p>
+            ) : null}
+          </div>
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="re-purchase-fees">{t('form.purchaseFees')}</Label>
-          <Input
-            id="re-purchase-fees"
-            name="purchaseFees"
-            inputMode="decimal"
-            placeholder="0"
-          />
-          {errorFor('purchaseFees') ? (
-            <p className="text-neg text-xs">{errorFor('purchaseFees')}</p>
-          ) : null}
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="re-current-value">{t('form.currentValue')}</Label>
-          <Input
-            id="re-current-value"
-            name="currentValue"
-            inputMode="decimal"
-            required
-          />
-          {errorFor('currentValue') ? (
-            <p className="text-neg text-xs">{errorFor('currentValue')}</p>
-          ) : null}
-        </div>
-      </div>
+      )}
 
       <div className="flex items-center gap-2">
-        <Checkbox id="re-is-rented" name="isRented" />
+        <Checkbox
+          id="re-is-rented"
+          name="isRented"
+          defaultChecked={initial?.isRented}
+        />
         <Label htmlFor="re-is-rented">{t('form.isRented')}</Label>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="re-rental-start">{t('form.rentalStartDate')}</Label>
-          <Input id="re-rental-start" name="rentalStartDate" type="date" />
+          <Input
+            id="re-rental-start"
+            name="rentalStartDate"
+            type="date"
+            defaultValue={initial?.rentalStartDate ?? undefined}
+          />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="re-rental-end">{t('form.rentalEndDate')}</Label>
-          <Input id="re-rental-end" name="rentalEndDate" type="date" />
+          <Input
+            id="re-rental-end"
+            name="rentalEndDate"
+            type="date"
+            defaultValue={initial?.rentalEndDate ?? undefined}
+          />
           {errorFor('rentalEndDate') ? (
             <p className="text-neg text-xs">{errorFor('rentalEndDate')}</p>
           ) : null}
@@ -202,13 +283,18 @@ export function PropertyForm({
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="re-notes">{t('form.notes')}</Label>
-        <Input id="re-notes" name="notes" maxLength={500} />
+        <Input
+          id="re-notes"
+          name="notes"
+          defaultValue={initial?.notes ?? undefined}
+          maxLength={500}
+        />
       </div>
 
       {formError ? <p className="text-neg text-sm">{formError}</p> : null}
 
       <Button type="submit" disabled={pending}>
-        {t('form.submit')}
+        {isEdit ? t('form.submitEdit') : t('form.submit')}
       </Button>
     </form>
   )

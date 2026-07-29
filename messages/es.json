@@ -1000,6 +1000,7 @@
       "name": "Nombre",
       "namePlaceholder": "p. ej. Piso del Eixample",
       "type": "Tipo de propiedad",
+      "ownershipPct": "Tu porcentaje de propiedad (%)",
       "address": "Dirección",
       "city": "Ciudad",
       "country": "Código de país",
@@ -1012,12 +1013,15 @@
       "rentalStartDate": "Inicio del alquiler",
       "rentalEndDate": "Fin del alquiler (opcional)",
       "notes": "Notas",
-      "submit": "Guardar propiedad"
+      "submit": "Guardar propiedad",
+      "submitEdit": "Guardar cambios"
     },
     "detail": {
       "back": "Volver a la cartera",
       "purchasedOn": "Comprada el {date}",
       "soldOn": "Vendida el {date}",
+      "yourShare": "Tu parte: {pct}%",
+      "equityShareNote": "Refleja tu parte del {pct}%",
       "costBasis": "Coste total",
       "currentValue": "Valor actual",
       "equity": "Patrimonio",
@@ -1039,6 +1043,7 @@
       "confirmDelete": "¿Eliminar esta entrada? No se puede deshacer.",
       "confirmDeleteProperty": "¿Eliminar esta propiedad y todo lo asociado? No se puede deshacer.",
       "edit": "Editar",
+      "editProperty": "Editar propiedad",
       "sell": "Marcar como vendida",
       "addLoan": "Añadir préstamo",
       "addIncome": "Añadir ingreso",
