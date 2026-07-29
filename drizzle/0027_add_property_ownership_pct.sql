@@ -1,0 +1,2 @@
+ALTER TABLE "properties" ADD COLUMN "ownership_pct" numeric(5, 2) DEFAULT '100' NOT NULL;--> statement-breakpoint
+ALTER TABLE "properties" ADD CONSTRAINT "properties_ownership_pct_check" CHECK ("properties"."ownership_pct" > 0 and "properties"."ownership_pct" <= 100);
