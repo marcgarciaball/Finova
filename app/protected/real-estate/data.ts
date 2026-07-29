@@ -9,6 +9,7 @@ import {
   grossYieldPct,
   ltvPct,
   netYieldPct,
+  ongoingRentCents,
   outstandingDebtCents,
   type PropertyExpenseEvent,
   type PropertyLoanSnapshot,
@@ -41,6 +42,8 @@ const DAYS_PER_YEAR = 365.25
 
 export interface PropertyMetrics {
   annualRentCents: number
+  /** Appreciation since purchase: (current value − purchase price) / purchase price, in percent. */
+  appreciationPct: number | null
   costBasisCents: number
   debtCents: number
   equityCents: number
@@ -70,6 +73,30 @@ export interface PropertyDetail extends PropertyOverview {
   valuations: PropertyValuationRow[]
 }
 
+/** Sum of a property's itemized acquisition costs. */
+function purchaseFeesCentsOf(property: PropertyRow): number {
+  return (
+    property.transfer_tax_cents +
+    property.notary_cents +
+    property.registry_cents +
+    property.agency_fee_cents +
+    property.renovation_cost_cents +
+    property.other_purchase_costs_cents
+  )
+}
+
+/** Appreciation since purchase, in percent; null when purchase price is 0. */
+function appreciationPct(property: PropertyRow): number | null {
+  if (property.purchase_price_cents === 0) {
+    return null
+  }
+  return (
+    ((property.current_value_cents - property.purchase_price_cents) /
+      property.purchase_price_cents) *
+    100
+  )
+}
+
 function isoDaysAgo(days: number, todayIso: string): string {
   const [y, m, d] = todayIso.split('-').map(Number)
   const ms = Date.UTC(y ?? 0, (m ?? 1) - 1, d ?? 1) - days * MS_PER_DAY
@@ -85,12 +112,16 @@ function computeMetrics(
 ): PropertyMetrics {
   const p = {
     currency: property.currency,
+    currentRentCents: property.current_rent_cents,
     currentValueCents: property.current_value_cents,
+    isRented: property.is_rented,
     isSold: property.is_sold,
     ownershipPct: property.ownership_pct,
     purchaseDate: property.purchase_date,
-    purchaseFeesCents: property.purchase_fees_cents,
+    purchaseFeesCents: purchaseFeesCentsOf(property),
     purchasePriceCents: property.purchase_price_cents,
+    rentalEndDate: property.rental_end_date,
+    rentalStartDate: property.rental_start_date,
     soldFeesCents: property.sold_fees_cents,
     soldPriceCents: property.sold_price_cents,
   }
@@ -114,14 +145,22 @@ function computeMetrics(
     expenseDate: e.expense_date,
   }))
 
-  const totalIncomeCents = incomeEvents
-    .filter((i) => i.isPaid)
-    .reduce((sum, i) => sum + i.amountCents, 0)
+  const ongoingRentToDateCents = ongoingRentCents(
+    p,
+    incomeEvents,
+    property.purchase_date,
+    todayIso,
+    todayIso
+  )
+  const totalIncomeCents =
+    incomeEvents
+      .filter((i) => i.isPaid)
+      .reduce((sum, i) => sum + i.amountCents, 0) + ongoingRentToDateCents
   const totalExpensesCents = expenseEvents.reduce(
     (sum, e) => sum + e.amountCents,
     0
   )
-  const annualRent = annualizedRentCents(incomeEvents, todayIso)
+  const annualRent = annualizedRentCents(incomeEvents, todayIso, p)
   const yearAgoIso = isoDaysAgo(365, todayIso)
   const operatingExpensesYearCents = expenseEvents
     .filter(
@@ -131,16 +170,18 @@ function computeMetrics(
         e.expenseDate <= todayIso
     )
     .reduce((sum, e) => sum + e.amountCents, 0)
-  const trailingYearCashFlow = cashFlowCents(
-    incomeEvents,
-    expenseEvents,
-    loanSnapshots,
-    yearAgoIso,
-    todayIso
-  )
+  const trailingYearCashFlow =
+    cashFlowCents(
+      incomeEvents,
+      expenseEvents,
+      loanSnapshots,
+      yearAgoIso,
+      todayIso
+    ) + ongoingRentCents(p, incomeEvents, yearAgoIso, todayIso, todayIso)
 
   return {
     annualRentCents: annualRent,
+    appreciationPct: appreciationPct(property),
     costBasisCents: costBasisCents(p),
     debtCents: outstandingDebtCents(loanSnapshots, p.currency),
     equityCents: equityCents(p, loanSnapshots),
@@ -204,12 +245,16 @@ export async function getRealEstateOverview(): Promise<RealEstateOverview> {
       })),
       property: {
         currency: property.currency,
+        currentRentCents: property.current_rent_cents,
         currentValueCents: property.current_value_cents,
+        isRented: property.is_rented,
         isSold: property.is_sold,
         ownershipPct: property.ownership_pct,
         purchaseDate: property.purchase_date,
-        purchaseFeesCents: property.purchase_fees_cents,
+        purchaseFeesCents: purchaseFeesCentsOf(property),
         purchasePriceCents: property.purchase_price_cents,
+        rentalEndDate: property.rental_end_date,
+        rentalStartDate: property.rental_start_date,
         soldFeesCents: property.sold_fees_cents,
         soldPriceCents: property.sold_price_cents,
       },

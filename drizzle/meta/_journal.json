@@ -204,6 +204,20 @@
       "when": 1785320509134,
       "tag": "0028_add_property_current_rent",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1785321029222,
+      "tag": "0029_add_itemized_purchase_costs",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1785321054302,
+      "tag": "0030_drop_purchase_fees_cents",
+      "breakpoints": true
     }
   ]
 }

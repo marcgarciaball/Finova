@@ -11,6 +11,7 @@ import {
   MixedCurrencyError,
   monthsInPeriod,
   netYieldPct,
+  ongoingRentCents,
   outstandingDebtCents,
   type PropertyExpenseEvent,
   type PropertyLoanSnapshot,
@@ -31,6 +32,10 @@ function property(overrides: Partial<PropertySnapshot> = {}): PropertySnapshot {
     isSold: false,
     soldPriceCents: null,
     soldFeesCents: null,
+    isRented: false,
+    rentalStartDate: null,
+    rentalEndDate: null,
+    currentRentCents: null,
     ...overrides,
   }
 }
@@ -173,6 +178,128 @@ describe('annualizedRentCents', () => {
     expect(annualizedRentCents([income({ isPaid: false })], '2026-01-31')).toBe(
       0
     )
+  })
+
+  it('prefers currentRentCents * 12 when the property declares an ongoing rent', () => {
+    const rented = property({
+      isRented: true,
+      rentalStartDate: '2022-04-01',
+      currentRentCents: 60_000, // 600 €
+    })
+    expect(annualizedRentCents([], '2026-01-31', rented)).toBe(720_000)
+  })
+
+  it('falls back to extrapolation when no current rent is declared', () => {
+    const notDeclared = property({ isRented: true, currentRentCents: null })
+    const result = annualizedRentCents([income()], '2026-01-31', notDeclared)
+    expect(result).toBe(Math.round((120_000 / 31) * 365.25))
+  })
+})
+
+describe('ongoingRentCents', () => {
+  it('is 0 when the property is not rented', () => {
+    expect(
+      ongoingRentCents(
+        property({ isRented: false, currentRentCents: 60_000 }),
+        [],
+        '2026-01-01',
+        '2026-01-31',
+        '2026-01-31'
+      )
+    ).toBe(0)
+  })
+
+  it('is 0 when no current rent is declared', () => {
+    expect(
+      ongoingRentCents(
+        property({ isRented: true, currentRentCents: null }),
+        [],
+        '2026-01-01',
+        '2026-01-31',
+        '2026-01-31'
+      )
+    ).toBe(0)
+  })
+
+  it('fills a full month with no logged income at the declared rate', () => {
+    const rented = property({
+      isRented: true,
+      rentalStartDate: '2022-04-01',
+      currentRentCents: 60_000,
+    })
+    expect(
+      ongoingRentCents(rented, [], '2026-01-01', '2026-01-31', '2026-01-31')
+    ).toBe(60_000)
+  })
+
+  it('skips a month entirely when any logged row overlaps it', () => {
+    const rented = property({
+      isRented: true,
+      rentalStartDate: '2022-04-01',
+      currentRentCents: 60_000,
+    })
+    const loggedInJanuary = income({
+      periodStart: '2026-01-10',
+      periodEnd: '2026-01-15',
+      amountCents: 60_000,
+    })
+    expect(
+      ongoingRentCents(
+        rented,
+        [loggedInJanuary],
+        '2026-01-01',
+        '2026-01-31',
+        '2026-01-31'
+      )
+    ).toBe(0)
+  })
+
+  it('prorates by days at the edge of the requested range', () => {
+    const rented = property({
+      isRented: true,
+      rentalStartDate: '2022-04-01',
+      currentRentCents: 62_000, // 620 €, 31-day January → 2 000 c/day
+    })
+    // Only the last 10 days of January requested.
+    expect(
+      ongoingRentCents(rented, [], '2026-01-22', '2026-01-31', '2026-01-31')
+    ).toBe(Math.round((62_000 * 10) / 31))
+  })
+
+  it('is capped by rentalEndDate', () => {
+    const rented = property({
+      isRented: true,
+      rentalStartDate: '2022-04-01',
+      rentalEndDate: '2026-01-15',
+      currentRentCents: 62_000,
+    })
+    // Requested range extends past the rental's end.
+    expect(
+      ongoingRentCents(rented, [], '2026-01-01', '2026-01-31', '2026-01-31')
+    ).toBe(Math.round((62_000 * 15) / 31))
+  })
+
+  it('is capped by asOfIso when there is no rentalEndDate', () => {
+    const rented = property({
+      isRented: true,
+      rentalStartDate: '2022-04-01',
+      currentRentCents: 62_000,
+    })
+    // "Today" is mid-January; nothing accrues past it.
+    expect(
+      ongoingRentCents(rented, [], '2026-01-01', '2026-01-31', '2026-01-15')
+    ).toBe(Math.round((62_000 * 15) / 31))
+  })
+
+  it('sums across multiple full months', () => {
+    const rented = property({
+      isRented: true,
+      rentalStartDate: '2022-04-01',
+      currentRentCents: 60_000,
+    })
+    expect(
+      ongoingRentCents(rented, [], '2025-12-01', '2026-01-31', '2026-01-31')
+    ).toBe(120_000)
   })
 })
 

@@ -192,7 +192,15 @@ export default async function PropertyDetailPage({
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {[
+          {
+            label: t('detail.purchasePrice'),
+            value: fmt(property.purchase_price_cents),
+          },
           { label: t('detail.costBasis'), value: fmt(metrics.costBasisCents) },
+          {
+            label: t('detail.appreciation'),
+            value: pct(metrics.appreciationPct),
+          },
           {
             label: t('detail.annualRent'),
             value: fmt(metrics.annualRentCents),
@@ -211,6 +219,33 @@ export default async function PropertyDetailPage({
           </GlassCard>
         ))}
       </div>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-semibold text-lg">
+          {t('detail.purchaseCostsTitle')}
+        </h2>
+        <GlassCard className="grid grid-cols-2 gap-x-4 gap-y-3 p-4 sm:grid-cols-3 lg:grid-cols-6">
+          {(
+            [
+              ['transferTax', property.transfer_tax_cents],
+              ['notary', property.notary_cents],
+              ['registry', property.registry_cents],
+              ['agencyFee', property.agency_fee_cents],
+              ['renovationCost', property.renovation_cost_cents],
+              ['otherPurchaseCosts', property.other_purchase_costs_cents],
+            ] as const
+          ).map(([key, cents]) => (
+            <div key={key} className="flex flex-col gap-1">
+              <span className="text-ink-soft text-xs">
+                {t(`detail.${key}`)}
+              </span>
+              <span className="font-semibold text-ink text-sm">
+                {fmt(cents)}
+              </span>
+            </div>
+          ))}
+        </GlassCard>
+      </section>
 
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">

@@ -16,7 +16,8 @@ const validProperty = {
   currency: 'EUR',
   purchaseDate: '2020-01-15',
   purchasePrice: '200000',
-  purchaseFees: '20000.50',
+  transferTax: '15000',
+  notary: '5000.50',
   currentValue: '250000',
 }
 
@@ -25,7 +26,12 @@ describe('createPropertySchema', () => {
     const parsed = createPropertySchema.parse(validProperty)
     expect(parsed.country).toBe('ES')
     expect(parsed.isRented).toBe(false)
-    expect(parsed.purchaseFees).toBe('20000.50')
+    expect(parsed.transferTax).toBe('15000')
+    expect(parsed.notary).toBe('5000.50')
+    expect(parsed.registry).toBe('0')
+    expect(parsed.agencyFee).toBe('0')
+    expect(parsed.renovationCost).toBe('0')
+    expect(parsed.otherPurchaseCosts).toBe('0')
   })
 
   it('accepts comma decimals', () => {
@@ -169,7 +175,12 @@ describe('propertyRowSchema', () => {
       currency: 'EUR',
       purchase_date: '2020-01-15',
       purchase_price_cents: 20_000_000,
-      purchase_fees_cents: 2_000_000,
+      transfer_tax_cents: 1_500_000,
+      notary_cents: 500_000,
+      registry_cents: 0,
+      agency_fee_cents: 0,
+      renovation_cost_cents: 0,
+      other_purchase_costs_cents: 0,
       current_value_cents: 25_000_000,
       last_valued_at: '2026-01-01',
       ownership_pct: 100,
@@ -201,7 +212,12 @@ describe('propertyRowSchema', () => {
         currency: 'EUR',
         purchase_date: '2020-01-15',
         purchase_price_cents: 200_000.5,
-        purchase_fees_cents: 0,
+        transfer_tax_cents: 0,
+        notary_cents: 0,
+        registry_cents: 0,
+        agency_fee_cents: 0,
+        renovation_cost_cents: 0,
+        other_purchase_costs_cents: 0,
         current_value_cents: 0,
         last_valued_at: '2026-01-01',
         ownership_pct: 100,

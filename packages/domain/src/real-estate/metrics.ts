@@ -17,13 +17,19 @@ const DAYS_PER_MONTH = DAYS_PER_YEAR / 12
 
 export interface PropertySnapshot {
   currency: string
+  /** Declared ongoing monthly rent, in cents; null when none is declared. */
+  currentRentCents: number | null
   currentValueCents: number
+  isRented: boolean
   isSold: boolean
   /** Share of the property owned by this user, in percent (100 = fully owned). */
   ownershipPct: number
   purchaseDate: string
+  /** Sum of itemized acquisition costs (transfer tax, notary, agency, …). */
   purchaseFeesCents: number
   purchasePriceCents: number
+  rentalEndDate: string | null
+  rentalStartDate: string | null
   soldFeesCents?: number | null
   soldPriceCents?: number | null
 }
@@ -159,12 +165,20 @@ export function incomeInRangeCents(
 
 /**
  * Average daily rent (from the earliest paid period start to `asOfIso` or the
- * latest period end, whichever is later) extrapolated to a full year.
+ * latest period end, whichever is later) extrapolated to a full year. When
+ * the property declares an ongoing rent, that declared rate is used directly
+ * instead — it's a more accurate "current run rate" than extrapolating from
+ * historical logged rows, and avoids the lump-sum distortion a long-span
+ * "monthly rent" entry would otherwise produce.
  */
 export function annualizedRentCents(
   incomes: RentalIncomeEvent[],
-  asOfIso: string
+  asOfIso: string,
+  property?: Pick<PropertySnapshot, 'currentRentCents' | 'isRented'>
 ): number {
+  if (property?.isRented && property.currentRentCents != null) {
+    return property.currentRentCents * 12
+  }
   const paid = incomes.filter((i) => i.isPaid)
   if (paid.length === 0) {
     return 0
@@ -199,6 +213,99 @@ function addMonthsClamped(iso: string, n: number): string {
   ).getUTCDate()
   t.setUTCDate(Math.min(d ?? 1, lastDay))
   return t.toISOString().slice(0, 10)
+}
+
+/** First day of the calendar month containing `iso`. */
+function firstOfMonthIso(iso: string): string {
+  const [y, m] = iso.split('-')
+  return `${y}-${m}-01`
+}
+
+/**
+ * One synthetic full-month `RentalIncomeEvent` per calendar month from
+ * `rentalStartDate` through `rentalEndDate` (or `asOfIso` when open-ended),
+ * for a property with `isRented` and `currentRentCents` set — skipping any
+ * month a real row in `loggedIncomes` overlaps at all (real data wins for
+ * the whole month). Feed the result into `incomeInRangeCents`/`cashFlowCents`
+ * alongside real logged rows; their existing day-overlap proration handles
+ * clipping to whatever range a caller queries, so this function doesn't
+ * need its own range parameter.
+ */
+export function synthesizeOngoingRentEvents(
+  property: PropertySnapshot,
+  loggedIncomes: RentalIncomeEvent[],
+  asOfIso: string
+): RentalIncomeEvent[] {
+  if (
+    !property.isRented ||
+    property.currentRentCents == null ||
+    !property.rentalStartDate
+  ) {
+    return []
+  }
+  const windowEnd = property.rentalEndDate ?? asOfIso
+  if (utcDay(property.rentalStartDate) > utcDay(windowEnd)) {
+    return []
+  }
+
+  const events: RentalIncomeEvent[] = []
+  let cursor = firstOfMonthIso(property.rentalStartDate)
+  while (utcDay(cursor) <= utcDay(windowEnd)) {
+    const nextMonthStart = addMonthsClamped(cursor, 1)
+    const monthEnd = new Date(utcDay(nextMonthStart) - MS_PER_DAY)
+      .toISOString()
+      .slice(0, 10)
+    const hasLoggedOverlap = loggedIncomes.some(
+      (i) =>
+        utcDay(i.periodStart) <= utcDay(monthEnd) &&
+        utcDay(i.periodEnd) >= utcDay(cursor)
+    )
+    if (!hasLoggedOverlap) {
+      // Truncate the boundary months to the actual active window
+      // (rentalStartDate/rentalEndDate or asOfIso), scaling the amount down
+      // proportionally so the implied daily rate (amount / period length)
+      // stays correct for whatever sub-range a caller later queries.
+      const eligibleStart =
+        utcDay(cursor) > utcDay(property.rentalStartDate)
+          ? cursor
+          : property.rentalStartDate
+      const eligibleEnd =
+        utcDay(monthEnd) < utcDay(windowEnd) ? monthEnd : windowEnd
+      const monthDays = daysInclusive(cursor, monthEnd)
+      const eligibleDays = daysInclusive(eligibleStart, eligibleEnd)
+      events.push({
+        amountCents: Math.round(
+          (property.currentRentCents * eligibleDays) / monthDays
+        ),
+        currency: property.currency,
+        isPaid: true,
+        periodEnd: eligibleEnd,
+        periodStart: eligibleStart,
+      })
+    }
+    cursor = nextMonthStart
+  }
+  return events
+}
+
+/**
+ * Declared "ongoing rent" income over [fromIso, toIso] — real logged income
+ * wins for any calendar month it overlaps; the declared rate fills the rest,
+ * prorated by day count at the edges of the requested range. See
+ * `synthesizeOngoingRentEvents` for how the fill-in months are chosen.
+ */
+export function ongoingRentCents(
+  property: PropertySnapshot,
+  loggedIncomes: RentalIncomeEvent[],
+  fromIso: string,
+  toIso: string,
+  asOfIso: string
+): number {
+  return incomeInRangeCents(
+    synthesizeOngoingRentEvents(property, loggedIncomes, asOfIso),
+    fromIso,
+    toIso
+  )
 }
 
 /**

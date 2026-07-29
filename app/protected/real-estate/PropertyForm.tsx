@@ -208,7 +208,7 @@ export function PropertyForm({
       )}
 
       {isEdit ? null : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="re-purchase-price">{t('form.purchasePrice')}</Label>
             <Input
@@ -222,18 +222,6 @@ export function PropertyForm({
             ) : null}
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="re-purchase-fees">{t('form.purchaseFees')}</Label>
-            <Input
-              id="re-purchase-fees"
-              name="purchaseFees"
-              inputMode="decimal"
-              placeholder="0"
-            />
-            {errorFor('purchaseFees') ? (
-              <p className="text-neg text-xs">{errorFor('purchaseFees')}</p>
-            ) : null}
-          </div>
-          <div className="flex flex-col gap-1.5">
             <Label htmlFor="re-current-value">{t('form.currentValue')}</Label>
             <Input
               id="re-current-value"
@@ -244,6 +232,39 @@ export function PropertyForm({
             {errorFor('currentValue') ? (
               <p className="text-neg text-xs">{errorFor('currentValue')}</p>
             ) : null}
+          </div>
+        </div>
+      )}
+
+      {isEdit ? null : (
+        <div className="flex flex-col gap-2">
+          <span className="font-medium text-ink text-sm">
+            {t('form.purchaseCostsTitle')}
+          </span>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {(
+              [
+                ['transferTax', 're-transfer-tax'],
+                ['notary', 're-notary'],
+                ['registry', 're-registry'],
+                ['agencyFee', 're-agency-fee'],
+                ['renovationCost', 're-renovation-cost'],
+                ['otherPurchaseCosts', 're-other-purchase-costs'],
+              ] as const
+            ).map(([field, id]) => (
+              <div key={field} className="flex flex-col gap-1.5">
+                <Label htmlFor={id}>{t(`form.${field}`)}</Label>
+                <Input
+                  id={id}
+                  name={field}
+                  inputMode="decimal"
+                  placeholder="0"
+                />
+                {errorFor(field) ? (
+                  <p className="text-neg text-xs">{errorFor(field)}</p>
+                ) : null}
+              </div>
+            ))}
           </div>
         </div>
       )}

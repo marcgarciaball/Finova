@@ -69,6 +69,40 @@ describe('PropertyForm', () => {
     expect(formData.get('currentValue')).toBe('250000')
   })
 
+  it('submits itemized purchase cost fields', async () => {
+    const action = vi.fn(async () => ({ ok: true as const }))
+    const onDone = vi.fn()
+    renderForm(action, onDone)
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'Piso Eixample' },
+    })
+    fireEvent.change(screen.getByLabelText('Purchase date'), {
+      target: { value: '2020-01-15' },
+    })
+    fireEvent.change(screen.getByLabelText('Purchase price'), {
+      target: { value: '200000' },
+    })
+    fireEvent.change(screen.getByLabelText('Current estimated value'), {
+      target: { value: '250000' },
+    })
+    fireEvent.change(screen.getByLabelText('Transfer tax'), {
+      target: { value: '15000' },
+    })
+    fireEvent.change(screen.getByLabelText('Notary'), {
+      target: { value: '1200.50' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save property' }))
+
+    await waitFor(() => {
+      expect(onDone).toHaveBeenCalled()
+    })
+    const formData = action.mock.calls[0]?.[1] as FormData
+    expect(formData.get('transferTax')).toBe('15000')
+    expect(formData.get('notary')).toBe('1200.50')
+    expect(formData.get('registry')).toBe('')
+  })
+
   it('shows a field error from the action result', async () => {
     const action = vi.fn(async () => ({
       ok: false as const,
@@ -142,6 +176,7 @@ describe('PropertyForm', () => {
     expect(
       screen.queryByLabelText('Current estimated value')
     ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Transfer tax')).not.toBeInTheDocument()
     expect(screen.getByLabelText('Name')).toHaveValue('Piso Eixample')
     expect(screen.getByLabelText('Your ownership share (%)')).toHaveValue('50')
 

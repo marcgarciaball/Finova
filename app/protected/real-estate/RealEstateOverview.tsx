@@ -161,11 +161,13 @@ export async function RealEstateOverviewSection({
               overview={p}
               typeLabel={t(`types.${p.property.type}`)}
               labels={{
+                appreciation: t('card.appreciation'),
                 cashFlow: t('card.cashFlow'),
                 equity: t('card.equity'),
                 grossYield: t('card.grossYield'),
                 ltv: t('card.ltv'),
                 netYield: t('card.netYield'),
+                purchasePrice: t('card.purchasePrice'),
                 rented: t('card.rented'),
                 roi: t('card.roi'),
                 sold: t('card.sold'),
@@ -216,11 +218,13 @@ function PropertyCard({
   overview: PropertyOverview
   typeLabel: string
   labels: Record<
+    | 'appreciation'
     | 'cashFlow'
     | 'equity'
     | 'grossYield'
     | 'ltv'
     | 'netYield'
+    | 'purchasePrice'
     | 'rented'
     | 'roi'
     | 'sold'
@@ -237,6 +241,10 @@ function PropertyCard({
   const stats: { label: string; value: string; tone?: 'pos' | 'neg' }[] = [
     { label: labels.value, value: fmt(property.current_value_cents, ccy) },
     {
+      label: labels.purchasePrice,
+      value: fmt(property.purchase_price_cents, ccy),
+    },
+    {
       label: labels.equity,
       value: fmt(metrics.equityCents, ccy),
       tone: metrics.equityCents >= 0 ? 'pos' : 'neg',
@@ -250,6 +258,16 @@ function PropertyCard({
       tone: metrics.monthlyCashFlowCents >= 0 ? 'pos' : 'neg',
     },
     { label: labels.roi, value: pct(metrics.roiPct) },
+    {
+      label: labels.appreciation,
+      value: pct(metrics.appreciationPct),
+      tone:
+        metrics.appreciationPct === null
+          ? undefined
+          : metrics.appreciationPct >= 0
+            ? 'pos'
+            : 'neg',
+    },
   ]
 
   return (

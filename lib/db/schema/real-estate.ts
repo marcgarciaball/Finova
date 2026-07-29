@@ -39,7 +39,24 @@ export const properties = pgTable(
     purchasePriceCents: bigint('purchase_price_cents', {
       mode: 'number',
     }).notNull(),
-    purchaseFeesCents: bigint('purchase_fees_cents', { mode: 'number' })
+    transferTaxCents: bigint('transfer_tax_cents', { mode: 'number' })
+      .notNull()
+      .default(0),
+    notaryCents: bigint('notary_cents', { mode: 'number' })
+      .notNull()
+      .default(0),
+    registryCents: bigint('registry_cents', { mode: 'number' })
+      .notNull()
+      .default(0),
+    agencyFeeCents: bigint('agency_fee_cents', { mode: 'number' })
+      .notNull()
+      .default(0),
+    renovationCostCents: bigint('renovation_cost_cents', { mode: 'number' })
+      .notNull()
+      .default(0),
+    otherPurchaseCostsCents: bigint('other_purchase_costs_cents', {
+      mode: 'number',
+    })
       .notNull()
       .default(0),
     currentValueCents: bigint('current_value_cents', {
@@ -79,9 +96,17 @@ export const properties = pgTable(
       'properties_purchase_price_check',
       sql`${table.purchasePriceCents} >= 0`
     ),
+    check('properties_transfer_tax_check', sql`${table.transferTaxCents} >= 0`),
+    check('properties_notary_check', sql`${table.notaryCents} >= 0`),
+    check('properties_registry_check', sql`${table.registryCents} >= 0`),
+    check('properties_agency_fee_check', sql`${table.agencyFeeCents} >= 0`),
     check(
-      'properties_purchase_fees_check',
-      sql`${table.purchaseFeesCents} >= 0`
+      'properties_renovation_cost_check',
+      sql`${table.renovationCostCents} >= 0`
+    ),
+    check(
+      'properties_other_purchase_costs_check',
+      sql`${table.otherPurchaseCostsCents} >= 0`
     ),
     check(
       'properties_current_value_check',

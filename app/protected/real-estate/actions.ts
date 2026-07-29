@@ -79,19 +79,24 @@ export async function createProperty(
   const claims = await requireUser()
   const parsed = createPropertySchema.safeParse({
     address: formData.get('address') ?? undefined,
+    agencyFee: formData.get('agencyFee') || undefined,
     city: formData.get('city') ?? undefined,
     country: formData.get('country') || undefined,
     currency: formData.get('currency'),
     currentValue: formData.get('currentValue'),
     isRented: formData.get('isRented') === 'on',
     name: formData.get('name'),
+    notary: formData.get('notary') || undefined,
     notes: formData.get('notes') ?? undefined,
+    otherPurchaseCosts: formData.get('otherPurchaseCosts') || undefined,
     ownershipPct: formData.get('ownershipPct') || undefined,
     purchaseDate: formData.get('purchaseDate'),
-    purchaseFees: formData.get('purchaseFees') || undefined,
     purchasePrice: formData.get('purchasePrice'),
+    registry: formData.get('registry') || undefined,
+    renovationCost: formData.get('renovationCost') || undefined,
     rentalEndDate: formData.get('rentalEndDate') || undefined,
     rentalStartDate: formData.get('rentalStartDate') || undefined,
+    transferTax: formData.get('transferTax') || undefined,
     type: formData.get('type'),
   })
   if (!parsed.success) {
@@ -110,6 +115,7 @@ export async function createProperty(
       .from('properties')
       .insert({
         address: input.address ?? null,
+        agency_fee_cents: toCents(input.agencyFee, input.currency),
         city: input.city ?? null,
         country: input.country,
         currency: input.currency,
@@ -117,13 +123,20 @@ export async function createProperty(
         is_rented: input.isRented,
         last_valued_at: input.purchaseDate,
         name: input.name,
+        notary_cents: toCents(input.notary, input.currency),
         notes: input.notes ?? null,
+        other_purchase_costs_cents: toCents(
+          input.otherPurchaseCosts,
+          input.currency
+        ),
         ownership_pct: normalizeDecimal(input.ownershipPct),
         purchase_date: input.purchaseDate,
-        purchase_fees_cents: toCents(input.purchaseFees, input.currency),
         purchase_price_cents: toCents(input.purchasePrice, input.currency),
+        registry_cents: toCents(input.registry, input.currency),
+        renovation_cost_cents: toCents(input.renovationCost, input.currency),
         rental_end_date: input.rentalEndDate ?? null,
         rental_start_date: input.rentalStartDate ?? null,
+        transfer_tax_cents: toCents(input.transferTax, input.currency),
         type: input.type,
         user_id: claims.sub,
       })
