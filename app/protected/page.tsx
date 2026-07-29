@@ -75,6 +75,7 @@ import {
   getPropertyLoanSnapshots,
   getRealEstateEquityByCurrency,
   getRentalIncomeEvents,
+  getRentedPropertyIds,
 } from './real-estate/data'
 import { type RankRow, SpendingRanking } from './SpendingRanking'
 import { WealthAllocation } from './WealthAllocation'
@@ -165,11 +166,21 @@ export default async function DashboardPage({
   )
   // Net rent against costs for the Earnings card only — mortgage/maintenance
   // spend so "how much I earn" reflects take-home, not gross rent received.
+  // Scoped to currently-rented properties so a primary residence's own
+  // mortgage/expenses (which earn no rent at all) never offset rental
+  // income they have nothing to do with.
+  const rentedPropertyIds = await getRentedPropertyIds()
   const propertyExpenseEvents = (await getPropertyExpenseEvents()).filter(
-    (e) => e.currency === currency
+    (e) =>
+      e.currency === currency &&
+      e.propertyId !== undefined &&
+      rentedPropertyIds.has(e.propertyId)
   )
   const propertyLoanSnapshots = (await getPropertyLoanSnapshots()).filter(
-    (l) => l.currency === currency
+    (l) =>
+      l.currency === currency &&
+      l.propertyId !== undefined &&
+      rentedPropertyIds.has(l.propertyId)
   )
   const EARLIEST_ISO = '1900-01-01'
   const rentIn = (start: string | null, endExclusive: string | null): number =>
@@ -383,13 +394,12 @@ export default async function DashboardPage({
     isEarningCategory(x.category_id, byId.get(x.category_id ?? '')?.name_key)
   )
 
-  // Dividends/coupons/interest and rent are lumpy/prorated, not naturally
-  // monthly — in month view, average the trailing 12 months ending at the
-  // selected month (the same "typical monthly amount" idea as the
-  // Investments page's forward-annual estimate, and matching the Real
-  // Estate page's own "monthly cash flow" figure for rent); in year view,
-  // use the real total received/earned in that calendar year, since a full
-  // year isn't lumpy the way one month can be.
+  // Dividends/coupons/interest are lumpy/prorated, not naturally monthly —
+  // in month view, average the trailing 12 months ending at the selected
+  // month (the same "typical monthly amount" idea as the Investments
+  // page's forward-annual estimate); in year view, use the real total
+  // received in that calendar year, since a full year isn't lumpy the way
+  // one month can be.
   const earningsTrailingStart =
     earningsView === 'month'
       ? trailingYearStartIso(earningsPeriodEnd)
@@ -407,16 +417,17 @@ export default async function DashboardPage({
     return earningsView === 'month' ? Math.round(total / 12) : total
   })()
 
-  const earningsRentCents = ((): number => {
-    const total = cashFlowCents(
-      rentEvents,
-      propertyExpenseEvents,
-      propertyLoanSnapshots,
-      earningsTrailingStart,
-      earningsPeriodEnd
-    )
-    return earningsView === 'month' ? Math.round(total / 12) : total
-  })()
+  // Rent isn't lumpy the way dividends are: each rental_income row already
+  // carries its own period_start/period_end, prorated by day, so the
+  // selected period's actual net cash flow is well-defined — use it
+  // directly instead of diluting it into a trailing-12-month average.
+  const earningsRentCents = cashFlowCents(
+    rentEvents,
+    propertyExpenseEvents,
+    propertyLoanSnapshots,
+    earningsPeriodStart,
+    earningsPeriodEnd
+  )
 
   const earningsManualAssetIncomeCents = ((): number => {
     const total = manualAssetIncomeInRangeCents(

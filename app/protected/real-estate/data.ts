@@ -390,6 +390,7 @@ export async function getPropertyExpenseEvents(): Promise<
     category: String(r.category),
     currency: String(r.currency),
     expenseDate: String(r.expense_date),
+    propertyId: String(r.property_id),
   }))
 }
 
@@ -421,6 +422,7 @@ export async function getPropertyLoanSnapshots(): Promise<
       isPaidOff: Boolean(r.is_paid_off),
       monthlyPaymentCents: Math.round(Number(r.monthly_payment_cents) * share),
       outstandingCents: Math.round(Number(r.outstanding_cents) * share),
+      propertyId: String(r.property_id),
     }
   })
 }
@@ -442,6 +444,26 @@ async function getOwnershipPctById(): Promise<Map<string, number>> {
 /** Ownership share (0..1) for a property_id, defaulting to fully owned. */
 function shareOf(pctById: Map<string, number>, propertyId: unknown): number {
   return (pctById.get(String(propertyId)) ?? 100) / 100
+}
+
+/**
+ * IDs of properties currently marked as rented — for scoping the dashboard's
+ * rent-vs-costs netting to properties that actually earn rent, so a primary
+ * residence's mortgage/expenses never offset rental income they have nothing
+ * to do with.
+ */
+export async function getRentedPropertyIds(): Promise<Set<string>> {
+  await requireUser()
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('properties')
+    .select('id, is_rented')
+  if (error) {
+    throw new Error(error.message)
+  }
+  return new Set(
+    (data ?? []).filter((p) => p.is_rented).map((p) => String(p.id))
+  )
 }
 
 /** Rough day/month figures derived from an annual amount. */
