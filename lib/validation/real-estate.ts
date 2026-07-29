@@ -33,6 +33,7 @@ export const propertyRowSchema = z.object({
   purchase_fees_cents: centsSchema.nonnegative(),
   current_value_cents: centsSchema.nonnegative(),
   last_valued_at: isoDateSchema,
+  ownership_pct: z.coerce.number().gt(0).lte(100),
   is_rented: z.boolean(),
   rental_start_date: isoDateSchema.nullable(),
   rental_end_date: isoDateSchema.nullable(),
@@ -126,6 +127,16 @@ const percentString = z
   .trim()
   .regex(/^\d{1,3}([.,]\d{1,3})?$/, 'invalidPercent')
 
+/** Ownership share as a decimal string, up to 2 dp, in (0, 100]. */
+const ownershipPctString = z
+  .string()
+  .trim()
+  .regex(/^\d{1,3}([.,]\d{1,2})?$/, 'invalidPercent')
+  .refine((v) => {
+    const n = normalizeDecimal(v)
+    return n > 0 && n <= 100
+  }, 'invalidPercent')
+
 const optionalText = (max: number) =>
   z
     .string()
@@ -150,6 +161,7 @@ export const createPropertySchema = z
     purchasePrice: decimalString,
     purchaseFees: decimalString.default('0'),
     currentValue: decimalString,
+    ownershipPct: ownershipPctString.default('100'),
     isRented: z.boolean().default(false),
     rentalStartDate: isoDateSchema.optional(),
     rentalEndDate: isoDateSchema.optional(),
@@ -169,6 +181,7 @@ export const updatePropertySchema = z.object({
   type: z.enum(PROPERTY_TYPES),
   address: optionalText(200),
   city: optionalText(80),
+  ownershipPct: ownershipPctString,
   isRented: z.boolean(),
   rentalStartDate: isoDateSchema.optional(),
   rentalEndDate: isoDateSchema.optional(),
