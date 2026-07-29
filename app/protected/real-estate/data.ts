@@ -87,6 +87,7 @@ function computeMetrics(
     currency: property.currency,
     currentValueCents: property.current_value_cents,
     isSold: property.is_sold,
+    ownershipPct: property.ownership_pct,
     purchaseDate: property.purchase_date,
     purchaseFeesCents: property.purchase_fees_cents,
     purchasePriceCents: property.purchase_price_cents,
@@ -205,6 +206,7 @@ export async function getRealEstateOverview(): Promise<RealEstateOverview> {
         currency: property.currency,
         currentValueCents: property.current_value_cents,
         isSold: property.is_sold,
+        ownershipPct: property.ownership_pct,
         purchaseDate: property.purchase_date,
         purchaseFeesCents: property.purchase_fees_cents,
         purchasePriceCents: property.purchase_price_cents,
@@ -285,7 +287,7 @@ export async function getRealEstateEquityByCurrency(): Promise<
     await Promise.all([
       supabase
         .from('properties')
-        .select('id, currency, current_value_cents, is_sold'),
+        .select('id, currency, current_value_cents, ownership_pct, is_sold'),
       supabase
         .from('property_loans')
         .select('property_id, currency, outstanding_cents, is_paid_off'),
@@ -298,23 +300,29 @@ export async function getRealEstateEquityByCurrency(): Promise<
   }
 
   const active = (props ?? []).filter((p) => !p.is_sold)
-  const activeIds = new Set(active.map((p) => String(p.id)))
+  const pctById = new Map(
+    active.map((p) => [String(p.id), Number(p.ownership_pct)])
+  )
   const byCurrency = new Map<string, number>()
   for (const p of active) {
     const ccy = String(p.currency)
+    const share = Number(p.ownership_pct) / 100
     byCurrency.set(
       ccy,
-      (byCurrency.get(ccy) ?? 0) + Number(p.current_value_cents)
+      (byCurrency.get(ccy) ?? 0) +
+        Math.round(Number(p.current_value_cents) * share)
     )
   }
   for (const l of loans ?? []) {
-    if (l.is_paid_off || !activeIds.has(String(l.property_id))) {
+    const pct = pctById.get(String(l.property_id))
+    if (l.is_paid_off || pct === undefined) {
       continue
     }
     const ccy = String(l.currency)
     byCurrency.set(
       ccy,
-      (byCurrency.get(ccy) ?? 0) - Number(l.outstanding_cents)
+      (byCurrency.get(ccy) ?? 0) -
+        Math.round(Number(l.outstanding_cents) * (pct / 100))
     )
   }
   return [...byCurrency.entries()].map(([currency, cents]) => ({
@@ -335,15 +343,20 @@ export async function getRealEstateEquityByCurrency(): Promise<
 export async function getRentalIncomeEvents(): Promise<RentalIncomeEvent[]> {
   await requireUser()
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('rental_income')
-    .select('amount_cents, currency, period_start, period_end')
-    .eq('is_paid', true)
+  const [{ data, error }, pctById] = await Promise.all([
+    supabase
+      .from('rental_income')
+      .select('amount_cents, currency, period_start, period_end, property_id')
+      .eq('is_paid', true),
+    getOwnershipPctById(),
+  ])
   if (error) {
     throw new Error(error.message)
   }
   return (data ?? []).map((r) => ({
-    amountCents: Number(r.amount_cents),
+    amountCents: Math.round(
+      Number(r.amount_cents) * shareOf(pctById, r.property_id)
+    ),
     currency: String(r.currency),
     isPaid: true,
     periodEnd: String(r.period_end),
@@ -361,14 +374,19 @@ export async function getPropertyExpenseEvents(): Promise<
 > {
   await requireUser()
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('property_expenses')
-    .select('amount_cents, category, currency, expense_date')
+  const [{ data, error }, pctById] = await Promise.all([
+    supabase
+      .from('property_expenses')
+      .select('amount_cents, category, currency, expense_date, property_id'),
+    getOwnershipPctById(),
+  ])
   if (error) {
     throw new Error(error.message)
   }
   return (data ?? []).map((r) => ({
-    amountCents: Number(r.amount_cents),
+    amountCents: Math.round(
+      Number(r.amount_cents) * shareOf(pctById, r.property_id)
+    ),
     category: String(r.category),
     currency: String(r.currency),
     expenseDate: String(r.expense_date),
@@ -385,18 +403,45 @@ export async function getPropertyLoanSnapshots(): Promise<
 > {
   await requireUser()
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('property_loans')
-    .select('currency, is_paid_off, monthly_payment_cents, outstanding_cents')
+  const [{ data, error }, pctById] = await Promise.all([
+    supabase
+      .from('property_loans')
+      .select(
+        'currency, is_paid_off, monthly_payment_cents, outstanding_cents, property_id'
+      ),
+    getOwnershipPctById(),
+  ])
   if (error) {
     throw new Error(error.message)
   }
-  return (data ?? []).map((r) => ({
-    currency: String(r.currency),
-    isPaidOff: Boolean(r.is_paid_off),
-    monthlyPaymentCents: Number(r.monthly_payment_cents),
-    outstandingCents: Number(r.outstanding_cents),
-  }))
+  return (data ?? []).map((r) => {
+    const share = shareOf(pctById, r.property_id)
+    return {
+      currency: String(r.currency),
+      isPaidOff: Boolean(r.is_paid_off),
+      monthlyPaymentCents: Math.round(Number(r.monthly_payment_cents) * share),
+      outstandingCents: Math.round(Number(r.outstanding_cents) * share),
+    }
+  })
+}
+
+/** `property_id → ownership_pct` map, for scaling cross-property event rows. */
+async function getOwnershipPctById(): Promise<Map<string, number>> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('properties')
+    .select('id, ownership_pct')
+  if (error) {
+    throw new Error(error.message)
+  }
+  return new Map(
+    (data ?? []).map((p) => [String(p.id), Number(p.ownership_pct)])
+  )
+}
+
+/** Ownership share (0..1) for a property_id, defaulting to fully owned. */
+function shareOf(pctById: Map<string, number>, propertyId: unknown): number {
+  return (pctById.get(String(propertyId)) ?? 100) / 100
 }
 
 /** Rough day/month figures derived from an annual amount. */

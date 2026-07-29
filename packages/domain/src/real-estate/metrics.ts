@@ -19,6 +19,8 @@ export interface PropertySnapshot {
   currency: string
   currentValueCents: number
   isSold: boolean
+  /** Share of the property owned by this user, in percent (100 = fully owned). */
+  ownershipPct: number
   purchaseDate: string
   purchaseFeesCents: number
   purchasePriceCents: number
@@ -31,6 +33,7 @@ export interface PropertyLoanSnapshot {
   isPaidOff: boolean
   monthlyPaymentCents: number
   outstandingCents: number
+  propertyId?: string
 }
 
 export interface RentalIncomeEvent {
@@ -46,6 +49,7 @@ export interface PropertyExpenseEvent {
   category: string
   currency: string
   expenseDate: string
+  propertyId?: string
 }
 
 export interface PropertyFinancials {
@@ -104,11 +108,14 @@ export function outstandingDebtCents(
   return total
 }
 
+/** Your share of value minus your share of debt, per `p.ownershipPct`. */
 export function equityCents(
   p: PropertySnapshot,
   loans: PropertyLoanSnapshot[]
 ): number {
-  return p.currentValueCents - outstandingDebtCents(loans, p.currency)
+  const fullEquity =
+    p.currentValueCents - outstandingDebtCents(loans, p.currency)
+  return Math.round(fullEquity * (p.ownershipPct / 100))
 }
 
 /** Loan-to-value in percent; null when the property has no value. */
@@ -340,17 +347,22 @@ export function aggregatePortfolio(
       }
       byCurrency.set(property.currency, totals)
     }
+    const share = property.ownershipPct / 100
     if (!property.isSold) {
       const debt = outstandingDebtCents(loans, property.currency)
-      totals.valueCents += property.currentValueCents
-      totals.debtCents += debt
-      totals.equityCents += property.currentValueCents - debt
-      totals.costBasisCents += costBasisCents(property)
+      totals.valueCents += Math.round(property.currentValueCents * share)
+      totals.debtCents += Math.round(debt * share)
+      totals.equityCents += Math.round(
+        (property.currentValueCents - debt) * share
+      )
+      totals.costBasisCents += Math.round(costBasisCents(property) * share)
       totals.propertyCount += 1
     }
-    totals.incomeCents += totalIncomeCents
-    totals.expensesCents += totalExpensesCents
-    totals.netProfitCents += totalIncomeCents - totalExpensesCents
+    totals.incomeCents += Math.round(totalIncomeCents * share)
+    totals.expensesCents += Math.round(totalExpensesCents * share)
+    totals.netProfitCents += Math.round(
+      (totalIncomeCents - totalExpensesCents) * share
+    )
   }
   return [...byCurrency.values()]
 }

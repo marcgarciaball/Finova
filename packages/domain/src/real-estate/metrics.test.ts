@@ -27,6 +27,7 @@ function property(overrides: Partial<PropertySnapshot> = {}): PropertySnapshot {
     purchasePriceCents: 20_000_000, // 200 000 €
     purchaseFeesCents: 2_000_000, // 20 000 €
     currentValueCents: 25_000_000, // 250 000 €
+    ownershipPct: 100,
     isSold: false,
     soldPriceCents: null,
     soldFeesCents: null,
@@ -109,6 +110,12 @@ describe('equityCents', () => {
     expect(
       equityCents(property({ currentValueCents: 10_000_000 }), [loan()])
     ).toBe(-2_000_000)
+  })
+
+  it('scales by ownership share for a co-owned property', () => {
+    expect(equityCents(property({ ownershipPct: 50 }), [loan()])).toBe(
+      6_500_000
+    )
   })
 })
 
@@ -340,5 +347,26 @@ describe('aggregatePortfolio', () => {
     expect(totals?.equityCents).toBe(0)
     expect(totals?.incomeCents).toBe(500_000)
     expect(totals?.propertyCount).toBe(0)
+  })
+
+  it('scales value, debt, equity, cost basis, income and expenses by ownership share', () => {
+    const halfOwned = {
+      property: property({ ownershipPct: 50 }),
+      loans: [loan()],
+      totalIncomeCents: 1_440_000,
+      totalExpensesCents: 240_000,
+    }
+    const [totals] = aggregatePortfolio([halfOwned])
+    expect(totals).toEqual({
+      currency: 'EUR',
+      valueCents: 12_500_000,
+      debtCents: 6_000_000,
+      equityCents: 6_500_000,
+      costBasisCents: 11_000_000,
+      incomeCents: 720_000,
+      expensesCents: 120_000,
+      netProfitCents: 600_000,
+      propertyCount: 1,
+    })
   })
 })
