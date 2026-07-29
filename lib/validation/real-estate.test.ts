@@ -7,6 +7,7 @@ import {
   createValuationSchema,
   normalizeDecimal,
   propertyRowSchema,
+  updateRentalIncomeSchema,
 } from './real-estate'
 
 const validProperty = {
@@ -98,6 +99,29 @@ describe('createRentalIncomeSchema', () => {
     expect(
       createRentalIncomeSchema.safeParse({
         propertyId: '4c9f1a52-4a1e-4a5a-9d3c-8a2f6b7c9d01',
+        periodStart: '2026-02-01',
+        periodEnd: '2026-01-01',
+        amount: '1200',
+      }).success
+    ).toBe(false)
+  })
+})
+
+describe('updateRentalIncomeSchema', () => {
+  it('accepts a valid update without propertyId', () => {
+    const result = updateRentalIncomeSchema.safeParse({
+      id: '4c9f1a52-4a1e-4a5a-9d3c-8a2f6b7c9d01',
+      periodStart: '2026-01-01',
+      periodEnd: '2026-01-31',
+      amount: '1200',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects a period ending before it starts', () => {
+    expect(
+      updateRentalIncomeSchema.safeParse({
+        id: '4c9f1a52-4a1e-4a5a-9d3c-8a2f6b7c9d01',
         periodStart: '2026-02-01',
         periodEnd: '2026-01-01',
         amount: '1200',

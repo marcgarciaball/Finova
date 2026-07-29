@@ -1044,6 +1044,7 @@
       "confirmDeleteProperty": "¿Eliminar esta propiedad y todo lo asociado? No se puede deshacer.",
       "edit": "Editar",
       "editProperty": "Editar propiedad",
+      "editIncome": "Editar ingreso",
       "sell": "Marcar como vendida",
       "addLoan": "Añadir préstamo",
       "addIncome": "Añadir ingreso",
@@ -1089,7 +1090,9 @@
       "computedTotal": "Total del periodo: {amount}",
       "tenantName": "Inquilino (opcional)",
       "notes": "Notas",
-      "submit": "Guardar ingreso"
+      "isPaid": "Pago recibido",
+      "submit": "Guardar ingreso",
+      "update": "Actualizar ingreso"
     },
     "expenseForm": {
       "category": "Categoría",

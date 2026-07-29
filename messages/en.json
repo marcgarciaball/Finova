@@ -1044,6 +1044,7 @@
       "confirmDeleteProperty": "Delete this property and everything attached to it? This cannot be undone.",
       "edit": "Edit",
       "editProperty": "Edit property",
+      "editIncome": "Edit income",
       "sell": "Mark as sold",
       "addLoan": "Add loan",
       "addIncome": "Add income",
@@ -1089,7 +1090,9 @@
       "computedTotal": "Total for the period: {amount}",
       "tenantName": "Tenant (optional)",
       "notes": "Notes",
-      "submit": "Save income"
+      "isPaid": "Payment received",
+      "submit": "Save income",
+      "update": "Update income"
     },
     "expenseForm": {
       "category": "Category",

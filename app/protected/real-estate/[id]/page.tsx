@@ -7,7 +7,7 @@ import { KpiCard } from '@/components/dashboard/KpiCard'
 import { Badge } from '@/components/ui/Badge'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { requireUser } from '@/lib/auth/require-user'
-import { deleteExpense, deleteRentalIncome, deleteValuation } from '../actions'
+import { deleteExpense, deleteValuation } from '../actions'
 import { getPropertyDetail } from '../data'
 import {
   AddExpenseButton,
@@ -79,6 +79,7 @@ export default async function PropertyDetailPage({
 
   const incomeRows = incomes.map((income) => ({
     id: income.id,
+    income,
     periodStart: income.period_start,
     periodLabel: `${fmtDate(income.period_start)} – ${fmtDate(income.period_end)}`,
     tenantSortKey: income.tenant_name ?? '',
@@ -285,7 +286,6 @@ export default async function PropertyDetailPage({
                 tenant: t('tables.tenant'),
                 amount: t('tables.amount'),
               }}
-              deleteAction={deleteRentalIncome}
             />
           )}
         </GlassCard>

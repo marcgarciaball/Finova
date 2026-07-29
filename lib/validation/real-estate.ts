@@ -240,6 +240,24 @@ export const createRentalIncomeSchema = z
   })
 export type CreateRentalIncomeInput = z.infer<typeof createRentalIncomeSchema>
 
+export const updateRentalIncomeSchema = z
+  .object({
+    id: z.string().uuid(),
+    periodStart: isoDateSchema,
+    periodEnd: isoDateSchema,
+    /** How `amount` is meant: the period total, or a monthly rent. */
+    amountKind: z.enum(['total', 'monthly']).default('total'),
+    amount: decimalString,
+    tenantName: optionalText(120),
+    isPaid: z.boolean().default(true),
+    notes: optionalText(500),
+  })
+  .refine((v) => v.periodEnd >= v.periodStart, {
+    message: 'endBeforeStart',
+    path: ['periodEnd'],
+  })
+export type UpdateRentalIncomeInput = z.infer<typeof updateRentalIncomeSchema>
+
 export const createExpenseSchema = z
   .object({
     propertyId: z.string().uuid(),

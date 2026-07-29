@@ -18,6 +18,7 @@ import {
   sellPropertySchema,
   updateLoanSchema,
   updatePropertySchema,
+  updateRentalIncomeSchema,
 } from '@/lib/validation/real-estate'
 
 /**
@@ -417,6 +418,69 @@ export async function createRentalIncome(
     tenant_name: input.tenantName ?? null,
     user_id: claims.sub,
   })
+  if (error) {
+    return { ok: false, error: UNEXPECTED }
+  }
+  revalidate()
+  return { ok: true }
+}
+
+export async function updateRentalIncome(
+  _prev: ActionResult | undefined,
+  formData: FormData
+): Promise<ActionResult> {
+  await requireUser()
+  const parsed = updateRentalIncomeSchema.safeParse({
+    amount: formData.get('amount'),
+    amountKind: formData.get('amountKind') || undefined,
+    id: formData.get('id'),
+    isPaid: formData.get('isPaid') !== 'off',
+    notes: formData.get('notes') ?? undefined,
+    periodEnd: formData.get('periodEnd'),
+    periodStart: formData.get('periodStart'),
+    tenantName: formData.get('tenantName') ?? undefined,
+  })
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: 'validationFailed',
+      fieldErrors: toFieldErrors(parsed.error),
+    }
+  }
+  const input = parsed.data
+
+  const supabase = await createClient()
+  const { data: existing } = await supabase
+    .from('rental_income')
+    .select('currency')
+    .eq('id', input.id)
+    .maybeSingle()
+  if (!existing) {
+    return { ok: false, error: UNEXPECTED }
+  }
+  const currency = String(existing.currency)
+  // A monthly amount is expanded to the period total here, calendar-aware;
+  // the row always stores the total received.
+  const enteredCents = toCents(input.amount, currency)
+  const amountCents =
+    input.amountKind === 'monthly'
+      ? totalFromMonthlyRentCents(
+          enteredCents,
+          input.periodStart,
+          input.periodEnd
+        )
+      : enteredCents
+  const { error } = await supabase
+    .from('rental_income')
+    .update({
+      amount_cents: amountCents,
+      is_paid: input.isPaid,
+      notes: input.notes ?? null,
+      period_end: input.periodEnd,
+      period_start: input.periodStart,
+      tenant_name: input.tenantName ?? null,
+    })
+    .eq('id', input.id)
   if (error) {
     return { ok: false, error: UNEXPECTED }
   }

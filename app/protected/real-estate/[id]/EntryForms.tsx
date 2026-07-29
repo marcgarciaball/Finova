@@ -22,7 +22,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
-import type { PropertyLoanRow } from '@/lib/validation/real-estate'
+import type {
+  PropertyLoanRow,
+  RentalIncomeRow,
+} from '@/lib/validation/real-estate'
 import type { ActionResult } from '../actions'
 import {
   createExpense,
@@ -30,6 +33,7 @@ import {
   createRentalIncome,
   createValuation,
   updateLoan,
+  updateRentalIncome,
 } from '../actions'
 import { AddDialog, Field, SELECT_CLASS } from './FormBits'
 
@@ -501,6 +505,178 @@ function IncomeForm({
       </Field>
       <Field id="income-notes" label={t('incomeForm.notes')}>
         <Input id="income-notes" name="notes" maxLength={500} />
+      </Field>
+    </FormShell>
+  )
+}
+
+/** Edit one rental-income entry, in a pencil-icon dialog. */
+export function EditIncomeButton({ income }: { income: RentalIncomeRow }) {
+  const t = useTranslations('realEstate')
+  const [open, setOpen] = useState(false)
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <button
+          type="button"
+          aria-label={t('detail.edit')}
+          className="text-ink-soft transition-colors hover:text-ink"
+        >
+          <Pencil className="size-4" aria-hidden="true" />
+        </button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t('detail.editIncome')}</DialogTitle>
+        </DialogHeader>
+        <EditIncomeForm income={income} onDone={() => setOpen(false)} />
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function EditIncomeForm({
+  income,
+  onDone,
+}: {
+  income: RentalIncomeRow
+  onDone: () => void
+}) {
+  const t = useTranslations('realEstate')
+  const locale = useLocale()
+  const { errorFor, formAction, formError, pending } = useEntryForm(
+    updateRentalIncome,
+    onDone
+  )
+  const [amountKind, setAmountKind] = useState<'total' | 'monthly'>('total')
+  const [amount, setAmount] = useState((income.amount_cents / 100).toFixed(2))
+  const [periodStart, setPeriodStart] = useState(income.period_start)
+  const [periodEnd, setPeriodEnd] = useState(income.period_end)
+
+  // Live preview of the period total when a monthly rent is entered — the
+  // exact number the server will store (same domain function).
+  let computedTotal: string | null = null
+  if (
+    amountKind === 'monthly' &&
+    /^\d+([.,]\d{1,2})?$/.test(amount.trim()) &&
+    periodStart &&
+    periodEnd &&
+    periodEnd >= periodStart
+  ) {
+    const monthlyCents = Math.round(
+      Number(amount.trim().replace(',', '.')) * 100
+    )
+    computedTotal = format(
+      money(
+        totalFromMonthlyRentCents(monthlyCents, periodStart, periodEnd),
+        income.currency
+      ),
+      locale
+    )
+  }
+
+  return (
+    <FormShell
+      formAction={formAction}
+      formError={formError}
+      pending={pending}
+      submitLabel={t('incomeForm.update')}
+    >
+      <input type="hidden" name="id" value={income.id} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field
+          id="edit-income-start"
+          label={t('incomeForm.periodStart')}
+          error={errorFor('periodStart')}
+        >
+          <Input
+            id="edit-income-start"
+            name="periodStart"
+            type="date"
+            value={periodStart}
+            onChange={(e) => setPeriodStart(e.target.value)}
+            required
+          />
+        </Field>
+        <Field
+          id="edit-income-end"
+          label={t('incomeForm.periodEnd')}
+          error={errorFor('periodEnd')}
+        >
+          <Input
+            id="edit-income-end"
+            name="periodEnd"
+            type="date"
+            value={periodEnd}
+            onChange={(e) => setPeriodEnd(e.target.value)}
+            required
+          />
+        </Field>
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field id="edit-income-amount-kind" label={t('incomeForm.amountKind')}>
+          <select
+            id="edit-income-amount-kind"
+            name="amountKind"
+            value={amountKind}
+            onChange={(e) =>
+              setAmountKind(e.target.value === 'total' ? 'total' : 'monthly')
+            }
+            className={SELECT_CLASS}
+          >
+            <option value="monthly">{t('incomeForm.amountKindMonthly')}</option>
+            <option value="total">{t('incomeForm.amountKindTotal')}</option>
+          </select>
+        </Field>
+        <Field
+          id="edit-income-amount"
+          label={
+            amountKind === 'monthly'
+              ? t('incomeForm.amountMonthly')
+              : t('incomeForm.amount')
+          }
+          error={errorFor('amount')}
+        >
+          <Input
+            id="edit-income-amount"
+            name="amount"
+            inputMode="decimal"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+        </Field>
+      </div>
+      {computedTotal ? (
+        <p className="text-ink-soft text-sm">
+          {t('incomeForm.computedTotal', { amount: computedTotal })}
+        </p>
+      ) : null}
+      <Field id="edit-income-tenant" label={t('incomeForm.tenantName')}>
+        <Input
+          id="edit-income-tenant"
+          name="tenantName"
+          defaultValue={income.tenant_name ?? undefined}
+          maxLength={120}
+        />
+      </Field>
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="edit-income-is-paid"
+          name="isPaid"
+          defaultChecked={income.is_paid}
+        />
+        <label htmlFor="edit-income-is-paid" className="text-ink text-sm">
+          {t('incomeForm.isPaid')}
+        </label>
+      </div>
+      <Field id="edit-income-notes" label={t('incomeForm.notes')}>
+        <Input
+          id="edit-income-notes"
+          name="notes"
+          defaultValue={income.notes ?? undefined}
+          maxLength={500}
+        />
       </Field>
     </FormShell>
   )

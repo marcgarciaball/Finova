@@ -3,13 +3,14 @@
 import { Badge } from '@/components/ui/Badge'
 import { SortButton } from '@/components/ui/table/SortButton'
 import { useClientSort } from '@/lib/hooks/useClientSort'
-import type { ActionResult } from '../actions'
-import { DeleteRowButton } from './DeleteRowButton'
+import type { RentalIncomeRow } from '@/lib/validation/real-estate'
+import { IncomeRowActions } from './IncomeRowActions'
 
 export interface IncomeRowView {
   amountCents: number
   amountLabel: string
   id: string
+  income: RentalIncomeRow
   isPaid: boolean
   pendingLabel: string
   periodLabel: string
@@ -21,11 +22,9 @@ export interface IncomeRowView {
 export function IncomeTable({
   rows,
   labels,
-  deleteAction,
 }: {
   rows: IncomeRowView[]
   labels: { period: string; tenant: string; amount: string }
-  deleteAction: (id: string) => Promise<ActionResult>
 }) {
   const { sort, sorted, toggleSort } = useClientSort<
     IncomeRowView,
@@ -84,7 +83,7 @@ export function IncomeTable({
               {income.amountLabel}
             </td>
             <td className="py-2 text-right">
-              <DeleteRowButton action={deleteAction} id={income.id} />
+              <IncomeRowActions income={income.income} />
             </td>
           </tr>
         ))}
