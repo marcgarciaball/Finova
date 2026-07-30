@@ -5,7 +5,7 @@ import {
   type PropertyType,
 } from '@finova/domain/real-estate/types'
 import { useTranslations } from 'next-intl'
-import { useActionState, useEffect } from 'react'
+import { useActionState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Input } from '@/components/ui/Input'
@@ -68,13 +68,13 @@ export function PropertyForm({
   const [state, formAction, pending] = useActionState<
     ActionResult | undefined,
     FormData
-  >(action, undefined)
-
-  useEffect(() => {
-    if (state?.ok) {
+  >(async (prevState, formData) => {
+    const result = await action(prevState, formData)
+    if (result.ok) {
       onDone?.()
     }
-  }, [state, onDone])
+    return result
+  }, undefined)
 
   const fieldErrors = state && !state.ok ? state.fieldErrors : undefined
   const errorFor = (field: string): string | undefined => {

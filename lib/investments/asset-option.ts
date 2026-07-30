@@ -29,7 +29,7 @@ export interface ResolvedAsset {
 
 /** Validates an AssetOption round-tripped through a server action call. */
 export const assetOptionSchema = z.object({
-  assetId: z.string().uuid().nullable(),
+  assetId: z.uuid().nullable(),
   assetType: z.enum(ASSET_TYPES),
   coingeckoId: z.string().max(100).nullable(),
   currency: z.string().max(3).nullable(),

@@ -1,4 +1,4 @@
-import { convert, type Money, money } from '../money'
+import { convert, type Money, money } from '../money/money'
 import { transactionType } from './filters'
 
 /**

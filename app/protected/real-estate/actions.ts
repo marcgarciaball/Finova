@@ -254,7 +254,7 @@ export async function sellProperty(
 
 export async function deleteProperty(id: string): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()
@@ -608,7 +608,7 @@ export async function createValuation(
 
 export async function deleteValuation(id: string): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()
@@ -664,7 +664,7 @@ async function deleteChild(
   id: string
 ): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()

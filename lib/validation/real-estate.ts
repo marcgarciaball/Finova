@@ -165,7 +165,7 @@ export const createPropertySchema = z
 export type CreatePropertyInput = z.infer<typeof createPropertySchema>
 
 export const updatePropertySchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string().trim().min(1, 'required').max(120, 'tooLong'),
   type: z.enum(PROPERTY_TYPES),
   address: optionalText(200),
@@ -180,7 +180,7 @@ export const updatePropertySchema = z.object({
 export type UpdatePropertyInput = z.infer<typeof updatePropertySchema>
 
 export const sellPropertySchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   soldDate: isoDateSchema,
   soldPrice: decimalString,
   soldFees: decimalString.default('0'),
@@ -190,7 +190,7 @@ export type SellPropertyInput = z.infer<typeof sellPropertySchema>
 const termMonthsSchema = z.coerce.number().int().positive()
 
 export const createLoanSchema = z.object({
-  propertyId: z.string().uuid(),
+  propertyId: z.uuid(),
   lenderName: z.string().trim().min(1, 'required').max(120, 'tooLong'),
   loanType: z.enum(LOAN_TYPES),
   originalAmount: decimalString,
@@ -207,7 +207,7 @@ export const createLoanSchema = z.object({
 export type CreateLoanInput = z.infer<typeof createLoanSchema>
 
 export const updateLoanSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   outstanding: decimalString,
   interestRatePct: percentString,
   monthlyPayment: decimalString,
@@ -217,7 +217,7 @@ export type UpdateLoanInput = z.infer<typeof updateLoanSchema>
 
 export const createRentalIncomeSchema = z
   .object({
-    propertyId: z.string().uuid(),
+    propertyId: z.uuid(),
     periodStart: isoDateSchema,
     periodEnd: isoDateSchema,
     /** How `amount` is meant: the period total, or a monthly rent. */
@@ -235,7 +235,7 @@ export type CreateRentalIncomeInput = z.infer<typeof createRentalIncomeSchema>
 
 export const updateRentalIncomeSchema = z
   .object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     periodStart: isoDateSchema,
     periodEnd: isoDateSchema,
     /** How `amount` is meant: the period total, or a monthly rent. */
@@ -253,7 +253,7 @@ export type UpdateRentalIncomeInput = z.infer<typeof updateRentalIncomeSchema>
 
 export const createExpenseSchema = z
   .object({
-    propertyId: z.string().uuid(),
+    propertyId: z.uuid(),
     category: z.enum(EXPENSE_CATEGORIES),
     description: z.string().trim().min(1, 'required').max(200, 'tooLong'),
     amount: decimalString,
@@ -269,7 +269,7 @@ export const createExpenseSchema = z
 export type CreateExpenseInput = z.infer<typeof createExpenseSchema>
 
 export const createValuationSchema = z.object({
-  propertyId: z.string().uuid(),
+  propertyId: z.uuid(),
   valuationDate: isoDateSchema,
   value: decimalString,
   source: z.enum(VALUATION_SOURCES).default('manual'),

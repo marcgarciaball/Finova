@@ -13,16 +13,19 @@ export default function LoginScreen() {
   async function handleSignIn() {
     setSubmitting(true)
     setError(null)
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    setSubmitting(false)
-    if (signInError) {
-      setError(signInError.message)
-      return
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      if (signInError) {
+        setError(signInError.message)
+        return
+      }
+      router.replace('/(protected)/dashboard')
+    } finally {
+      setSubmitting(false)
     }
-    router.replace('/(protected)/dashboard')
   }
 
   return (

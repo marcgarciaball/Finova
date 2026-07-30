@@ -1,6 +1,6 @@
 'use client'
 import { GRANULARITIES } from '@finova/domain/dashboard'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useTransition } from 'react'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
@@ -13,17 +13,15 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl'
 export function GranularitySelector({ value }: { value: string }) {
   const t = useTranslations('dashboard.granularity')
   const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
   const [, startTransition] = useTransition()
 
   const options = GRANULARITIES.map((g) => ({ value: g, label: t(g) }))
 
   const onChange = (next: string) => {
-    const params = new URLSearchParams(searchParams)
-    params.set('granularity', next)
+    const url = new URL(window.location.href)
+    url.searchParams.set('granularity', next)
     startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`)
+      router.push(`${url.pathname}?${url.searchParams.toString()}`)
     })
   }
 

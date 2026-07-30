@@ -3,7 +3,6 @@
 import { Laptop, Moon, Sun } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import {
   DropdownMenu,
@@ -12,16 +11,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
+import { useMounted } from '@/lib/hooks/useMounted'
 
 const ThemeSwitcher = () => {
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
   const { theme, setTheme } = useTheme()
   const t = useTranslations('theme')
-
-  // useEffect only runs on the client, so now we can safely show the UI
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   if (!mounted) {
     return null

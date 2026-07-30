@@ -101,9 +101,11 @@ export async function deleteAccount(
     const { data: batches } = await supabase
       .from('import_batches')
       .select('storage_path')
-    const paths = (batches ?? [])
-      .map((b) => (typeof b.storage_path === 'string' ? b.storage_path : ''))
-      .filter((p) => p.length > 0)
+    const paths = (batches ?? []).flatMap((b) =>
+      typeof b.storage_path === 'string' && b.storage_path.length > 0
+        ? [b.storage_path]
+        : []
+    )
     if (paths.length > 0) {
       await admin.storage.from(IMPORTS_BUCKET).remove(paths)
     }

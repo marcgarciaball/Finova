@@ -1,8 +1,9 @@
 'use client'
 
 import type { ColumnMapping } from '@finova/domain/import/mapping'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Label } from '@/components/ui/Label'
@@ -35,14 +36,10 @@ export function ReviewPanel({
     null
   )
 
-  // A prior review is only valid for the mapping+batch it ran against;
-  // invalidate it when either changes so stale counts never linger. The deps
-  // are intentional re-run triggers even though the body only clears state.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: mapping/batchId are intentional invalidation triggers
-  useEffect(() => {
-    setResult(null)
-    setCommitResult(null)
-  }, [mapping, batchId])
+  // A prior review is only valid for the mapping+batch it ran against; the
+  // parent remounts this component (via a `key` derived from both) whenever
+  // either changes, so local state naturally resets instead of lingering
+  // stale — see ImportClient's <ReviewPanel key={...} /> usage.
 
   async function onReview() {
     if (!accountId) return
@@ -171,12 +168,12 @@ export function ReviewPanel({
                     </span>
                   ) : null}
                 </div>
-                <a
+                <Link
                   href="/protected/transactions"
                   className="text-brand-500 underline"
                 >
                   {t('commit.viewTransactions')}
-                </a>
+                </Link>
               </div>
             ) : null}
           </div>

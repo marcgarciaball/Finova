@@ -8,6 +8,11 @@ import { InvestmentsHistoryChart } from './InvestmentsHistoryChart'
 import type { InvestmentsOverview } from './overview-data'
 import { RefreshPricesButton } from './RefreshPricesButton'
 
+const pct = (v: number | null) =>
+  v === null ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`
+const plClass = (v: number | null) =>
+  v === null ? 'text-ink-soft' : v >= 0 ? 'text-pos' : 'text-neg'
+
 /**
  * Portfolio overview band (Inversiones Phase B): KPI row, allocation donuts,
  * holdings table with data-freshness signals. Dividends arrive with Phase C
@@ -30,10 +35,6 @@ export async function InvestmentsOverviewSection({
 
   const fmt = (cents: number, ccy = baseCurrency) =>
     format(money(cents, ccy), locale)
-  const pct = (v: number | null) =>
-    v === null ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`
-  const plClass = (v: number | null) =>
-    v === null ? 'text-ink-soft' : v >= 0 ? 'text-pos' : 'text-neg'
 
   const donut = (byKey: Record<string, number>, label: (k: string) => string) =>
     Object.entries(byKey).map(([key, fraction]) => ({

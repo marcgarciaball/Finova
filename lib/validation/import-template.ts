@@ -40,19 +40,17 @@ const amountMappingSchema = z.discriminatedUnion('kind', [
 ])
 
 const currencyMappingSchema = z.union([
-  z.object({ column: z.string().trim().min(1, 'columnRequired') }).strict(),
-  z.object({ fixed: currencySchema }).strict(),
+  z.strictObject({ column: z.string().trim().min(1, 'columnRequired') }),
+  z.strictObject({ fixed: currencySchema }),
 ])
 
-export const columnMappingSchema = z
-  .object({
-    date: dateMappingSchema,
-    amount: amountMappingSchema,
-    description: columnRefSchema,
-    note: columnRefSchema.optional(),
-    currency: currencyMappingSchema.optional(),
-  })
-  .strip()
+export const columnMappingSchema = z.object({
+  date: dateMappingSchema,
+  amount: amountMappingSchema,
+  description: columnRefSchema,
+  note: columnRefSchema.optional(),
+  currency: currencyMappingSchema.optional(),
+})
 
 export const saveTemplateSchema = z.object({
   name: z.string().trim().min(1, 'nameRequired').max(100, 'nameTooLong'),

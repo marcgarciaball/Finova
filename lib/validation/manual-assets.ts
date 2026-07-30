@@ -86,7 +86,7 @@ export const createManualAssetSchema = z.object({
 export type CreateManualAssetInput = z.infer<typeof createManualAssetSchema>
 
 export const updateManualAssetSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string().trim().min(1, 'required').max(120, 'tooLong'),
   type: z.enum(MANUAL_ASSET_TYPES),
   isClosed: z.boolean(),
@@ -95,7 +95,7 @@ export const updateManualAssetSchema = z.object({
 export type UpdateManualAssetInput = z.infer<typeof updateManualAssetSchema>
 
 export const createManualAssetValuationSchema = z.object({
-  manualAssetId: z.string().uuid(),
+  manualAssetId: z.uuid(),
   valuationDate: isoDateSchema,
   value: decimalString,
   source: z.enum(MANUAL_VALUATION_SOURCES).default('manual'),
@@ -106,7 +106,7 @@ export type CreateManualAssetValuationInput = z.infer<
 >
 
 export const createManualAssetIncomeSchema = z.object({
-  manualAssetId: z.string().uuid(),
+  manualAssetId: z.uuid(),
   receivedDate: isoDateSchema,
   amount: decimalString,
   notes: optionalText(500),

@@ -7,6 +7,7 @@ import { KpiCard } from '@/components/dashboard/KpiCard'
 import { Badge } from '@/components/ui/Badge'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { requireUser } from '@/lib/auth/require-user'
+import { getDateFormatter } from '@/lib/i18n/date-formatter'
 import { deleteExpense, deleteValuation } from '../actions'
 import { getPropertyDetail } from '../data'
 import {
@@ -45,10 +46,8 @@ export default async function PropertyDetailPage({
   const { property, loans, incomes, expenses, valuations, metrics } = detail
   const ccy = property.currency
   const fmt = (cents: number) => format(money(cents, ccy), locale)
-  const fmtDate = (iso: string) =>
-    new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(
-      new Date(`${iso}T00:00:00Z`)
-    )
+  const dateFmt = getDateFormatter(locale, { dateStyle: 'medium' })
+  const fmtDate = (iso: string) => dateFmt.format(new Date(`${iso}T00:00:00Z`))
 
   const chartPoints = [...valuations]
     .sort((a, b) => a.valuation_date.localeCompare(b.valuation_date))

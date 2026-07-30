@@ -36,21 +36,6 @@ export async function findTemplateBySignature(
   return data ? importTemplateRowSchema.parse(data) : null
 }
 
-/** All of the caller's saved templates, newest first. */
-export async function listTemplates(): Promise<ImportTemplateRow[]> {
-  await requireUser()
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('import_templates')
-    .select('*')
-    .order('updated_at', { ascending: false })
-
-  if (error) {
-    throw new Error(error.message)
-  }
-  return importTemplateRowSchema.array().parse(data)
-}
-
 /**
  * The caller's enabled categorization rules (P3-03), ordered by precedence:
  * `priority` ascending, `created_at` ascending on ties — the order

@@ -16,34 +16,28 @@ import { z } from 'zod'
 // Each clause is `.strict()` — the conditions jsonb trusts nothing, so an
 // unexpected key (a typo or a stale field) is rejected, not silently stripped
 // (mirrors the `.strict()` rigor of `import-template.ts`'s jsonb schemas).
-const descriptionClauseSchema = z
-  .object({
-    field: z.literal('description'),
-    op: z.enum(['contains', 'equals', 'starts_with', 'regex']),
-    // Length-capped to bound a `regex` op's ReDoS surface cheaply; full
-    // safe-execution is a P3-02 matcher concern (matching runs in-process over a
-    // user's own rules + own data, so the blast radius is self-limited).
-    value: z.string().min(1, 'valueRequired').max(200, 'valueTooLong'),
-  })
-  .strict()
+const descriptionClauseSchema = z.strictObject({
+  field: z.literal('description'),
+  op: z.enum(['contains', 'equals', 'starts_with', 'regex']),
+  // Length-capped to bound a `regex` op's ReDoS surface cheaply; full
+  // safe-execution is a P3-02 matcher concern (matching runs in-process over a
+  // user's own rules + own data, so the blast radius is self-limited).
+  value: z.string().min(1, 'valueRequired').max(200, 'valueTooLong'),
+})
 
-const amountClauseSchema = z
-  .object({
-    field: z.literal('amount_cents'),
-    op: z.enum(['lt', 'lte', 'gt', 'gte', 'eq']),
-    value: z.number().int('valueMustBeInteger'),
-    // `true` compares |amount_cents| (sign-agnostic); default compares the signed value.
-    absolute: z.boolean().optional(),
-  })
-  .strict()
+const amountClauseSchema = z.strictObject({
+  field: z.literal('amount_cents'),
+  op: z.enum(['lt', 'lte', 'gt', 'gte', 'eq']),
+  value: z.number().int('valueMustBeInteger'),
+  // `true` compares |amount_cents| (sign-agnostic); default compares the signed value.
+  absolute: z.boolean().optional(),
+})
 
-const accountClauseSchema = z
-  .object({
-    field: z.literal('account_id'),
-    op: z.literal('eq'),
-    value: z.string().uuid('valueMustBeUuid'),
-  })
-  .strict()
+const accountClauseSchema = z.strictObject({
+  field: z.literal('account_id'),
+  op: z.literal('eq'),
+  value: z.uuid('valueMustBeUuid'),
+})
 
 const clauseSchema = z.discriminatedUnion('field', [
   descriptionClauseSchema,
@@ -76,16 +70,16 @@ const prioritySchema = z
 export const createCategorizationRuleSchema = z.object({
   name: nameSchema,
   conditions: conditionsSchema,
-  categoryId: z.string().uuid('categoryRequired'),
+  categoryId: z.uuid('categoryRequired'),
   priority: prioritySchema.optional().default(0),
   enabled: z.boolean().optional().default(true),
 })
 
 export const updateCategorizationRuleSchema = z.object({
-  id: z.string().uuid('idRequired'),
+  id: z.uuid('idRequired'),
   name: nameSchema.optional(),
   conditions: conditionsSchema.optional(),
-  categoryId: z.string().uuid('categoryRequired').optional(),
+  categoryId: z.uuid('categoryRequired').optional(),
   priority: prioritySchema.optional(),
   enabled: z.boolean().optional(),
 })

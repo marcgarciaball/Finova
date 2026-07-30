@@ -485,7 +485,7 @@ export async function deleteInvestmentTransaction(
   id: string
 ): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()
@@ -505,9 +505,9 @@ export async function deleteInvestmentTransaction(
       .eq('asset_id', target.asset_id)
     try {
       computeHolding(
-        (siblings ?? [])
-          .filter((r) => String(r.id) !== id)
-          .map((r) => toHoldingTxn(r))
+        (siblings ?? []).flatMap((r) =>
+          String(r.id) !== id ? [toHoldingTxn(r)] : []
+        )
       )
     } catch (e) {
       if (e instanceof OversellError) {

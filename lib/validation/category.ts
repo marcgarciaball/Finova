@@ -24,7 +24,6 @@ const nameSchema = z
  * caller, shares the kind, and is itself top-level (one-level nesting).
  */
 const parentIdSchema = z
-  .string()
   .uuid()
   .nullish()
   .or(z.literal('').transform(() => null))
@@ -55,7 +54,7 @@ export const createCategorySchema = z.object({
  * (moving between income/expense would strand transactions), so it is not here.
  */
 export const updateCategorySchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: nameSchema.optional(),
   parentId: parentIdSchema,
   iconName: iconNameSchema,

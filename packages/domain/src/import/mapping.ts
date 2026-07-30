@@ -13,7 +13,7 @@
  * P2-07 new/dup/error review screen later.
  */
 
-import { fromDecimal } from '../money'
+import { fromDecimal } from '../money/money'
 import type { RawTxn } from './adapter'
 import { fnv1a } from './fingerprint'
 import {

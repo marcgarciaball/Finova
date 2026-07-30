@@ -11,8 +11,19 @@ const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : 'http://localhost:3000'
 
+// VERCEL_URL is platform-injected and normally safe, but a malformed value
+// (e.g. an empty string on a misconfigured host) would otherwise throw here
+// and crash every page render, so fall back to a known-good URL instead.
+const metadataBaseUrl = (() => {
+  try {
+    return new URL(defaultUrl)
+  } catch {
+    return new URL('http://localhost:3000')
+  }
+})()
+
 export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
+  metadataBase: metadataBaseUrl,
   title: 'Finova',
   description: 'One clear, trustworthy view of your money.',
 }

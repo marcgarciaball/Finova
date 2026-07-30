@@ -1404,6 +1404,121 @@
       "payment": "Cuota"
     }
   },
+  "profitabilityCalculator": {
+    "nav": "Calculadora",
+    "title": "Calculadora de rentabilidad",
+    "subtitle": "Simula el interés compuesto, objetivos de ingresos y rentabilidades históricas antes de invertir.",
+    "tabs": {
+      "goal": "Objetivo de ingresos",
+      "growth": "Proyector de crecimiento",
+      "historical": "Rentabilidades históricas",
+      "dividends": "Dividendos",
+      "rental": "Piso en alquiler"
+    },
+    "common": {
+      "annualReturn": "Rentabilidad anual (%)",
+      "years": "Horizonte temporal (años)",
+      "initialCapital": "Capital inicial",
+      "monthlyContribution": "Aportación mensual",
+      "compounding": "Frecuencia de capitalización",
+      "compoundingOptions": {
+        "monthly": "Mensual",
+        "quarterly": "Trimestral",
+        "annually": "Anual"
+      },
+      "balanceLabel": "Saldo"
+    },
+    "goal": {
+      "title": "¿Cuánto necesito invertido?",
+      "description": "Funciona al revés de una \"tasa de retiro segura\": eliges el ingreso mensual con el que quieres vivir y la rentabilidad anual que esperas, y calcula el capital que ese ingreso requiere — gastando solo la rentabilidad, sin tocar nunca el principal.",
+      "monthlyIncomeTarget": "Ingreso mensual con el que quieres vivir",
+      "capitalRequired": "Capital necesario",
+      "capitalRequiredHint": "Esto es {income}/mes × 12 ÷ {rate}% — el capital cuya rentabilidad anual por sí sola cubre ese ingreso",
+      "yearsToReachTitle": "Años para alcanzarlo",
+      "yearsToReachBody": "Aportando {contribution}/mes al {rate}%, partiendo de {initial}",
+      "neverReaches": "No es alcanzable en 60 años con esta aportación y rentabilidad — sube la aportación o la rentabilidad.",
+      "chartTitle": "Capital a lo largo del tiempo"
+    },
+    "growth": {
+      "title": "Proyector de crecimiento de la inversión",
+      "description": "Proyecta cómo un capital inicial más aportaciones periódicas se capitaliza con el tiempo.",
+      "futureValue": "Valor futuro",
+      "totalContributed": "Total aportado",
+      "totalInterest": "Intereses generados",
+      "chartTitle": "Saldo a lo largo del tiempo",
+      "breakdownTitle": "Aportado vs. intereses",
+      "breakdown": {
+        "contributed": "Aportado",
+        "interest": "Intereses"
+      }
+    },
+    "historical": {
+      "title": "Comparativa de rentabilidades históricas",
+      "description": "Aplica el mismo plan de aportaciones a varias rentabilidades medias históricas de referencia para comparar resultados. Las rentabilidades pasadas no garantizan las futuras.",
+      "presets": {
+        "worldStocks": "Bolsa mundial (~8%)",
+        "usStocks": "Bolsa EE.UU. (~10%)",
+        "realEstate": "Inmobiliario (~6%)",
+        "bonds": "Bonos (~4%)",
+        "custom": "Personalizado"
+      },
+      "customRate": "Rentabilidad personalizada (%)",
+      "tableTitle": "Resultado tras {years} años",
+      "columnScenario": "Escenario",
+      "columnRate": "Rentabilidad",
+      "columnFinalValue": "Valor final",
+      "columnInterest": "Intereses generados",
+      "chartTitle": "Saldo a lo largo del tiempo por escenario"
+    },
+    "dividends": {
+      "title": "Proyector de ingresos por dividendo",
+      "description": "Indica lo que paga la empresa hoy y cuánto suele subir el dividendo — mira cómo crecen tu posición e ingresos si reinviertes, o cuánto ingreso en efectivo cobrarías si no lo haces.",
+      "dividendYield": "Rentabilidad por dividendo actual (%)",
+      "dividendGrowth": "Crecimiento anual del dividendo (%)",
+      "priceAppreciation": "Revalorización anual de la acción (%)",
+      "priceAppreciationHint": "La rentabilidad por dividendo por sí sola no hace crecer la posición — esto es lo que hace que el precio de la acción suba, además de los dividendos reinvertidos. Pon 0 si solo quieres ver el efecto del dividendo.",
+      "reinvest": "Reinvertir dividendos (DRIP)",
+      "reinvestHint": "Activado: los dividendos compran más acciones automáticamente. Desactivado: los dividendos se cobran en efectivo y solo tus aportaciones hacen crecer la posición.",
+      "futureValue": "Valor de la posición",
+      "finalMonthlyIncome": "Ingreso mensual (año {years})",
+      "finalAnnualIncome": "Ingreso anual (año {years})",
+      "totalDividendsReceived": "Total de dividendos cobrados",
+      "chartTitle": "Valor de la posición a lo largo del tiempo",
+      "incomeChartTitle": "Ingreso anual por dividendo a lo largo del tiempo",
+      "annualIncomeLabel": "Ingreso anual por dividendo",
+      "goalTitle": "Objetivo de ingresos por dividendo",
+      "goalDescription": "¿Quieres un ingreso mensual por dividendo concreto? Mira cuántos años de aportar {contribution}/mes hacen falta para lograrlo, reinvirtiendo los dividendos por el camino.",
+      "targetMonthlyIncome": "Ingreso mensual por dividendo objetivo",
+      "yearsToReachIncome": "Años para alcanzarlo",
+      "neverReachesIncome": "No es alcanzable en 60 años con esta aportación, rentabilidad y crecimiento — sube alguno de ellos."
+    },
+    "rental": {
+      "title": "¿Es rentable este piso?",
+      "description": "Indica las condiciones de compra y financiación más el alquiler que cobrarías — mira el flujo de caja mensual, la rentabilidad (cap rate) y el retorno sobre el efectivo invertido, además de cómo crece tu patrimonio con el tiempo.",
+      "purchasePrice": "Precio de compra",
+      "downPaymentPct": "Entrada (%)",
+      "mortgageRate": "Tipo de interés hipotecario (anual %)",
+      "mortgageTerm": "Plazo de la hipoteca (años)",
+      "monthlyRent": "Alquiler mensual",
+      "monthlyOperatingExpenses": "Gastos mensuales (IBI, seguro, comunidad, mantenimiento)",
+      "vacancyPct": "Reserva por vacíos (%)",
+      "managementFeePct": "Comisión de gestión (% del alquiler)",
+      "appreciationPct": "Revalorización anual del inmueble (%)",
+      "monthlyMortgagePayment": "Cuota hipotecaria",
+      "monthlyCashFlow": "Flujo de caja mensual",
+      "cashOnCashReturn": "Retorno sobre el efectivo invertido",
+      "capRate": "Cap rate",
+      "grossYield": "Rentabilidad bruta",
+      "profitable": "Rentable — flujo de caja positivo",
+      "unprofitable": "Flujo de caja negativo — cuesta más de lo que genera",
+      "equityChartTitle": "Valor del inmueble, deuda pendiente y patrimonio a lo largo del tiempo",
+      "equityLabels": {
+        "propertyValue": "Valor del inmueble",
+        "loanBalance": "Deuda pendiente",
+        "equity": "Patrimonio"
+      }
+    }
+  },
   "settings": {
     "title": "Ajustes",
     "tabs": {

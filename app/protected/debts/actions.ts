@@ -149,7 +149,7 @@ export async function updateDebt(
 
 export async function deleteDebt(id: string): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()

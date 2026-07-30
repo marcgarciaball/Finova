@@ -21,9 +21,11 @@ export async function AccountsStrip({
   balances: AccountBalance[]
   className?: string
 }) {
-  const t = await getTranslations('dashboard.accountsStrip')
-  const tTypes = await getTranslations('accounts.types')
-  const locale = await getLocale()
+  const [t, tTypes, locale] = await Promise.all([
+    getTranslations('dashboard.accountsStrip'),
+    getTranslations('accounts.types'),
+    getLocale(),
+  ])
 
   const byId = new Map(accounts.map((a) => [a.id, a]))
 

@@ -1,6 +1,6 @@
 'use client'
 import { PERIODS } from '@finova/domain/dashboard'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useTransition } from 'react'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
@@ -12,17 +12,15 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl'
 export function PeriodSelector({ value }: { value: string }) {
   const t = useTranslations('dashboard.period')
   const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
   const [, startTransition] = useTransition()
 
   const options = PERIODS.map((p) => ({ value: p, label: t(p) }))
 
   const onChange = (next: string) => {
-    const params = new URLSearchParams(searchParams)
-    params.set('period', next)
+    const url = new URL(window.location.href)
+    url.searchParams.set('period', next)
     startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`)
+      router.push(`${url.pathname}?${url.searchParams.toString()}`)
     })
   }
 

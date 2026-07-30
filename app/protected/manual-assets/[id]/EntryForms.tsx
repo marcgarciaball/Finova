@@ -2,7 +2,7 @@
 
 import { MANUAL_VALUATION_SOURCES } from '@finova/domain/manual-assets/types'
 import { useTranslations } from 'next-intl'
-import { useActionState, useEffect } from 'react'
+import { useActionState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import type { ActionResult } from '../actions'
@@ -45,13 +45,13 @@ function ValuationForm({
   const [state, formAction, pending] = useActionState<
     ActionResult | undefined,
     FormData
-  >(createManualAssetValuation, undefined)
-
-  useEffect(() => {
-    if (state?.ok) {
+  >(async (prevState, formData) => {
+    const result = await createManualAssetValuation(prevState, formData)
+    if (result.ok) {
       onDone()
     }
-  }, [state, onDone])
+    return result
+  }, undefined)
 
   const fieldErrors = state && !state.ok ? state.fieldErrors : undefined
   const errorFor = (field: string): string | undefined => {
@@ -149,13 +149,13 @@ function IncomeForm({
   const [state, formAction, pending] = useActionState<
     ActionResult | undefined,
     FormData
-  >(createManualAssetIncome, undefined)
-
-  useEffect(() => {
-    if (state?.ok) {
+  >(async (prevState, formData) => {
+    const result = await createManualAssetIncome(prevState, formData)
+    if (result.ok) {
       onDone()
     }
-  }, [state, onDone])
+    return result
+  }, undefined)
 
   const fieldErrors = state && !state.ok ? state.fieldErrors : undefined
   const errorFor = (field: string): string | undefined => {

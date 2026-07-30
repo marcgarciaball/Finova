@@ -12,6 +12,7 @@ import { KpiCard } from '@/components/dashboard/KpiCard'
 import { Badge } from '@/components/ui/Badge'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { requireUser } from '@/lib/auth/require-user'
+import { getDateFormatter } from '@/lib/i18n/date-formatter'
 import { deleteDebt } from '../actions'
 import { DeleteRowButton } from '../DeleteRowButton'
 import { getDebtDetail } from '../data'
@@ -38,10 +39,8 @@ export default async function DebtDetailPage({
   const todayIso = new Date().toISOString().slice(0, 10)
   const ccy = debt.currency
   const fmt = (cents: number) => format(money(cents, ccy), locale)
-  const fmtDate = (iso: string) =>
-    new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(
-      new Date(`${iso}T00:00:00Z`)
-    )
+  const dateFmt = getDateFormatter(locale, { dateStyle: 'medium' })
+  const fmtDate = (iso: string) => dateFmt.format(new Date(`${iso}T00:00:00Z`))
 
   const amortizable = {
     interestRatePct: debt.interest_rate_pct,

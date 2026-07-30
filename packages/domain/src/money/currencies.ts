@@ -31,10 +31,3 @@ export const CURRENCIES: readonly CurrencyOption[] = [
   { code: 'ARS', name: 'Argentine Peso' },
   { code: 'INR', name: 'Indian Rupee' },
 ] as const
-
-const CODES = new Set(CURRENCIES.map((c) => c.code))
-
-/** Is `code` one of the curated pickable currencies? */
-export function isKnownCurrency(code: string): boolean {
-  return CODES.has(code)
-}

@@ -310,10 +310,10 @@ export async function recategorizeTransaction(
   categoryId: string | null
 ): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
-  if (categoryId !== null && !z.string().uuid().safeParse(categoryId).success) {
+  if (categoryId !== null && !z.uuid().safeParse(categoryId).success) {
     return { ok: false, error: UNEXPECTED }
   }
 
@@ -358,7 +358,7 @@ export async function loadMoreTransactions(
 
 export async function deleteTransaction(id: string): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
 
@@ -382,7 +382,7 @@ export async function deleteTransaction(id: string): Promise<ActionResult> {
  */
 export async function duplicateTransaction(id: string): Promise<ActionResult> {
   const claims = await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
 
@@ -480,25 +480,27 @@ export async function recategorizeUncategorized(): Promise<RecategorizeResult> {
     byCategory.set(categoryId, ids)
   }
 
-  let updated = 0
-  for (const [categoryId, ids] of byCategory) {
-    const { error: updErr } = await supabase
-      .from('transactions')
-      .update({ category_id: categoryId })
-      .in('id', ids)
-    if (!updErr) {
-      updated += ids.length
-    }
-  }
+  // Each category's ids are disjoint from every other's, so the per-category
+  // updates can commit concurrently.
+  const updateResults = await Promise.all(
+    Array.from(byCategory.entries()).map(async ([categoryId, ids]) => {
+      const { error: updErr } = await supabase
+        .from('transactions')
+        .update({ category_id: categoryId })
+        .in('id', ids)
+      return updErr ? 0 : ids.length
+    })
+  )
+  const updated = updateResults.reduce((sum, n) => sum + n, 0)
 
   revalidatePath(TX_PATH)
   return { ok: true, updated, scanned: rows.length }
 }
 
-const uuidArray = z.array(z.string().uuid())
+const uuidArray = z.array(z.uuid())
 
 const bulkDeleteFiltersSchema = z.object({
-  accountId: z.string().uuid().nullable(),
+  accountId: z.uuid().nullable(),
   categoryId: z.string().min(1).nullable(),
   type: z.enum(TRANSACTION_TYPES).nullable(),
   from: z.string().nullable(),

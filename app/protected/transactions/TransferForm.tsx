@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useActionState, useEffect } from 'react'
+import { useActionState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -39,13 +39,13 @@ export function TransferForm({
   const [state, formAction, pending] = useActionState<
     ActionResult | undefined,
     FormData
-  >(createTransfer, undefined)
-
-  useEffect(() => {
-    if (state?.ok) {
+  >(async (prevState, formData) => {
+    const result = await createTransfer(prevState, formData)
+    if (result.ok) {
       onDone?.()
     }
-  }, [state, onDone])
+    return result
+  }, undefined)
 
   const fieldErrors = state && !state.ok ? state.fieldErrors : undefined
   const topError =

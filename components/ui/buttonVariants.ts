@@ -1,0 +1,25 @@
+import { cva } from 'class-variance-authority'
+
+export const buttonVariants = cva(
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:pointer-events-none disabled:opacity-50 motion-safe:transition [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  {
+    variants: {
+      variant: {
+        default: 'bg-brand text-white shadow-soft hover:bg-brand-700',
+        brand: 'bg-brand text-white shadow-soft hover:bg-brand-700',
+        glass: 'glass border border-glass-line text-ink hover:-translate-y-0.5',
+        outline: 'border border-glass-line bg-glass text-ink hover:bg-brand-50',
+        ghost: 'text-ink hover:bg-brand-50',
+        destructive: 'bg-neg text-white shadow-soft hover:opacity-90',
+        link: 'text-brand-600 underline-offset-4 hover:underline',
+      },
+      size: {
+        default: 'h-11 px-5 py-2',
+        sm: 'h-10 rounded-xl px-3 text-xs',
+        lg: 'h-12 rounded-2xl px-8',
+        icon: 'h-11 w-11',
+      },
+    },
+    defaultVariants: { variant: 'default', size: 'default' },
+  }
+)

@@ -18,9 +18,9 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode
 }) {
-  const t = await getTranslations()
-  const claims = await requireUser()
-  const [accounts, categories, baseCurrency] = await Promise.all([
+  const [t, claims, accounts, categories, baseCurrency] = await Promise.all([
+    getTranslations(),
+    requireUser(),
     listAccountsForPicker(),
     listCategoriesForPicker(),
     getBaseCurrency(),
@@ -47,6 +47,10 @@ export default async function ProtectedLayout({
         { href: '/protected/real-estate', label: t('realEstate.nav') },
         { href: '/protected/manual-assets', label: t('manualAssets.nav') },
         { href: '/protected/debts', label: t('debts.nav') },
+        {
+          href: '/protected/profitability-calculator',
+          label: t('profitabilityCalculator.nav'),
+        },
       ],
     },
   ]

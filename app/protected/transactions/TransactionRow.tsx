@@ -5,7 +5,7 @@ import { format, money } from '@finova/domain/money'
 import { transactionType } from '@finova/domain/transactions/filters'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
-import { useState, useTransition } from 'react'
+import { useMemo, useState, useTransition } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
@@ -45,6 +45,10 @@ export function TransactionRow({
   const [pending, startTransition] = useTransition()
   const [recategorizeError, setRecategorizeError] = useState(false)
   const { active, isSelected, toggle } = useSelection()
+  const dateFmt = useMemo(
+    () => new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }),
+    [locale]
+  )
 
   if (editing) {
     return (
@@ -69,9 +73,7 @@ export function TransactionRow({
     locale
   )
   const account = accounts.find((a) => a.id === transaction.account_id)
-  const dateLabel = new Intl.DateTimeFormat(locale, {
-    dateStyle: 'medium',
-  }).format(new Date(transaction.occurred_at))
+  const dateLabel = dateFmt.format(new Date(transaction.occurred_at))
 
   const amountTone =
     type === 'transfer'

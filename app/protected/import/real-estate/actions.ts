@@ -162,14 +162,19 @@ export async function commitRealEstateBackup(input: {
       items: { parentFp: string; fp: string; row: T }[],
       build: (row: T) => Record<string, unknown>
     ) =>
-      items
-        .filter((c) => fpToId.has(c.parentFp))
-        .map((c) => ({
-          ...build(c.row),
-          user_id: userId,
-          property_id: fpToId.get(c.parentFp) as string,
-          import_fingerprint: c.fp,
-        }))
+      items.flatMap((c) => {
+        if (!fpToId.has(c.parentFp)) {
+          return []
+        }
+        return [
+          {
+            ...build(c.row),
+            user_id: userId,
+            property_id: fpToId.get(c.parentFp) as string,
+            import_fingerprint: c.fp,
+          },
+        ]
+      })
 
     await insertChildren(
       'debts',

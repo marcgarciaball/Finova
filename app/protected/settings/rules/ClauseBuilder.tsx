@@ -9,6 +9,7 @@ import {
 } from '@finova/domain/rules/clause-form'
 import { Plus, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Input } from '@/components/ui/Input'
@@ -39,10 +40,24 @@ export function ClauseBuilder({
 }) {
   const t = useTranslations('settings.rules')
 
+  // `ClauseDraft` carries no id of its own (plain form-state shape shared with
+  // the pure `clause-form` domain module), so stable per-row identity for the
+  // `key` prop is tracked here, kept in lockstep with `drafts` across
+  // add/remove (the only operations that change its length).
+  const [ids, setIds] = useState<string[]>(() =>
+    drafts.map(() => crypto.randomUUID())
+  )
+
   const update = (i: number, patch: Partial<ClauseDraft>) =>
     onChange(drafts.map((d, idx) => (idx === i ? { ...d, ...patch } : d)))
-  const remove = (i: number) => onChange(drafts.filter((_, idx) => idx !== i))
-  const add = () => onChange([...drafts, emptyDraft('description')])
+  const remove = (i: number) => {
+    onChange(drafts.filter((_, idx) => idx !== i))
+    setIds((prev) => prev.filter((_, idx) => idx !== i))
+  }
+  const add = () => {
+    onChange([...drafts, emptyDraft('description')])
+    setIds((prev) => [...prev, crypto.randomUUID()])
+  }
 
   const onFieldChange = (i: number, field: ClauseField) =>
     // Reset op/value to the new field's defaults so op stays valid.
@@ -51,8 +66,7 @@ export function ClauseBuilder({
   return (
     <div className="flex flex-col gap-3">
       {drafts.map((draft, i) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: drafts are positional
-        <div key={i} className="flex flex-col gap-2">
+        <div key={ids[i] ?? i} className="flex flex-col gap-2">
           {i > 0 ? (
             <span className="text-ink-soft text-xs uppercase">{t('and')}</span>
           ) : null}

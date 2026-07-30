@@ -7,6 +7,7 @@ import { KpiCard } from '@/components/dashboard/KpiCard'
 import { Badge } from '@/components/ui/Badge'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { requireUser } from '@/lib/auth/require-user'
+import { getDateFormatter } from '@/lib/i18n/date-formatter'
 import { deleteManualAssetIncome, deleteManualAssetValuation } from '../actions'
 import { getManualAssetDetail } from '../data'
 import { AssetActions } from './AssetActions'
@@ -34,10 +35,8 @@ export default async function ManualAssetDetailPage({
   const { asset, income, valuations } = detail
   const ccy = asset.currency
   const fmt = (cents: number) => format(money(cents, ccy), locale)
-  const fmtDate = (iso: string) =>
-    new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(
-      new Date(`${iso}T00:00:00Z`)
-    )
+  const dateFmt = getDateFormatter(locale, { dateStyle: 'medium' })
+  const fmtDate = (iso: string) => dateFmt.format(new Date(`${iso}T00:00:00Z`))
   const gainLossCents = asset.current_value_cents - asset.cost_basis_cents
 
   const chartPoints = [...valuations]

@@ -2,7 +2,7 @@
 
 import { DEBT_RATE_TYPES, DEBT_TYPES } from '@finova/domain/debts/types'
 import { useTranslations } from 'next-intl'
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import type { ActionResult } from './actions'
@@ -33,14 +33,14 @@ export function DebtForm({
   const [state, formAction, pending] = useActionState<
     ActionResult | undefined,
     FormData
-  >(createDebt, undefined)
-  const [type, setType] = useState<(typeof DEBT_TYPES)[number]>('mortgage')
-
-  useEffect(() => {
-    if (state?.ok) {
+  >(async (prevState, formData) => {
+    const result = await createDebt(prevState, formData)
+    if (result.ok) {
       onDone?.()
     }
-  }, [state, onDone])
+    return result
+  }, undefined)
+  const [type, setType] = useState<(typeof DEBT_TYPES)[number]>('mortgage')
 
   const fieldErrors = state && !state.ok ? state.fieldErrors : undefined
   const errorFor = (field: string): string | undefined => {

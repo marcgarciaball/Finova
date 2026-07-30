@@ -25,11 +25,11 @@ import { createClient } from '@/lib/supabase/server'
 import {
   columnMappingSchema,
   type ImportTemplateRow,
-  importTemplateRowSchema,
   saveTemplateSchema,
 } from '@/lib/validation/import-template'
 import {
   existingFingerprintsForAccount,
+  findTemplateBySignature,
   listEnabledRulesForCategorization,
 } from './data'
 
@@ -156,12 +156,7 @@ export async function uploadImport(
 
   // 5. Pre-fill from a saved template for this exact layout, if one exists.
   try {
-    const { data } = await supabase
-      .from('import_templates')
-      .select('*')
-      .eq('header_signature', outcome.data.signature)
-      .maybeSingle()
-    const template = data ? importTemplateRowSchema.parse(data) : null
+    const template = await findTemplateBySignature(outcome.data.signature)
     return { ok: true, batchId, data: outcome.data, template }
   } catch {
     // A template-lookup failure must not block parsing; map with no pre-fill.
@@ -436,9 +431,9 @@ export async function commitBatch(input: {
   }
   const result = reviewRows(records, parsedMapping.data, accountId, existing)
 
-  const newTxns = result.rows
-    .filter((r) => r.status === 'new' && r.txn !== undefined)
-    .map((r) => r.txn as NonNullable<ReviewRow['txn']>)
+  const newTxns = result.rows.flatMap((r) =>
+    r.status === 'new' && r.txn !== undefined ? [r.txn] : []
+  )
 
   // 5. Auto-categorize via the user's enabled rules (P3-03). Rules failing to
   //    load degrades to uncategorized — categorization enhances, never blocks,
@@ -462,25 +457,38 @@ export async function commitBatch(input: {
   // 7. Chunked idempotent upsert. Under ON CONFLICT DO NOTHING, .select()
   //    returns only newly-inserted rows; conflicts are silently skipped. A
   //    failed chunk is counted and skipped, not fatal — a retry is idempotent.
+  //    Chunks target disjoint rows, so they can commit concurrently.
+  const chunks: CommitRow[][] = []
+  for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
+    chunks.push(rows.slice(i, i + CHUNK_SIZE))
+  }
+  const chunkResults = await Promise.all(
+    chunks.map(async (chunk) => {
+      const { data, error } = await supabase
+        .from('transactions')
+        .upsert(chunk, {
+          onConflict: 'user_id,import_fingerprint',
+          ignoreDuplicates: true,
+        })
+        .select('id')
+      if (error) {
+        return { committed: 0, skipped: 0, failed: chunk.length }
+      }
+      const inserted = data?.length ?? 0
+      return {
+        committed: inserted,
+        skipped: chunk.length - inserted,
+        failed: 0,
+      }
+    })
+  )
   let committed = 0
   let skipped = 0
   let failed = 0
-  for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
-    const chunk = rows.slice(i, i + CHUNK_SIZE)
-    const { data, error } = await supabase
-      .from('transactions')
-      .upsert(chunk, {
-        onConflict: 'user_id,import_fingerprint',
-        ignoreDuplicates: true,
-      })
-      .select('id')
-    if (error) {
-      failed += chunk.length
-      continue
-    }
-    const inserted = data?.length ?? 0
-    committed += inserted
-    skipped += chunk.length - inserted
+  for (const r of chunkResults) {
+    committed += r.committed
+    skipped += r.skipped
+    failed += r.failed
   }
 
   // 8. Persist the outcome on the batch.

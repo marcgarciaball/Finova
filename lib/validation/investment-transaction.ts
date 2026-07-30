@@ -32,7 +32,7 @@ function clearFundingOnSell<T extends { type: string }>(
 }
 
 const investmentTransactionFields = {
-  assetId: z.string().uuid(),
+  assetId: z.uuid(),
   currency: currencySchema,
   fees: decimalString.default('0'),
   fundingNote: z
@@ -74,7 +74,7 @@ export const updateInvestmentTransactionSchema = z
       .max(200, 'invalid')
       .optional()
       .transform((v) => (v ? v : undefined)),
-    id: z.string().uuid(),
+    id: z.uuid(),
   })
   .transform(clearFundingOnSell)
 

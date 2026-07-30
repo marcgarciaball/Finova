@@ -526,7 +526,11 @@ export function EditIncomeButton({ income }: { income: RentalIncomeRow }) {
         <DialogHeader>
           <DialogTitle>{t('detail.editIncome')}</DialogTitle>
         </DialogHeader>
-        <EditIncomeForm income={income} onDone={() => setOpen(false)} />
+        <EditIncomeForm
+          key={JSON.stringify(income)}
+          income={income}
+          onDone={() => setOpen(false)}
+        />
       </DialogContent>
     </Dialog>
   )
@@ -546,7 +550,9 @@ function EditIncomeForm({
     onDone
   )
   const [amountKind, setAmountKind] = useState<'total' | 'monthly'>('total')
-  const [amount, setAmount] = useState((income.amount_cents / 100).toFixed(2))
+  const [amount, setAmount] = useState(() =>
+    (income.amount_cents / 100).toFixed(2)
+  )
   const [periodStart, setPeriodStart] = useState(income.period_start)
   const [periodEnd, setPeriodEnd] = useState(income.period_end)
 

@@ -9,9 +9,11 @@ import { ProfileForm } from './ProfileForm'
 
 /** Profile tab (P5-01): currency preferences + reused language/theme switchers. */
 export default async function ProfilePage() {
-  const claims = await requireUser()
-  const t = await getTranslations('settings.profile')
-  const profile = await getProfile()
+  const [claims, t, profile] = await Promise.all([
+    requireUser(),
+    getTranslations('settings.profile'),
+    getProfile(),
+  ])
   const email = typeof claims.email === 'string' ? claims.email : ''
 
   return (

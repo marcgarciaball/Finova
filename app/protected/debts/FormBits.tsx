@@ -1,15 +1,6 @@
 'use client'
 
-import { Plus } from 'lucide-react'
-import { type ReactNode, useState } from 'react'
-import { Button } from '@/components/ui/Button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/Dialog'
+import type { ReactNode } from 'react'
 import { Label } from '@/components/ui/Label'
 
 export const SELECT_CLASS =
@@ -33,37 +24,5 @@ export function Field({
       {children}
       {error ? <p className="text-neg text-xs">{error}</p> : null}
     </div>
-  )
-}
-
-/**
- * "Add X" button opening a dialog with a form; the dialog closes itself when
- * the child form reports success via the `onDone` it receives.
- */
-export function AddDialog({
-  title,
-  variant = 'outline',
-  children,
-}: {
-  title: string
-  variant?: 'default' | 'outline'
-  children: (onDone: () => void) => ReactNode
-}) {
-  const [open, setOpen] = useState(false)
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button type="button" variant={variant} size="sm">
-          <Plus className="size-4" aria-hidden="true" />
-          {title}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
-        {children(() => setOpen(false))}
-      </DialogContent>
-    </Dialog>
   )
 }

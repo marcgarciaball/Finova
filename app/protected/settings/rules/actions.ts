@@ -145,7 +145,7 @@ export async function updateRule(
 
 export async function deleteRule(id: string): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()
@@ -165,7 +165,7 @@ export async function toggleRule(
   enabled: boolean
 ): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()

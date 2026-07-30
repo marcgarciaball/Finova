@@ -2,6 +2,7 @@ import type { KeyStats } from '@finova/domain/dashboard'
 import { format, money } from '@finova/domain/money'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { getDateFormatter } from '@/lib/i18n/date-formatter'
 
 /**
  * Key-stats strip (UD-08): the headline activity stats — average spend, biggest
@@ -18,10 +19,7 @@ export async function KeyStatsStrip({
   const t = await getTranslations('dashboard.keyStats')
   const locale = await getLocale()
 
-  const dateFmt = new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'short',
-  })
+  const dateFmt = getDateFormatter(locale, { day: 'numeric', month: 'short' })
   const fmtMoney = (cents: number) => format(money(cents, currency), locale)
 
   const cells: { key: string; label: string; value: string; sub?: string }[] = [

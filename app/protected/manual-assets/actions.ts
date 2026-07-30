@@ -167,7 +167,7 @@ export async function updateManualAsset(
 
 export async function deleteManualAsset(id: string): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()
@@ -275,7 +275,7 @@ export async function deleteManualAssetIncome(
   id: string
 ): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()
@@ -294,7 +294,7 @@ export async function deleteManualAssetValuation(
   id: string
 ): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
   const supabase = await createClient()

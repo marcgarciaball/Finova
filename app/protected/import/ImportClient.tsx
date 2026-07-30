@@ -52,8 +52,10 @@ export function ImportClient({ accounts }: { accounts: AccountRow[] }) {
   const [form, setForm] = useState<MappingFormState>(emptyFormState)
   const [saveMsg, setSaveMsg] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [templateName, setTemplateName] = useState('')
 
-  // When a new file parses, seed the mapping from a saved template if present.
+  // When a new file parses, seed the mapping (and template name field) from a
+  // saved template if present.
   useEffect(() => {
     if (parseState?.ok) {
       setForm(
@@ -61,11 +63,13 @@ export function ImportClient({ accounts }: { accounts: AccountRow[] }) {
           ? formStateFromMapping(parseState.template.mapping)
           : suggestMapping(parseState.data.headers)
       )
+      const name = parseState.template?.name ?? ''
       setLoaded({
         batchId: parseState.batchId,
         data: parseState.data,
-        templateName: parseState.template?.name ?? '',
+        templateName: name,
       })
+      setTemplateName(name)
       setSaveMsg(null)
     }
   }, [parseState])
@@ -90,26 +94,22 @@ export function ImportClient({ accounts }: { accounts: AccountRow[] }) {
       : mapping.amount.debitColumn !== '' || mapping.amount.creditColumn !== ''
   }, [mapping])
 
-  const [templateName, setTemplateName] = useState('')
-  useEffect(() => {
-    if (loaded) {
-      setTemplateName(loaded.templateName)
-    }
-  }, [loaded])
-
   async function onSave() {
     if (!loaded) {
       return
     }
     setSaving(true)
     setSaveMsg(null)
-    const result = await saveTemplate({
-      name: templateName,
-      signature: loaded.data.signature,
-      mapping,
-    })
-    setSaving(false)
-    setSaveMsg(result.ok ? t('saved') : t('errors.saveFailed'))
+    try {
+      const result = await saveTemplate({
+        name: templateName,
+        signature: loaded.data.signature,
+        mapping,
+      })
+      setSaveMsg(result.ok ? t('saved') : t('errors.saveFailed'))
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -184,6 +184,7 @@ export function ImportClient({ accounts }: { accounts: AccountRow[] }) {
 
       {loaded && mappingReady ? (
         <ReviewPanel
+          key={`${loaded.batchId}:${JSON.stringify(mapping)}`}
           batchId={loaded.batchId}
           mapping={mapping}
           accounts={accounts}

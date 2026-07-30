@@ -60,7 +60,7 @@ export type DebtRow = z.infer<typeof debtRowSchema>
 export const createDebtSchema = z
   .object({
     type: z.enum(DEBT_TYPES),
-    propertyId: z.string().uuid().optional(),
+    propertyId: z.uuid().optional(),
     lender: z.string().trim().min(1, 'required').max(120, 'tooLong'),
     currency: currencySchema,
     principal: decimalString,
@@ -79,7 +79,7 @@ export const createDebtSchema = z
 export type CreateDebtInput = z.infer<typeof createDebtSchema>
 
 export const updateDebtSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   lender: z.string().trim().min(1, 'required').max(120, 'tooLong'),
   outstanding: decimalString,
   interestRatePct: percentString,

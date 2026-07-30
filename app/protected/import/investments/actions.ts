@@ -206,37 +206,46 @@ export async function commitInvestmentsBackup(input: {
     const neededAssetIds = new Set(
       plan.transactions.map((t) => t.assetExportId)
     )
-    for (const exportId of neededAssetIds) {
-      const ref = plan.assetsByExportId.get(exportId)
-      if (!ref) continue
-      const id = await resolveAssetId(admin, ref)
-      if (id) assetExportIdToId.set(exportId, id)
+    const resolvedAssetIds = await Promise.all(
+      Array.from(neededAssetIds).map(async (exportId) => {
+        const ref = plan.assetsByExportId.get(exportId)
+        if (!ref) return null
+        const id = await resolveAssetId(admin, ref)
+        return id ? ([exportId, id] as const) : null
+      })
+    )
+    for (const entry of resolvedAssetIds) {
+      if (entry) assetExportIdToId.set(entry[0], entry[1])
     }
 
     // 4. Transactions (portfolio + asset must resolve).
-    const txnRows = plan.transactions
-      .filter(
-        (t) =>
-          portfolioFpToId.has(t.parentPortfolioFp) &&
-          assetExportIdToId.has(t.assetExportId)
-      )
-      .map((t) => ({
-        user_id: userId,
-        portfolio_id: portfolioFpToId.get(t.parentPortfolioFp) as string,
-        account_id:
-          t.accountFp && accountFpToId.has(t.accountFp)
-            ? (accountFpToId.get(t.accountFp) as string)
-            : null,
-        asset_id: assetExportIdToId.get(t.assetExportId) as string,
-        type: t.row.type,
-        quantity: t.row.quantity,
-        price_cents: t.row.price_cents,
-        currency: t.row.currency,
-        fees_cents: t.row.fees_cents,
-        traded_at: t.row.traded_at,
-        notes: t.row.notes,
-        import_fingerprint: t.fp,
-      }))
+    const txnRows = plan.transactions.flatMap((t) => {
+      if (
+        !portfolioFpToId.has(t.parentPortfolioFp) ||
+        !assetExportIdToId.has(t.assetExportId)
+      ) {
+        return []
+      }
+      return [
+        {
+          user_id: userId,
+          portfolio_id: portfolioFpToId.get(t.parentPortfolioFp) as string,
+          account_id:
+            t.accountFp && accountFpToId.has(t.accountFp)
+              ? (accountFpToId.get(t.accountFp) as string)
+              : null,
+          asset_id: assetExportIdToId.get(t.assetExportId) as string,
+          type: t.row.type,
+          quantity: t.row.quantity,
+          price_cents: t.row.price_cents,
+          currency: t.row.currency,
+          fees_cents: t.row.fees_cents,
+          traded_at: t.row.traded_at,
+          notes: t.row.notes,
+          import_fingerprint: t.fp,
+        },
+      ]
+    })
     if (txnRows.length > 0) {
       const { error } = await supabase
         .from('investment_transactions')

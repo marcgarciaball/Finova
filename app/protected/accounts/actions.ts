@@ -145,7 +145,7 @@ export async function setArchived(
   archived: boolean
 ): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
 
@@ -163,7 +163,7 @@ export async function setArchived(
 }
 
 const reconcileSchema = z.object({
-  accountId: z.string().uuid(),
+  accountId: z.uuid(),
   targetAmount: z.string().trim().min(1),
   description: z.string().trim().min(1).max(200),
 })
@@ -258,7 +258,7 @@ export async function reconcileAccount(
  */
 export async function deleteAccount(id: string): Promise<ActionResult> {
   await requireUser()
-  if (!z.string().uuid().safeParse(id).success) {
+  if (!z.uuid().safeParse(id).success) {
     return { ok: false, error: UNEXPECTED }
   }
 

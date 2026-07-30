@@ -9,6 +9,20 @@ import { Button, FlatList, Text, View } from 'react-native'
 import { getDashboardData } from '../../src/data/dashboard'
 import { supabase } from '../../src/lib/supabase'
 
+type AccountBalance = ReturnType<typeof accountBalances>[number]
+
+/**
+ * Module-scope render function: no closure deps, so it's created once
+ * instead of being rebuilt on every DashboardScreen render.
+ */
+function renderAccountBalance({ item }: { item: AccountBalance }) {
+  return (
+    <Text>
+      {item.accountId}: {format(money(item.balance, item.currency), 'en')}
+    </Text>
+  )
+}
+
 export default function DashboardScreen() {
   const [balances, setBalances] = useState<ReturnType<typeof accountBalances>>(
     []
@@ -40,11 +54,7 @@ export default function DashboardScreen() {
       <FlatList
         data={balances}
         keyExtractor={(item) => item.accountId}
-        renderItem={({ item }) => (
-          <Text>
-            {item.accountId}: {format(money(item.balance, item.currency), 'en')}
-          </Text>
-        )}
+        renderItem={renderAccountBalance}
       />
       <Button title="Sign out" onPress={() => supabase.auth.signOut()} />
     </View>

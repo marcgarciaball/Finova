@@ -3,7 +3,7 @@
 import { format, money } from '@finova/domain/money'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
-import { type ReactNode, useState, useTransition } from 'react'
+import { type ReactNode, useMemo, useState, useTransition } from 'react'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { cn } from '@/lib/utils'
@@ -103,10 +103,10 @@ export function EarningsCard({
     yearOptions.push(String(y))
   }
 
-  const monthFormatter = new Intl.DateTimeFormat(locale, {
-    month: 'long',
-    timeZone: 'UTC',
-  })
+  const monthFormatter = useMemo(
+    () => new Intl.DateTimeFormat(locale, { month: 'long', timeZone: 'UTC' }),
+    [locale]
+  )
   const monthOptions = Array.from({ length: 12 }, (_, i) => ({
     value: String(i + 1).padStart(2, '0'),
     label: monthFormatter.format(new Date(Date.UTC(2000, i, 1))),

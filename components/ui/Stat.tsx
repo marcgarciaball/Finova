@@ -30,16 +30,21 @@ export function Stat({
   emptyDisplay = '—',
   className,
 }: StatProps) {
-  const fmt =
-    currency && locale
-      ? (n: number) =>
-          new Intl.NumberFormat(locale, {
+  const currencyFmt = React.useMemo(
+    () =>
+      currency && locale
+        ? new Intl.NumberFormat(locale, {
             style: 'currency',
             currency,
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
-          }).format(n / 100)
-      : (n: number) => `${n.toLocaleString()}${suffix}`
+          })
+        : null,
+    [currency, locale]
+  )
+  const fmt = currencyFmt
+    ? (n: number) => currencyFmt.format(n / 100)
+    : (n: number) => `${n.toLocaleString()}${suffix}`
   const [display, setDisplay] = React.useState(value)
 
   React.useEffect(() => {

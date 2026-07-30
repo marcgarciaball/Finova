@@ -314,14 +314,18 @@ export async function refreshPrices(): Promise<RefreshSummary> {
         } else if (asset.ticker && process.env.FMP_API_KEY) {
           daily = await getFmpDailyPrices(String(asset.ticker), assetFirst)
         }
-        const rows = daily
-          .filter((d) => d.date >= assetFirst)
-          .map((d) => ({
-            asset_id: asset.id,
-            close_cents: d.closeCents,
-            currency: asset.currency,
-            date: d.date,
-          }))
+        const rows = daily.flatMap((d) =>
+          d.date >= assetFirst
+            ? [
+                {
+                  asset_id: asset.id,
+                  close_cents: d.closeCents,
+                  currency: asset.currency,
+                  date: d.date,
+                },
+              ]
+            : []
+        )
         for (let i = 0; i < rows.length; i += 500) {
           const { error } = await admin
             .from('historical_prices')

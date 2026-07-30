@@ -1404,6 +1404,121 @@
       "payment": "Payment"
     }
   },
+  "profitabilityCalculator": {
+    "nav": "Calculator",
+    "title": "Profitability calculator",
+    "subtitle": "Model compound interest, income goals, and historical returns before you invest.",
+    "tabs": {
+      "goal": "Income goal",
+      "growth": "Growth projector",
+      "historical": "Historical returns",
+      "dividends": "Dividends",
+      "rental": "Rental property"
+    },
+    "common": {
+      "annualReturn": "Annual return (%)",
+      "years": "Time horizon (years)",
+      "initialCapital": "Initial capital",
+      "monthlyContribution": "Monthly contribution",
+      "compounding": "Compounding frequency",
+      "compoundingOptions": {
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually"
+      },
+      "balanceLabel": "Balance"
+    },
+    "goal": {
+      "title": "How much do I need invested?",
+      "description": "This works backwards from a \"safe withdrawal rate\": you pick the monthly income you want to live off and the annual return you expect, and it tells you the capital that income requires — spending only the return, never the principal.",
+      "monthlyIncomeTarget": "Monthly income you want to live off",
+      "capitalRequired": "Capital required",
+      "capitalRequiredHint": "This is {income}/month × 12 ÷ {rate}% — the capital whose annual return alone covers that income",
+      "yearsToReachTitle": "Years to reach it",
+      "yearsToReachBody": "Contributing {contribution}/month at {rate}%, starting from {initial}",
+      "neverReaches": "Not reachable within 60 years at this contribution and rate — raise the contribution or the rate.",
+      "chartTitle": "Capital over time"
+    },
+    "growth": {
+      "title": "Investment growth projector",
+      "description": "Project how an initial amount plus regular contributions compounds over time.",
+      "futureValue": "Future value",
+      "totalContributed": "Total contributed",
+      "totalInterest": "Interest earned",
+      "chartTitle": "Balance over time",
+      "breakdownTitle": "Contributed vs. interest",
+      "breakdown": {
+        "contributed": "Contributed",
+        "interest": "Interest"
+      }
+    },
+    "historical": {
+      "title": "Historical return comparison",
+      "description": "Run the same contribution plan against a few reference long-term average annual returns to compare outcomes. Past returns don't guarantee future ones.",
+      "presets": {
+        "worldStocks": "World stocks (~8%)",
+        "usStocks": "US stocks (~10%)",
+        "realEstate": "Real estate (~6%)",
+        "bonds": "Bonds (~4%)",
+        "custom": "Custom"
+      },
+      "customRate": "Custom rate (%)",
+      "tableTitle": "Outcome after {years} years",
+      "columnScenario": "Scenario",
+      "columnRate": "Return",
+      "columnFinalValue": "Final value",
+      "columnInterest": "Interest earned",
+      "chartTitle": "Balance over time by scenario"
+    },
+    "dividends": {
+      "title": "Dividend income projector",
+      "description": "Enter what the company pays today and how fast it tends to raise its dividend — see how your position and income grow if you reinvest, or how much cash income you'd collect if you don't.",
+      "dividendYield": "Current dividend yield (%)",
+      "dividendGrowth": "Annual dividend growth (%)",
+      "priceAppreciation": "Annual stock price appreciation (%)",
+      "priceAppreciationHint": "The dividend yield alone doesn't grow the position — this is what makes the share price itself go up, on top of any reinvested dividends. Set 0 if you only want to see the dividend effect.",
+      "reinvest": "Reinvest dividends (DRIP)",
+      "reinvestHint": "On: dividends buy more shares automatically. Off: dividends are paid out as cash and only your contributions grow the position.",
+      "futureValue": "Position value",
+      "finalMonthlyIncome": "Monthly income (year {years})",
+      "finalAnnualIncome": "Annual income (year {years})",
+      "totalDividendsReceived": "Total dividends received",
+      "chartTitle": "Position value over time",
+      "incomeChartTitle": "Annual dividend income over time",
+      "annualIncomeLabel": "Annual dividend income",
+      "goalTitle": "Dividend income goal",
+      "goalDescription": "Want a specific monthly dividend income? See how many years of contributing {contribution}/month it takes to get there, reinvesting dividends along the way.",
+      "targetMonthlyIncome": "Target monthly dividend income",
+      "yearsToReachIncome": "Years to reach it",
+      "neverReachesIncome": "Not reachable within 60 years at this contribution, yield, and growth rate — raise one of them."
+    },
+    "rental": {
+      "title": "Is this apartment profitable?",
+      "description": "Enter the purchase and financing terms plus the rent you'd charge — see the monthly cash flow, cap rate, and cash-on-cash return, plus how your equity builds over time.",
+      "purchasePrice": "Purchase price",
+      "downPaymentPct": "Down payment (%)",
+      "mortgageRate": "Mortgage rate (annual %)",
+      "mortgageTerm": "Mortgage term (years)",
+      "monthlyRent": "Monthly rent",
+      "monthlyOperatingExpenses": "Monthly expenses (tax, insurance, community, maintenance)",
+      "vacancyPct": "Vacancy allowance (%)",
+      "managementFeePct": "Management fee (% of rent)",
+      "appreciationPct": "Annual property appreciation (%)",
+      "monthlyMortgagePayment": "Mortgage payment",
+      "monthlyCashFlow": "Monthly cash flow",
+      "cashOnCashReturn": "Cash-on-cash return",
+      "capRate": "Cap rate",
+      "grossYield": "Gross rental yield",
+      "profitable": "Profitable — positive cash flow",
+      "unprofitable": "Negative cash flow — costs more than it earns",
+      "equityChartTitle": "Property value, loan balance and equity over time",
+      "equityLabels": {
+        "propertyValue": "Property value",
+        "loanBalance": "Loan balance",
+        "equity": "Equity"
+      }
+    }
+  },
   "settings": {
     "title": "Settings",
     "tabs": {

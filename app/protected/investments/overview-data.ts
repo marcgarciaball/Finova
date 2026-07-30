@@ -183,6 +183,15 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
     )
   )
 
+  // First-seen currency per asset, pre-indexed so the per-row loop below does
+  // O(1) lookups instead of an O(n) `.find()` scan of `txns` per row.
+  const currencyByAssetId = new Map<string, string>()
+  for (const t of txns) {
+    if (!currencyByAssetId.has(t.assetId)) {
+      currencyByAssetId.set(t.assetId, t.currency)
+    }
+  }
+
   const holdings: HoldingView[] = []
   let realizedPlBaseCents = 0
   let unconvertibleCount = 0
@@ -190,8 +199,7 @@ export async function getInvestmentsOverview(): Promise<InvestmentsOverview> {
   for (const r of rows) {
     const meta = assetMeta.get(r.asset_id)
     const quote = quoteMeta.get(r.asset_id)
-    const txnCurrency =
-      txns.find((t) => t.assetId === r.asset_id)?.currency ?? base
+    const txnCurrency = currencyByAssetId.get(r.asset_id) ?? base
     const convertible =
       txnCurrency === base || rates.has(fxKey(txnCurrency, base))
     if (convertible) {

@@ -5,8 +5,15 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import { CategoryIcon } from '@/components/dashboard/CategoryIcon'
 import { ListRow } from '@/components/dashboard/ListRow'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { getDateFormatter } from '@/lib/i18n/date-formatter'
 import type { CategoryRow } from '@/lib/validation/category'
 import type { DashboardTxn } from './data'
+
+const QUICK_FILTERS: { key: string; href: string }[] = [
+  { key: 'income', href: '/protected/transactions?type=income' },
+  { key: 'expense', href: '/protected/transactions?type=expense' },
+  { key: 'transfer', href: '/protected/transactions?type=transfer' },
+]
 
 /**
  * Recent transactions block (P4-04): the newest rows in the selected period,
@@ -22,15 +29,14 @@ export async function RecentTransactions({
   /** Quick-add trigger rendered next to the title (nav IA priority 2). */
   quickAdd?: React.ReactNode
 }) {
-  const t = await getTranslations('dashboard.recent')
-  const tTypes = await getTranslations('transactions.types')
-  const tDefaults = await getTranslations('categories.defaults')
-  const locale = await getLocale()
+  const [t, tTypes, tDefaults, locale] = await Promise.all([
+    getTranslations('dashboard.recent'),
+    getTranslations('transactions.types'),
+    getTranslations('categories.defaults'),
+    getLocale(),
+  ])
 
-  const dateFmt = new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'short',
-  })
+  const dateFmt = getDateFormatter(locale, { day: 'numeric', month: 'short' })
   const byId = new Map(categories.map((c) => [c.id, c]))
 
   const labelFor = (categoryId: string | null): string | undefined => {
@@ -50,12 +56,6 @@ export async function RecentTransactions({
     )
   }
 
-  const quickFilters: { key: string; href: string }[] = [
-    { key: 'income', href: '/protected/transactions?type=income' },
-    { key: 'expense', href: '/protected/transactions?type=expense' },
-    { key: 'transfer', href: '/protected/transactions?type=transfer' },
-  ]
-
   return (
     <GlassCard className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
@@ -74,7 +74,7 @@ export async function RecentTransactions({
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {quickFilters.map((f) => (
+        {QUICK_FILTERS.map((f) => (
           <Link
             key={f.key}
             href={f.href}

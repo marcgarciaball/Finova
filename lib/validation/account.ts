@@ -61,7 +61,7 @@ export const createAccountSchema = z.object({
 })
 
 export const updateAccountSchema = createAccountSchema.extend({
-  id: z.string().uuid(),
+  id: z.uuid(),
 })
 
 export type CreateAccountInput = z.infer<typeof createAccountSchema>

@@ -30,9 +30,11 @@ export async function WealthAllocation({
   currency: string
   className?: string
 }) {
-  const t = await getTranslations('dashboard.wealthAllocation')
-  const tTypes = await getTranslations('investments.search.types')
-  const locale = await getLocale()
+  const [t, tTypes, locale] = await Promise.all([
+    getTranslations('dashboard.wealthAllocation'),
+    getTranslations('investments.search.types'),
+    getLocale(),
+  ])
 
   const rows = [
     { key: 'cash', label: t('cash'), cents: cashCents },

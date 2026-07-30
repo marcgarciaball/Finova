@@ -532,7 +532,7 @@ export async function getRentedPropertyIds(): Promise<Set<string>> {
     throw new Error(error.message)
   }
   return new Set(
-    (data ?? []).filter((p) => p.is_rented).map((p) => String(p.id))
+    (data ?? []).flatMap((p) => (p.is_rented ? [String(p.id)] : []))
   )
 }
 

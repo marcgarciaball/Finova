@@ -33,7 +33,7 @@ const noteSchema = z.preprocess(
 /** `categoryId` is optional: omitted/empty → uncategorized (null); a uuid → a category. */
 const categoryIdSchema = z.preprocess(
   emptyToNull,
-  z.string().uuid().nullable().default(null)
+  z.uuid().nullable().default(null)
 )
 
 /**
@@ -50,7 +50,7 @@ export const amountSchema = z
 export const tagsSchema = z.array(z.string().trim().min(1)).default([])
 
 export const createTransactionSchema = z.object({
-  accountId: z.string().uuid(),
+  accountId: z.uuid(),
   categoryId: categoryIdSchema,
   amount: amountSchema,
   currency: currencySchema,
@@ -62,7 +62,7 @@ export const createTransactionSchema = z.object({
 })
 
 export const updateTransactionSchema = createTransactionSchema.extend({
-  id: z.string().uuid(),
+  id: z.uuid(),
 })
 
 /**
@@ -73,8 +73,8 @@ export const updateTransactionSchema = createTransactionSchema.extend({
  * fields as cleanly as a plain comparison in the action).
  */
 export const createTransferSchema = z.object({
-  fromAccountId: z.string().uuid(),
-  toAccountId: z.string().uuid(),
+  fromAccountId: z.uuid(),
+  toAccountId: z.uuid(),
   amount: z
     .string()
     .trim()

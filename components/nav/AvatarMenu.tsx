@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { useTheme } from 'next-themes'
-import { useEffect, useState, useTransition } from 'react'
+import { useTransition } from 'react'
 import { Button } from '@/components/ui/Button'
 import {
   DropdownMenu,
@@ -28,6 +28,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
+import { useMounted } from '@/lib/hooks/useMounted'
 import { setLocale } from '@/lib/i18n/actions'
 import { type Locale, locales } from '@/lib/i18n/config'
 import { createClient } from '@/lib/supabase/client'
@@ -42,12 +43,8 @@ export function AvatarMenu({ email }: { email: string }) {
   const router = useRouter()
   const activeLocale = useLocale()
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
   const [, startLocaleTransition] = useTransition()
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   function onLocaleChange(value: string) {
     const next = value as Locale
